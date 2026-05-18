@@ -5,6 +5,12 @@ import LoginPage from './features/auth/LoginPage';
 import DashboardPage from './features/dashboard/DashboardPage';
 import StudentLayout from './components/StudentLayout';
 
+// Feature Pages
+import MyAttendancePage from './features/attendance/MyAttendancePage';
+import MyFeesPage from './features/fees/MyFeesPage';
+import NotificationsPage from './features/notifications/NotificationsPage';
+import MyProfilePage from './features/profile/MyProfilePage';
+
 // Simple route guards (student-specific, no extra deps)
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -16,19 +22,6 @@ function PublicOnly({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   if (isAuthenticated) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
-}
-
-// Placeholder for pages not yet built
-function PlaceholderPage({ title }: { title: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
-      <div className="w-14 h-14 rounded-lg bg-surface flex items-center justify-center mb-4">
-        <span className="text-2xl">🚧</span>
-      </div>
-      <h2 className="text-lg font-bold text-ink mb-2">{title}</h2>
-      <p className="text-sm text-steel">This section will be available soon.</p>
-    </div>
-  );
 }
 
 export default function App() {
@@ -60,10 +53,10 @@ export default function App() {
           </ProtectedRoute>
         }>
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/attendance" element={<PlaceholderPage title="My Attendance" />} />
-          <Route path="/fees" element={<PlaceholderPage title="My Fees" />} />
-          <Route path="/notifications" element={<PlaceholderPage title="Notifications" />} />
-          <Route path="/profile" element={<PlaceholderPage title="My Profile" />} />
+          <Route path="/attendance" element={<MyAttendancePage />} />
+          <Route path="/fees" element={<MyFeesPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/profile" element={<MyProfilePage />} />
         </Route>
 
         {/* Catch-all */}

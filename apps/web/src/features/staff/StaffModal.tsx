@@ -12,53 +12,55 @@ interface StaffModalProps {
 
 const PERMISSION_GROUPS = [
   {
+    id: 'students',
     title: 'Students & Inquiries',
     items: [
-      { id: 'students.view', label: 'View student directory' },
-      { id: 'students.add', label: 'Enroll new students' },
-      { id: 'students.edit', label: 'Modify student data' },
-      { id: 'students.delete', label: 'Remove student records' },
+      { id: 'students.view', label: 'View student directory', description: 'Access student list and basic profiles' },
+      { id: 'students.add', label: 'Enroll new students', description: 'Register new students into the system' },
+      { id: 'students.edit', label: 'Modify student data', description: 'Update KYC, contact info, and status' },
+      { id: 'students.delete', label: 'Remove student records', description: 'Permit removal or archiving of records' },
     ]
   },
   {
+    id: 'academics',
     title: 'Academics & Attendance',
     items: [
-      { id: 'batches.view', label: 'View batch schedules' },
-      { id: 'batches.edit', label: 'Manage batch settings' },
-      { id: 'attendance.mark', label: 'Mark daily attendance' },
-      { id: 'attendance.view', label: 'View attendance reports' },
-      { id: 'attendance.edit', label: 'Correct past attendance' },
+      { id: 'batches.view', label: 'View batch schedules', description: 'See class schedules and assignments' },
+      { id: 'batches.edit', label: 'Manage batch settings', description: 'Configure batch settings and timings' },
+      { id: 'attendance.mark', label: 'Mark daily attendance', description: 'Record daily attendance for students' },
+      { id: 'attendance.view', label: 'View attendance reports', description: 'Access past attendance logs' },
+      { id: 'attendance.edit', label: 'Correct past attendance', description: 'Modify past attendance records' },
     ]
   },
   {
+    id: 'finance',
     title: 'Financials & Fees',
     items: [
-      { id: 'fees.view', label: 'Access fee dashboard' },
-      { id: 'fees.collect', label: 'Process fee payments' },
-      { id: 'fees.edit', label: 'Edit fee structures' },
-      { id: 'fees.delete', label: 'Void/Delete receipts' },
+      { id: 'fees.view', label: 'Access fee dashboard', description: 'Access financial summaries and dues' },
+      { id: 'fees.collect', label: 'Process fee payments', description: 'Record and verify fee collections' },
+      { id: 'fees.edit', label: 'Edit fee structures', description: 'Modify fee plans and discounts' },
+      { id: 'fees.delete', label: 'Void/Delete receipts', description: 'Cancel or delete payment records' },
+      { id: 'wallet.view', label: 'Institute Wallet', description: 'Access wallet transactions and balance' },
     ]
   },
   {
-    title: 'Analytics & Reports',
-    items: [
-      { id: 'reports.view', label: 'View operational reports' },
-      { id: 'reports.export', label: 'Download data exports' },
-    ]
-  },
-  {
+    id: 'communications',
     title: 'Communications',
     items: [
-      { id: 'notifications.view', label: 'View notification logs' },
-      { id: 'notifications.send', label: 'Send broadcast alerts' },
+      { id: 'notifications.view', label: 'View notification logs', description: 'View history of sent alerts' },
+      { id: 'notifications.send', label: 'Send broadcast alerts', description: 'Send WhatsApp/Email notifications' },
+      { id: 'marketing.campaigns', label: 'Marketing Campaigns', description: 'Manage promotional campaigns and offers' },
     ]
   },
   {
+    id: 'system',
     title: 'System & Team',
     items: [
-      { id: 'staff.view', label: 'View staff members' },
-      { id: 'staff.manage', label: 'Manage staff & payroll' },
-      { id: 'settings.manage', label: 'Institute settings access' },
+      { id: 'reports.view', label: 'View operational reports', description: 'Access institute-wide performance data' },
+      { id: 'reports.export', label: 'Download data exports', description: 'Download CSV/PDF reports' },
+      { id: 'staff.view', label: 'View staff members', description: 'See directory of staff members' },
+      { id: 'staff.manage', label: 'Manage staff & payroll', description: 'Add/Edit team members and permissions' },
+      { id: 'settings.manage', label: 'Institute settings access', description: 'Access system-wide configuration' },
     ]
   }
 ];
@@ -238,39 +240,83 @@ export default function StaffModal({ isOpen, onClose, staff, onSuccess }: StaffM
               </div>
 
               {/* Delegation Matrix */}
-              <div className="space-y-4 border-t border-hairline pt-8">
-                <div className="flex items-center justify-between">
+              <div className="space-y-8 border-t border-hairline pt-12">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h4 className="font-bold text-ink tracking-tight">What can they do?</h4>
-                    <p className="text-xs text-slate font-medium">Set exactly what this person is allowed to see or change.</p>
+                    <h4 className="text-[11px] font-black text-ink uppercase tracking-[0.25em]">Responsibility Matrix</h4>
+                    <p className="text-xs text-steel font-medium mt-2">Modular features allowed for this role.</p>
                   </div>
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-brand-green/5 border border-brand-green/10 rounded-xl">
-                    <div className="w-1.5 h-1.5 rounded-full bg-brand-green" />
-                    <span className="text-[9px] font-bold text-brand-green uppercase tracking-widest">
-                      {role === 'custom' ? 'Custom Mode Active' : 'Template Locked'}
+                  <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border ${role === 'custom' ? 'bg-brand-green/5 border-brand-green/20' : 'bg-surface border-hairline'}`}>
+                    <div className={`w-2 h-2 rounded-full ${role === 'custom' ? 'bg-brand-green animate-pulse' : 'bg-stone opacity-30'}`} />
+                    <span className={`text-[9px] font-black uppercase tracking-widest ${role === 'custom' ? 'text-brand-green-deep' : 'text-stone opacity-60'}`}>
+                      {role === 'custom' ? 'Custom Engine Unlocked' : 'Template Locked'}
                     </span>
                   </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-12">
                   {PERMISSION_GROUPS.map((group) => (
-                    <div key={group.title} className="space-y-3">
-                      <h5 className="text-[10px] font-black text-stone uppercase tracking-[0.15em]">{group.title}</h5>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {group.items.map(({ id, label }) => {
+                    <div key={group.id} className="space-y-6 animate-slide-up">
+                      <div className="flex items-center justify-between border-b border-hairline pb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-brand-green/5 flex items-center justify-center">
+                            <Shield className="w-5 h-5 text-brand-green" />
+                          </div>
+                          <h4 className="text-xs font-black text-ink uppercase tracking-widest">{group.title}</h4>
+                        </div>
+                        {role === 'custom' && (
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              const groupPerms = group.items.map(p => p.id);
+                              const allSelected = groupPerms.every(p => permissions.includes(p));
+                              if (allSelected) {
+                                setPermissions(prev => prev.filter(p => !groupPerms.includes(p)));
+                              } else {
+                                setPermissions(prev => [...new Set([...prev, ...groupPerms])]);
+                              }
+                            }}
+                            className="text-[9px] font-black text-brand-green uppercase tracking-widest hover:underline"
+                          >
+                            {group.items.every(p => permissions.includes(p.id)) ? 'Deselect Module' : 'Select Module'}
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                          {group.items.map(({ id, label, description }) => {
                             const isSelected = permissions.includes(id);
                             const isDisabled = role !== 'custom' && role !== 'admin';
+                            
                             return (
-                              <div key={id} onClick={() => togglePermission(id)}
-                                className={`flex items-center gap-3 p-4 rounded-2xl border transition-all cursor-pointer ${
-                                  isSelected ? 'bg-canvas border-brand-green shadow-premium' : 'bg-surface/30 border-hairline hover:bg-surface'
-                                } ${isDisabled ? 'cursor-default opacity-80' : ''}`}>
-                                <div className={`w-5 h-5 rounded-lg border flex items-center justify-center transition-all ${
-                                  isSelected ? 'bg-brand-green border-brand-green text-white' : 'bg-white border-hairline'
-                                }`}>
-                                    {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                              <div 
+                                key={id} 
+                                onClick={() => togglePermission(id)}
+                                className={`flex flex-col text-left p-5 rounded-2xl border transition-all relative overflow-hidden group ${
+                                  isSelected ? 'bg-canvas border-brand-green shadow-premium-subtle' : 'bg-surface/30 border-hairline opacity-60 grayscale-[0.5]'
+                                } ${isDisabled ? 'cursor-not-allowed' : 'hover:scale-[1.02] hover:border-brand-green hover:grayscale-0 cursor-pointer active:scale-95'}`}
+                              >
+                                {isSelected && (
+                                  <div className="absolute top-0 right-0 p-1">
+                                    <div className="w-3 h-3 bg-brand-green rounded-bl-lg" />
+                                  </div>
+                                )}
+                                
+                                <div className="flex items-center gap-4 mb-3">
+                                  <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
+                                    isSelected 
+                                      ? 'bg-brand-green border-brand-green text-white shadow-[0_0_12px_rgba(0,212,164,0.3)]' 
+                                      : 'bg-canvas border-hairline group-hover:border-slate'
+                                  }`}>
+                                    {isSelected && <Check className="w-4 h-4 stroke-[4]" />}
+                                  </div>
+                                  <span className={`text-[11px] font-black uppercase tracking-tight ${isSelected ? 'text-ink' : 'text-slate'}`}>
+                                    {label}
+                                  </span>
                                 </div>
-                                <span className={`text-[11px] font-bold ${isSelected ? 'text-ink' : 'text-slate'}`}>{label}</span>
+                                <p className={`text-[10px] font-medium leading-relaxed ${isSelected ? 'text-slate' : 'text-stone'}`}>
+                                  {description}
+                                </p>
                               </div>
                             );
                           })}

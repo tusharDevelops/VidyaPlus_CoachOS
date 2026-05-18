@@ -114,6 +114,8 @@ export const PERMISSIONS = {
   STAFF_VIEW: 'staff.view',
   STAFF_MANAGE: 'staff.manage',
   SETTINGS_MANAGE: 'settings.manage',
+  WALLET_VIEW: 'wallet.view',
+  MARKETING_CAMPAIGNS: 'marketing.campaigns',
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -134,6 +136,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, Permission[]> = {
     PERMISSIONS.FEES_COLLECT,
     PERMISSIONS.FEES_EDIT,
     PERMISSIONS.FEES_DELETE,
+    PERMISSIONS.WALLET_VIEW,
     PERMISSIONS.REPORTS_VIEW,
     PERMISSIONS.NOTIFICATIONS_VIEW,
     PERMISSIONS.STAFF_VIEW,

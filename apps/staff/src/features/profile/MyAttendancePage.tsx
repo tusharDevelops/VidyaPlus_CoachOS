@@ -39,13 +39,6 @@ export default function MyAttendancePage() {
     const fetchAttendance = async () => {
       setLoading(true);
       try {
-        const res = await api.get('/staff/attendance/summary', { params: { month, year } });
-        // The summary API returns grouped by staffId. 
-        // We need an endpoint for personal history.
-        // For now, let's assume we might need to add a personal history endpoint.
-        // I'll check the staff-attendance.controller again.
-        
-        // Mocking for now if data is missing, but let's try to fetch daily for the month.
         const dailyRes = await api.get('/staff/attendance/daily', { params: { month, year } });
         setHistory(dailyRes.data.data || []);
       } catch (err) {

@@ -3,72 +3,27 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/auth.store';
 import api from '../lib/api';
 import {
-  GraduationCap, Users, CalendarCheck, IndianRupee, Bell,
-  TrendingUp, BookOpen, UserCog, Settings, LogOut, LayoutDashboard,
-  Wallet, User, ClipboardList, BarChart3,
-
+  GraduationCap, Bell, TrendingUp, Wallet, Megaphone, 
+  IndianRupee, Banknote, UserCircle, LogOut, LayoutDashboard,
   Menu, X, Search, ChevronLeft, MoreHorizontal, Sun, Moon
 } from 'lucide-react';
 
-interface NavItem {
-  icon: any;
-  label: string;
-  path: string;
-  permission?: string;
-}
-
-interface NavGroup {
-  title: string;
-  items: NavItem[];
-  requirement?: string[];
-}
-
-const NAVIGATION_STRUCTURE: NavGroup[] = [
-  {
-    title: 'Core',
-    items: [
-      { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-      { icon: Bell, label: 'Notifications', path: '/notifications', permission: 'notifications.view' },
-    ]
-  },
-  {
-    title: 'Academic',
-    requirement: ['students.view', 'batches.view', 'attendance.view'],
-    items: [
-      { icon: GraduationCap, label: 'Batches & Students', path: '/dashboard', permission: 'batches.view' },
-      { icon: CalendarCheck, label: 'Mark Attendance', path: '/dashboard', permission: 'attendance.mark' },
-    ]
-  },
-  {
-    title: 'Financial',
-    requirement: ['fees.view', 'fees.collect'],
-    items: [
-      { icon: IndianRupee, label: 'Fees & Payments', path: '/fees', permission: 'fees.view' },
-      { icon: ClipboardList, label: 'Student Ledger', path: '/fees', permission: 'fees.collect' },
-    ]
-  },
-  {
-    title: 'Analytics',
-    requirement: ['reports.view'],
-    items: [
-      { icon: BarChart3, label: 'Operational Reports', path: '/reports', permission: 'reports.view' },
-    ]
-  },
-  {
-    title: 'Personal',
-    items: [
-      { icon: Wallet, label: 'My Salary', path: '/my-salary' },
-      { icon: User, label: 'My Profile', path: '/my-profile' },
-    ]
-  }
+const NAV_ITEMS = [
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+  { icon: Bell, label: 'Notifications', path: '/notifications', permission: 'notifications.view' },
+  { icon: TrendingUp, label: 'Reports', path: '/reports', permission: 'reports.view' },
+  { icon: Wallet, label: 'Wallet', path: '/wallet', permission: 'wallet.view' },
+  { icon: Megaphone, label: 'Marketing', path: '/marketing', permission: 'marketing.campaigns' },
+  { icon: IndianRupee, label: 'Fees & Payments', path: '/fees', permission: 'fees.view' },
+  { icon: Banknote, label: 'My Salary', path: '/my-salary' },
+  { icon: UserCircle, label: 'My Profile', path: '/my-profile' },
 ];
 
-const BOTTOM_NAV_STRUCTURE = [
+const BOTTOM_NAV_ITEMS = [
   { icon: LayoutDashboard, label: 'Home', path: '/dashboard' },
-  { icon: IndianRupee, label: 'Money', path: '/fees', permission: 'fees.view' },
-  { icon: GraduationCap, label: 'Academic', path: '/dashboard', permission: 'batches.view' },
-  { icon: Bell, label: 'Alerts', path: '/notifications' },
-  { icon: MoreHorizontal, label: 'Menu', path: 'more' },
+  { icon: IndianRupee, label: 'Fees', path: '/fees', permission: 'fees.view' },
+  { icon: Banknote, label: 'Salary', path: '/my-salary' },
+  { icon: MoreHorizontal, label: 'More', path: 'more' },
 ];
 
 export default function StaffLayout() {
@@ -109,18 +64,6 @@ export default function StaffLayout() {
     navigate('/login');
   };
 
-  // Filter groups and items based on permissions
-  const filteredNav = NAVIGATION_STRUCTURE.map(group => {
-    const visibleItems = group.items.filter(item => !item.permission || hasPermission(item.permission));
-    const isGroupVisible = group.requirement 
-      ? group.requirement.some(p => hasPermission(p))
-      : visibleItems.length > 0;
-
-    return { ...group, items: visibleItems, isVisible: isGroupVisible };
-  }).filter(group => group.isVisible);
-
-  const filteredBottomNav = BOTTOM_NAV_STRUCTURE.filter(item => !item.permission || hasPermission(item.permission));
-
   return (
     <div className="flex flex-col min-h-screen bg-surface font-sans pb-20 lg:pb-0 lg:flex-row">
       {/* Sidebar - Hidden on mobile, fixed/sticky on desktop */}
@@ -138,7 +81,7 @@ export default function StaffLayout() {
             {(sidebarOpen || window.innerWidth < 1024) && (
               <div className="ml-3 overflow-hidden whitespace-nowrap">
                 <h1 className="font-bold text-ink tracking-tight">VidyaPlus</h1>
-                <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest leading-none">CoachOS</p>
+                <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest leading-none">Staff Portal</p>
               </div>
             )}
             <button onClick={() => setSidebarOpen(false)} className="ml-auto lg:hidden p-1 rounded-lg hover:bg-surface-hover text-ink-muted">
@@ -147,40 +90,33 @@ export default function StaffLayout() {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-3 py-4 space-y-6 overflow-y-auto scrollbar-hide">
-            {filteredNav.map((group) => (
-              <div key={group.title} className="space-y-1">
-                {(sidebarOpen || window.innerWidth < 1024) && (
-                  <h3 className="px-3 text-[9px] font-black text-ink-muted uppercase tracking-[0.2em] mb-2 opacity-50">{group.title}</h3>
-                )}
-                {group.items.map(({ icon: Icon, label, path }) => {
-                  const isActive = location.pathname === path || (path !== '/dashboard' && location.pathname.startsWith(path));
-                  return (
-                    <button
-                      key={label}
-                      onClick={() => {
-                        navigate(path);
-                        if (window.innerWidth < 1024) setSidebarOpen(false);
-                      }}
-                      className={`w-full flex items-center h-9 px-3 rounded-md text-sm font-medium transition-all group ${
-                        isActive
-                          ? 'bg-surface text-brand-green shadow-sm'
-                          : 'text-ink-muted hover:bg-surface-hover hover:text-ink'
-                      }`}
-                      title={!sidebarOpen ? label : undefined}
-                    >
-                      <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${
-                        isActive ? 'text-brand-green' : 'text-ink-muted group-hover:text-ink'
-                      }`} />
-                      {(sidebarOpen || window.innerWidth < 1024) && <span className="ml-3 truncate font-bold">{label}</span>}
-                      {isActive && (sidebarOpen || window.innerWidth < 1024) && (
-                        <div className="ml-auto w-1 h-1 bg-brand-green rounded-full shadow-[0_0_8px_rgba(0,212,164,0.6)]" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
+          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+            {NAV_ITEMS.filter(item => !item.permission || hasPermission(item.permission)).map(({ icon: Icon, label, path }) => {
+              const isActive = location.pathname === path || (path !== '/dashboard' && location.pathname.startsWith(path));
+              return (
+                <button
+                  key={label}
+                  onClick={() => {
+                    navigate(path);
+                    if (window.innerWidth < 1024) setSidebarOpen(false);
+                  }}
+                  className={`w-full flex items-center h-9 px-3 rounded-md text-sm font-medium transition-all group ${
+                    isActive
+                      ? 'bg-surface text-brand-green'
+                      : 'text-ink-muted hover:bg-surface-hover hover:text-ink'
+                  }`}
+                  title={!sidebarOpen ? label : undefined}
+                >
+                  <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${
+                    isActive ? 'text-brand-green' : 'text-ink-muted group-hover:text-ink'
+                  }`} />
+                  {(sidebarOpen || window.innerWidth < 1024) && <span className="ml-3 truncate">{label}</span>}
+                  {isActive && (sidebarOpen || window.innerWidth < 1024) && (
+                    <div className="ml-auto w-1 h-1 bg-brand-green rounded-full shadow-[0_0_8px_rgba(0,212,164,0.6)]" />
+                  )}
+                </button>
+              );
+            })}
           </nav>
 
           {/* Footer Actions */}
@@ -245,7 +181,7 @@ export default function StaffLayout() {
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
 
-            <button className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-steel hover:bg-surface relative group">
+            <button onClick={() => navigate('/notifications')} className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-steel hover:bg-surface relative group">
               <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
                 <span className="absolute top-2 right-2 w-2 h-2 bg-brand-error rounded-full border-2 border-canvas" />
@@ -281,7 +217,7 @@ export default function StaffLayout() {
       {/* Bottom Navigation - Mobile Only */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-canvas border-t border-hairline lg:hidden px-2 pb-safe">
         <div className="flex items-center justify-around h-16">
-          {filteredBottomNav.map(({ icon: Icon, label, path }) => {
+          {BOTTOM_NAV_ITEMS.filter(item => !item.permission || hasPermission(item.permission)).map(({ icon: Icon, label, path }) => {
             const isActive = path === 'more' ? sidebarOpen : (location.pathname === path || (path !== '/dashboard' && location.pathname.startsWith(path)));
             return (
               <button
@@ -300,7 +236,7 @@ export default function StaffLayout() {
                 </span>
                 {isActive && path !== 'more' && (
                    <div className="absolute top-0 w-8 h-1 bg-brand-green rounded-b-full" />
-                 )}
+                )}
               </button>
             );
           })}

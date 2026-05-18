@@ -12,6 +12,22 @@ export interface AuthUser {
   instituteId?: string;
   instituteName?: string;
   permissions?: string[];
+  dob?: string;
+  address?: string;
+  studentProfile?: {
+    id: string;
+    studentCode: string;
+    parentName: string;
+    parentPhone: string;
+    enrolledAt: string;
+  };
+  institute?: {
+    id: string;
+    name: string;
+    subdomain: string;
+    status: string;
+    setupCompleted: boolean;
+  };
 }
 
 export interface AuthState {

@@ -65,7 +65,7 @@ export default function MyProfilePage() {
                 {profile?.role}
               </span>
               <span className="px-3 py-1 bg-surface border border-hairline rounded-full text-[9px] font-black uppercase tracking-widest text-steel">
-                Active
+                {profile?.status || 'Active'}
               </span>
             </div>
 
@@ -94,16 +94,16 @@ export default function MyProfilePage() {
                 </div>
                 <span className="text-[10px] font-bold text-ink uppercase tracking-widest">Attendance Score</span>
               </div>
-              <span className="text-sm font-black text-brand-green-deep">98%</span>
+              <span className="text-sm font-black text-brand-green-deep">{profile?.attendanceRate ? `${profile.attendanceRate}%` : '—'}</span>
             </div>
             <div className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-hairline">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center">
                   <Briefcase className="w-4 h-4 text-brand-blue" />
                 </div>
-                <span className="text-[10px] font-bold text-ink uppercase tracking-widest">Batches Taken</span>
+                <span className="text-[10px] font-bold text-ink uppercase tracking-widest">Batches Assigned</span>
               </div>
-              <span className="text-sm font-black text-brand-blue">124</span>
+              <span className="text-sm font-black text-brand-blue">{profile?.batchCount ?? '—'}</span>
             </div>
           </div>
         </div>
@@ -161,7 +161,7 @@ export default function MyProfilePage() {
                 <label className="text-[10px] font-black text-steel uppercase tracking-widest flex items-center gap-2 opacity-60">
                   <Briefcase className="w-3 h-3" /> Department
                 </label>
-                <p className="text-sm font-bold text-ink">Academics</p>
+                <p className="text-sm font-bold text-ink">{profile?.department || 'Not assigned'}</p>
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-steel uppercase tracking-widest flex items-center gap-2 opacity-60">

@@ -70,6 +70,8 @@ export default function App() {
           <Route path="/fees/student/:studentId" element={<StudentLedgerPage />} />
           <Route path="/fees/receipt/:receiptNumber" element={<ReceiptView />} />
           <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/wallet" element={<PlaceholderPage title="Wallet" />} />
+          <Route path="/marketing" element={<PlaceholderPage title="Marketing Campaigns" />} />
           <Route path="/notifications" element={<PlaceholderPage title="Notifications" />} />
           <Route path="/my-profile" element={<MyProfilePage />} />
           <Route path="/my-attendance" element={<MyAttendancePage />} />

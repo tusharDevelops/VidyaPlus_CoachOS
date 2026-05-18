@@ -60,7 +60,7 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
   const toggleBatch = (id: string) => {
     setForm(prev => ({
       ...prev,
-      batchIds: prev.batchIds.includes(id) ? prev.batchIds.filter(b => b !== id) : [...prev.batchIds, id],
+      batchIds: prev.batchIds.includes(id) ? prev.batchIds.filter((b: string) => b !== id) : [...prev.batchIds, id],
     }));
   };
 

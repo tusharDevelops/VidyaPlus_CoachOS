@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { authService } from './auth.service';
 import { z } from 'zod';
+import { DEFAULT_ROLE_PERMISSIONS } from '@coachos/shared';
 
 // Validation schemas
 const loginSchema = z.object({
@@ -164,6 +165,17 @@ export const authController = {
           instituteId: true,
           photoUrl: true,
           permissionsJson: true,
+          dob: true,
+          address: true,
+          studentProfile: {
+            select: {
+              id: true,
+              studentCode: true,
+              parentName: true,
+              parentPhone: true,
+              enrolledAt: true,
+            }
+          },
           institute: { select: { id: true, name: true, subdomain: true, status: true, setupCompleted: true } },
         },
       });

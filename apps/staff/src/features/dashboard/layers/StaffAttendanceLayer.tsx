@@ -128,7 +128,8 @@ export default function StaffAttendanceLayer({ batchId, onNavigate }: Attendance
              />
              <button 
                onClick={markAllPresent}
-               className="h-11 px-6 bg-surface border border-hairline text-ink hover:bg-canvas rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center transition-all shadow-sm"
+               disabled={!hasPermission('attendance.mark')}
+               className="h-11 px-6 bg-surface border border-hairline text-ink hover:bg-canvas rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
              >
                Mark All Present
              </button>
@@ -155,8 +156,8 @@ export default function StaffAttendanceLayer({ batchId, onNavigate }: Attendance
           </p>
           <button 
             onClick={handleSave}
-            disabled={saving || Object.keys(attendance).length === 0}
-            className="flex-1 sm:flex-none h-12 px-8 bg-ink text-canvas hover:bg-ink/90 disabled:opacity-50 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center transition-all shadow-lg"
+            disabled={saving || Object.keys(attendance).length === 0 || !hasPermission('attendance.mark')}
+            className="flex-1 sm:flex-none h-12 px-8 bg-ink text-canvas hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center transition-all shadow-lg"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
             Save Attendance
@@ -197,8 +198,9 @@ export default function StaffAttendanceLayer({ batchId, onNavigate }: Attendance
                       return (
                         <button
                           key={status}
+                          disabled={!hasPermission('attendance.mark')}
                           onClick={() => setAttendance(prev => ({ ...prev, [student.userId]: status }))}
-                          className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+                          className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                             isActive 
                               ? cfg.color 
                               : 'bg-canvas border-hairline text-steel hover:bg-surface'

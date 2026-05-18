@@ -61,8 +61,12 @@ export default function MySalaryPage() {
                 </div>
                 <div className="flex items-center justify-between p-4 bg-canvas/5 rounded-2xl border border-canvas/10">
                   <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Status</span>
-                  <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand-green">
-                    <CheckCircle2 className="w-3 h-3" /> Fully Disbursed
+                  <span className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${payroll.length > 0 ? 'text-brand-green' : 'text-steel'}`}>
+                    {payroll.length > 0 ? (
+                      <><CheckCircle2 className="w-3 h-3" /> {payroll[0]?.status || 'Paid'}</>
+                    ) : (
+                      'No records'
+                    )}
                   </span>
                 </div>
               </div>

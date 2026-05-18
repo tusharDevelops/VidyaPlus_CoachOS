@@ -3,7 +3,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/auth.store';
 import {
   GraduationCap, CalendarCheck, CreditCard, Bell,
-  LayoutDashboard, User, LogOut, MoreHorizontal
+  LayoutDashboard, User, LogOut, MoreHorizontal, Sun, Moon
 } from 'lucide-react';
 
 const BOTTOM_NAV = [
@@ -18,6 +18,19 @@ export default function StudentLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [showMore, setShowMore] = useState(false);
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+
+  const toggleDarkMode = () => {
+    const newDark = !isDark;
+    setIsDark(newDark);
+    if (newDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -39,6 +52,14 @@ export default function StudentLayout() {
         </div>
 
         <div className="flex items-center gap-2">
+          <button 
+            onClick={toggleDarkMode}
+            className="w-9 h-9 flex items-center justify-center rounded-full text-steel hover:bg-surface transition-colors"
+            title="Toggle Dark Mode"
+          >
+            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+
           <button
             onClick={() => navigate('/notifications')}
             className="w-9 h-9 flex items-center justify-center rounded-full text-steel hover:bg-surface"
