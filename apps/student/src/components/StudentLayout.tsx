@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/auth.store';
+import { PWAInstallBanner } from '@coachos/ui';
 import {
   GraduationCap, CalendarCheck, CreditCard, Bell,
   LayoutDashboard, User, LogOut, MoreHorizontal, Sun, Moon
@@ -143,6 +144,7 @@ export default function StudentLayout() {
           })}
         </div>
       </div>
+      <PWAInstallBanner appName="VP Student" />
     </div>
   );
 }

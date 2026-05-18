@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/auth.store';
+import { PWAInstallBanner } from '@coachos/ui';
 import api from '../lib/api';
 import {
   GraduationCap, Users, CalendarCheck, IndianRupee, Bell,
@@ -238,6 +239,7 @@ export default function OwnerLayout() {
           })}
         </div>
       </div>
+      <PWAInstallBanner appName="VidyaPlus" />
     </div>
   );
 }

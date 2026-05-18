@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAdminAuthStore } from '../stores/auth.store';
+import { PWAInstallBanner } from '@coachos/ui';
 import {
   LayoutDashboard, Building2, CreditCard, Settings, LogOut,
   Menu, Shield, ChevronLeft, Sun, Moon
@@ -167,6 +168,7 @@ export default function AdminLayout() {
           </div>
         </main>
       </div>
+      <PWAInstallBanner appName="VP Admin" />
     </div>
   );
 }
