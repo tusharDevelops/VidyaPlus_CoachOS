@@ -8,6 +8,7 @@ import AdminDashboardPage from './features/dashboard/AdminDashboardPage';
 import InstitutesListPage from './features/institutes/InstitutesListPage';
 import InstituteDetailPage from './features/institutes/InstituteDetailPage';
 import PlanManagementPage from './features/plans/PlanManagementPage';
+import PlatformSettingsPage from './features/settings/PlatformSettingsPage';
 
 export default function App() {
   const { isAuthenticated } = useAdminAuthStore();
@@ -31,7 +32,7 @@ export default function App() {
             <Route path="/institutes" element={<InstitutesListPage />} />
             <Route path="/institutes/:id" element={<InstituteDetailPage />} />
             <Route path="/plans" element={<PlanManagementPage />} />
-            <Route path="/settings" element={<div className="text-steel text-center py-20">Platform settings - coming next</div>} />
+            <Route path="/settings" element={<PlatformSettingsPage />} />
           </Route>
         </Route>
 
