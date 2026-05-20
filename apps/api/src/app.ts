@@ -24,7 +24,7 @@ const app = express();
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: (process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:5174').split(',').map(s => s.trim()),
+  origin: (process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,https://vidya-plus-coach-os-web.vercel.app,https://vidya-plus-coach-os-admin.vercel.app,https://vidya-plus-coach-os-staff.vercel.app,https://vidya-plus-coach-os-student.vercel.app').split(',').map(s => s.trim()),
   credentials: true,
 }));
 
