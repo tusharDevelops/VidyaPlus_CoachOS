@@ -28,8 +28,16 @@ app.use(cors({
   credentials: true,
 }));
 
-// Rate limiting
-const limiter = rateLimit({
+// Rate limiting wrapper to bypass in Cloudflare Workers (forbidden global setInterval)
+const createLimiter = (options: any) => {
+  if (process.env.CLOUDFLARE_WORKER === 'true') {
+    return (_req: any, _res: any, next: any) => next();
+  }
+  return rateLimit(options);
+};
+
+// Global rate limiting
+const limiter = createLimiter({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 2000, // 2000 requests per minute
   standardHeaders: true,
@@ -39,7 +47,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Auth rate limiting (stricter)
-const authLimiter = rateLimit({
+const authLimiter = createLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 1000, // Very lenient for active user/agent pair testing
   standardHeaders: true,
