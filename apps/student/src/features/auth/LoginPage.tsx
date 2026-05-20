@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuthStore } from '../../stores/auth.store';
-import { GraduationCap, Loader2, Mail, CheckCircle2, Building, ChevronRight, ArrowLeft } from 'lucide-react';
+import { GraduationCap, Loader2, Mail, CheckCircle2, Building, ChevronRight, ArrowLeft, Sun, Moon } from 'lucide-react';
 
 export default function LoginPage() {
   const { sendLoginOtp, verifyLoginOtp, selectProfile, isLoading, error, clearError } = useAuthStore();
@@ -8,6 +8,20 @@ export default function LoginPage() {
   const [step, setStep] = useState<'email' | 'otp' | 'profile'>('email');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
+  const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+
+  const toggleDarkMode = () => {
+    const root = document.documentElement;
+    if (isDark) {
+      root.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setIsDark(false);
+    } else {
+      root.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setIsDark(true);
+    }
+  };
   
   // Profile selection state
   const [profiles, setProfiles] = useState<any[]>([]);
@@ -52,7 +66,16 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-canvas flex flex-col">
       {/* Hero */}
-      <div className="hero-backdrop flex-shrink-0 py-8 px-4 text-center border-b border-hairline">
+      <div className="hero-backdrop flex-shrink-0 py-8 px-4 text-center border-b border-hairline relative">
+        <div className="absolute top-4 right-4 z-50">
+          <button 
+            onClick={toggleDarkMode}
+            className="w-10 h-10 flex items-center justify-center rounded-full text-steel hover:bg-surface transition-colors bg-canvas shadow-sm border border-hairline"
+            title="Toggle Dark Mode"
+          >
+            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+        </div>
         <div className="flex items-center justify-center gap-3 mb-2">
           <div className="w-10 h-10 rounded-lg bg-ink flex items-center justify-center">
             <GraduationCap className="w-6 h-6 text-brand-green" />

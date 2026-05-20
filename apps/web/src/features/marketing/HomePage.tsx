@@ -5,7 +5,7 @@ import { useAuthStore } from '../../stores/auth.store';
 import AuthModal from '../auth/AuthModal';
 import {
   ArrowRight, BarChart3, Bell, BookOpen, CalendarCheck, CheckCircle2,
-  CreditCard, GraduationCap, IndianRupee, Layers3, ShieldCheck, Users, Shield, UserCog, ExternalLink, ChevronDown
+  CreditCard, GraduationCap, IndianRupee, Layers3, ShieldCheck, Users, Shield, UserCog, ExternalLink, ChevronDown, Sun, Moon
 } from 'lucide-react';
 
 const LOGOS = ['Aakash Prep', 'BrightPath', 'Narayana Local', 'Focus Academy', 'MeritHub', 'LearnWell'];
@@ -52,6 +52,20 @@ export default function HomePage() {
     mode: 'login' 
   });
   const [isPortalsOpen, setIsPortalsOpen] = useState(false);
+  const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+
+  const toggleDarkMode = () => {
+    const root = document.documentElement;
+    if (isDark) {
+      root.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setIsDark(false);
+    } else {
+      root.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setIsDark(true);
+    }
+  };
 
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -165,6 +179,13 @@ export default function HomePage() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <button 
+              onClick={toggleDarkMode}
+              className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-steel hover:bg-surface transition-colors"
+              title="Toggle Dark Mode"
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
             <button 
               onClick={() => setAuthModal({ open: true, mode: 'login' })} 
               className="hidden sm:inline-flex mint-btn-secondary"

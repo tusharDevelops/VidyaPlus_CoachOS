@@ -1,14 +1,28 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminAuthStore } from '../../stores/auth.store';
-import { Shield, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Shield, Eye, EyeOff, Loader2, Sun, Moon } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
   const { login, isLoading, error, clearError } = useAdminAuthStore();
   const navigate = useNavigate();
+
+  const toggleDarkMode = () => {
+    const root = document.documentElement;
+    if (isDark) {
+      root.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setIsDark(false);
+    } else {
+      root.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setIsDark(true);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +36,17 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden hero-backdrop">
-      <div className="absolute inset-x-0 top-0 h-24 bg-white/30" />
+      <div className="absolute inset-x-0 top-0 h-24 bg-white/30 dark:bg-black/30" />
+      
+      <div className="absolute top-4 right-4 z-50">
+        <button 
+          onClick={toggleDarkMode}
+          className="w-10 h-10 flex items-center justify-center rounded-full text-steel hover:bg-surface transition-colors bg-canvas shadow-sm border border-hairline"
+          title="Toggle Dark Mode"
+        >
+          {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+        </button>
+      </div>
 
       <div className="relative w-full max-w-[440px] animate-fade-in">
         <div className="text-center mb-8">
