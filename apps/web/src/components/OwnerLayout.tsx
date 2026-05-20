@@ -8,7 +8,7 @@ import {
   TrendingUp, BookOpen, UserCog, Settings, LogOut, LayoutDashboard,
   Wallet, 
 
-  Menu, X, Search, ChevronLeft, MoreHorizontal, Sun, Moon
+  Menu, X, Search, ChevronLeft, MoreHorizontal, Sun, Moon, LayoutGrid, Shield, ExternalLink
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -31,6 +31,7 @@ export default function OwnerLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+  const [isAppSwitcherOpen, setIsAppSwitcherOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -177,6 +178,60 @@ export default function OwnerLayout() {
             >
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
+
+            {/* App Switcher */}
+            <div className="relative">
+              <button
+                onClick={() => setIsAppSwitcherOpen(!isAppSwitcherOpen)}
+                className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-colors ${isAppSwitcherOpen ? 'bg-surface text-ink' : 'text-steel hover:bg-surface'}`}
+                title="Switch Portals"
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              
+              {isAppSwitcherOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsAppSwitcherOpen(false)} />
+                  <div className="absolute right-0 mt-2 w-64 bg-canvas border border-hairline rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                    <div className="p-3 border-b border-hairline bg-surface/50">
+                      <p className="text-xs font-semibold text-ink-muted uppercase tracking-wider">Your Portals</p>
+                    </div>
+                    <div className="p-2 space-y-1">
+                      <a href="https://vidya-plus-coach-os-admin.vercel.app/" target="_blank" rel="noopener noreferrer" onClick={() => setIsAppSwitcherOpen(false)} className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
+                        <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
+                          <Shield className="w-4 h-4 text-brand-blue" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-ink">Admin Console</p>
+                          <p className="text-[10px] text-steel leading-tight mt-0.5">System configuration</p>
+                        </div>
+                        <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </a>
+                      <a href="https://vidya-plus-coach-os-staff.vercel.app/" target="_blank" rel="noopener noreferrer" onClick={() => setIsAppSwitcherOpen(false)} className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
+                        <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
+                          <UserCog className="w-4 h-4 text-brand-purple" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-ink">Staff Portal</p>
+                          <p className="text-[10px] text-steel leading-tight mt-0.5">Manage operations</p>
+                        </div>
+                        <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </a>
+                      <a href="https://vidya-plus-coach-os-student.vercel.app/" target="_blank" rel="noopener noreferrer" onClick={() => setIsAppSwitcherOpen(false)} className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
+                        <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
+                          <GraduationCap className="w-4 h-4 text-brand-green" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-ink">Student App</p>
+                          <p className="text-[10px] text-steel leading-tight mt-0.5">Learner experience</p>
+                        </div>
+                        <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </a>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
 
             <button className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-steel hover:bg-surface relative group">
               <Bell className="w-4 h-4" />
