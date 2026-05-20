@@ -5,7 +5,7 @@ import { useAuthStore } from '../../stores/auth.store';
 import AuthModal from '../auth/AuthModal';
 import {
   ArrowRight, BarChart3, Bell, BookOpen, CalendarCheck, CheckCircle2,
-  CreditCard, GraduationCap, IndianRupee, Layers3, ShieldCheck, Users
+  CreditCard, GraduationCap, IndianRupee, Layers3, ShieldCheck, Users, Shield, UserCog, ExternalLink, ChevronDown
 } from 'lucide-react';
 
 const LOGOS = ['Aakash Prep', 'BrightPath', 'Narayana Local', 'Focus Academy', 'MeritHub', 'LearnWell'];
@@ -51,6 +51,7 @@ export default function HomePage() {
     open: false, 
     mode: 'login' 
   });
+  const [isPortalsOpen, setIsPortalsOpen] = useState(false);
 
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -99,7 +100,68 @@ export default function HomePage() {
             <a href="#product" className="hover:text-ink transition-colors">Product</a>
             <a href="#modules" className="hover:text-ink transition-colors">Modules</a>
             <a href="#pricing" className="hover:text-ink transition-colors">Pricing</a>
-            <a href="#security" className="hover:text-ink transition-colors">Security</a>
+            
+            <div className="relative">
+              <button 
+                onClick={() => setIsPortalsOpen(!isPortalsOpen)}
+                className={`flex items-center gap-1 transition-colors ${isPortalsOpen ? 'text-ink' : 'hover:text-ink'}`}
+              >
+                Portals <ChevronDown className={`w-3 h-3 transition-transform ${isPortalsOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {isPortalsOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsPortalsOpen(false)} />
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-5 w-64 bg-canvas border border-hairline rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                    <div className="p-3 border-b border-hairline bg-surface/50">
+                      <p className="text-xs font-semibold text-ink-muted uppercase tracking-wider">Access Portals</p>
+                    </div>
+                    <div className="p-2 space-y-1">
+                      <a href="https://vidya-plus-coach-os-web.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
+                        <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
+                          <GraduationCap className="w-4 h-4 text-brand-green" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-ink">Owner Portal</p>
+                          <p className="text-[10px] text-steel leading-tight mt-0.5">Manage your institute</p>
+                        </div>
+                        <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </a>
+                      <a href="https://vidya-plus-coach-os-staff.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
+                        <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
+                          <UserCog className="w-4 h-4 text-brand-purple" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-ink">Staff Portal</p>
+                          <p className="text-[10px] text-steel leading-tight mt-0.5">Faculty & operations</p>
+                        </div>
+                        <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </a>
+                      <a href="https://vidya-plus-coach-os-student.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
+                        <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
+                          <BookOpen className="w-4 h-4 text-brand-green" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-ink">Student App</p>
+                          <p className="text-[10px] text-steel leading-tight mt-0.5">Learner experience</p>
+                        </div>
+                        <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </a>
+                      <a href="https://vidya-plus-coach-os-admin.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
+                        <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
+                          <Shield className="w-4 h-4 text-brand-blue" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-ink">Admin Console</p>
+                          <p className="text-[10px] text-steel leading-tight mt-0.5">System administration</p>
+                        </div>
+                        <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </a>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </nav>
 
           <div className="flex items-center gap-2">
