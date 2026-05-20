@@ -15,7 +15,7 @@ const ALLOWED_ORIGINS = [
   'https://vidya-plus-coach-os-student.vercel.app',
 ];
 
-const corsHeaders = (origin: string) => ({
+const getCorsHeaders = (origin: string): Record<string, string> => ({
   'Access-Control-Allow-Origin': origin,
   'Access-Control-Allow-Methods': 'GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -30,24 +30,30 @@ export default {
     const origin = request.headers.get('Origin') || '';
     const isAllowed = ALLOWED_ORIGINS.includes(origin);
 
-    // Handle preflight OPTIONS requests directly
-    if (request.method === 'OPTIONS') {
+    // Handle preflight OPTIONS requests directly — never touch Express
+    if (request.method === 'OPTIONS' && isAllowed) {
       return new Response(null, {
         status: 204,
-        headers: isAllowed ? corsHeaders(origin) : {},
+        headers: getCorsHeaders(origin),
       });
     }
 
-    // Forward to Express via serverless-http
-    const response = await handler(request, env) as Response;
+    // Forward everything else to Express via serverless-http
+    const response: any = await handler(request, env);
 
-    // Attach CORS headers to the response
-    if (isAllowed) {
-      const newResponse = new Response(response.body, response);
-      Object.entries(corsHeaders(origin)).forEach(([key, value]) => {
-        newResponse.headers.set(key, value);
+    // If response is a proper Response, clone it with CORS headers
+    if (isAllowed && response && typeof response.arrayBuffer === 'function') {
+      const body = await response.arrayBuffer();
+      const headers = new Headers(response.headers);
+      const cors = getCorsHeaders(origin);
+      for (const [k, v] of Object.entries(cors)) {
+        headers.set(k, v);
+      }
+      return new Response(body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers,
       });
-      return newResponse;
     }
 
     return response;
