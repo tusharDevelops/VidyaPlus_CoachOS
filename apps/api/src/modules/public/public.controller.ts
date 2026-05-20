@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../lib/prisma';
 import winston from 'winston';
 import bcrypt from 'bcryptjs';
 import { authService } from '../auth/auth.service';
@@ -7,7 +7,6 @@ import { sendOtpEmail } from '../../lib/mailer';
 import { generateSubdomain } from '../../lib/subdomain';
 import { utils } from '../../lib/utils';
 
-const prisma = new PrismaClient();
 const logger = winston.createLogger({
   format: winston.format.json(),
   transports: [new winston.transports.Console()],
