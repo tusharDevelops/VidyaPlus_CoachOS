@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api/v1',
+  baseURL: import.meta.env.VITE_API_URL || '/api/v1',
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -22,7 +22,7 @@ api.interceptors.response.use(
       const refreshToken = localStorage.getItem('admin_refresh_token');
       if (refreshToken) {
         try {
-          const { data } = await axios.post('/api/v1/auth/refresh', { refreshToken });
+          const { data } = await axios.post(`${import.meta.env.VITE_API_URL || '/api/v1'}/auth/refresh`, { refreshToken });
           localStorage.setItem('admin_access_token', data.data.accessToken);
           error.config.headers.Authorization = `Bearer ${data.data.accessToken}`;
           return api(error.config);
