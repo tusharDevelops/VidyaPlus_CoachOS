@@ -35,21 +35,13 @@ export default {
       });
     }
 
-    // serverless-http tries to assign to request.body which is read-only in Workers.
-    // Fix: shadow the prototype getter with a writable instance property.
-    try {
-      Object.defineProperty(request, 'body', {
-        value: request.body,
-        writable: true,
-        configurable: true,
-      });
-    } catch {
-      // If defineProperty fails, clone the request into a plain wrapper
-    }
+    // Cloudflare's Request object has read-only properties that serverless-http tries to mutate.
+    // Cloning the request creates a mutable copy we can safely pass to express.
+    const mutableRequest = new Request(request);
 
     let response: Response;
     try {
-      response = await (expressHandler as any)(request, env);
+      response = await (expressHandler as any)(mutableRequest, env);
     } catch (err: any) {
       const body = JSON.stringify({ success: false, error: err?.message || 'Internal Server Error' });
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
