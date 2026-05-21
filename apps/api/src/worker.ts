@@ -71,8 +71,25 @@ export default {
           statusText: response.statusText,
           headers: newHeaders,
         });
-      } catch {
-        // If response cloning fails, return it as-is
+      } catch (e: any) {
+        console.error("CORS injection failed. Error:", e.message);
+        console.log("Response object looks like:", JSON.stringify({
+          status: response.status,
+          hasBody: !!response.body,
+          headersType: typeof response.headers
+        }));
+        
+        // Attempt fallback by just trying to mutate the existing response headers (if they are not immutable)
+        try {
+          if (response.headers && typeof response.headers.set === 'function') {
+             response.headers.set('Access-Control-Allow-Origin', origin);
+             response.headers.set('Access-Control-Allow-Credentials', 'true');
+          }
+        } catch (mutateErr) {
+           console.error("Could not mutate headers directly:", mutateErr);
+        }
+        
+        // If response cloning fails, return it as-is (this is likely causing the CORS error on frontend)
         return response;
       }
     }
