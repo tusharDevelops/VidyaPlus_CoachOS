@@ -5,7 +5,7 @@ let prisma: any;
 if (process.env.CLOUDFLARE_WORKER === 'true' || typeof globalThis.WebSocket !== 'undefined') {
   const { Pool } = require('pg');
   const { PrismaPg } = require('@prisma/adapter-pg');
-  const { PrismaClient } = require('@prisma/client/edge');
+  const { PrismaClient } = require('@prisma/client/wasm');
   
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   const adapter = new PrismaPg(pool);
