@@ -30,10 +30,14 @@ app.use(cors({
 
 // Rate limiting wrapper to bypass in Cloudflare Workers (forbidden global setInterval)
 const createLimiter = (options: any) => {
-  if (process.env.CLOUDFLARE_WORKER === 'true') {
-    return (_req: any, _res: any, next: any) => next();
-  }
-  return rateLimit(options);
+  let limiter: any = null;
+  return (req: any, res: any, next: any) => {
+    if (process.env.CLOUDFLARE_WORKER === 'true') {
+      return next();
+    }
+    if (!limiter) limiter = rateLimit(options);
+    return limiter(req, res, next);
+  };
 };
 
 // Global rate limiting
@@ -55,13 +59,24 @@ const authLimiter = createLimiter({
   message: { success: false, error: 'Too many authentication attempts', code: 'AUTH_RATE_LIMITED' },
 });
 
+app.use((req, res, next) => {
+  console.log('EXPRESS URL:', req.url, req.path);
+  next();
+});
+
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Logging
-app.use(morgan('dev'));
+const morganMiddleware = morgan('dev');
+app.use((req, res, next) => {
+  if (process.env.CLOUDFLARE_WORKER === 'true') {
+    return next();
+  }
+  return morganMiddleware(req, res, next);
+});
 
 // Health check
 app.get('/api/health', (_req, res) => {

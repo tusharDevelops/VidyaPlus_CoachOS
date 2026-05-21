@@ -14,7 +14,15 @@ const ALLOWED_ORIGINS = new Set([
   'https://vidya-plus-coach-os-student.vercel.app',
 ]);
 
-const expressHandler = serverless(app);
+const expressHandler = serverless(app, {
+  request(req: any, event: any) {
+    if (event && event.url) {
+      const parsed = new URL(event.url);
+      req.url = parsed.pathname + parsed.search;
+      req.path = parsed.pathname;
+    }
+  }
+});
 
 export default {
   async fetch(request: Request, env: any): Promise<Response> {
@@ -41,7 +49,7 @@ export default {
     const mutableRequest = new Proxy(request, {
       get(target, prop, receiver) {
         if (prop in customState) return customState[prop as string];
-        const value = Reflect.get(target, prop, receiver);
+        const value = Reflect.get(target, prop, target);
         return typeof value === 'function' ? value.bind(target) : value;
       },
       set(target, prop, value) {
@@ -58,9 +66,9 @@ export default {
       }
     });
 
-    let response: Response;
+    let result: any;
     try {
-      response = await (expressHandler as any)(mutableRequest, env);
+      result = await (expressHandler as any)(mutableRequest, env);
     } catch (err: any) {
       const body = JSON.stringify({ success: false, error: err?.message || 'Internal Server Error' });
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
@@ -71,41 +79,23 @@ export default {
       return new Response(body, { status: 500, headers });
     }
 
-    // Inject CORS headers into the response
-    console.log(`[CORS DEBUG] Origin: "${origin}", isAllowed: ${isAllowed}, method: ${request.method}`);
-    if (isAllowed && response) {
-      try {
-        const newHeaders = new Headers(response.headers);
-        newHeaders.set('Access-Control-Allow-Origin', origin);
-        newHeaders.set('Access-Control-Allow-Credentials', 'true');
-        return new Response(response.body, {
-          status: response.status,
-          statusText: response.statusText,
-          headers: newHeaders,
-        });
-      } catch (e: any) {
-        console.error("CORS injection failed. Error:", e.message);
-        console.log("Response object looks like:", JSON.stringify({
-          status: response.status,
-          hasBody: !!response.body,
-          headersType: typeof response.headers
-        }));
-        
-        // Attempt fallback by just trying to mutate the existing response headers (if they are not immutable)
-        try {
-          if (response.headers && typeof response.headers.set === 'function') {
-             response.headers.set('Access-Control-Allow-Origin', origin);
-             response.headers.set('Access-Control-Allow-Credentials', 'true');
-          }
-        } catch (mutateErr) {
-           console.error("Could not mutate headers directly:", mutateErr);
-        }
-        
-        // If response cloning fails, return it as-is (this is likely causing the CORS error on frontend)
-        return response;
-      }
+    // If result is already a Response, just return it or inject CORS
+    const isResponse = result instanceof Response;
+    let body = isResponse ? result.body : result.body;
+    if (!isResponse && result.isBase64Encoded && typeof body === 'string') {
+      body = Buffer.from(body, 'base64');
+    }
+    const status = isResponse ? result.status : (result.statusCode || 200);
+    const headers = new Headers(isResponse ? result.headers : (result.headers || {}));
+
+    if (isAllowed) {
+      headers.set('Access-Control-Allow-Origin', origin);
+      headers.set('Access-Control-Allow-Credentials', 'true');
     }
 
-    return response;
+    return new Response(body, {
+      status,
+      headers
+    });
   },
 };
