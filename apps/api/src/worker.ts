@@ -27,6 +27,25 @@ const expressHandler = serverless(app, {
 
 export default {
   async fetch(request: Request, env: any): Promise<Response> {
+    // Ensure process.env is defined
+    if (typeof process === 'undefined') {
+      (globalThis as any).process = { env: {} };
+    } else if (!process.env) {
+      (process as any).env = {};
+    }
+
+    // Populate process.env with env bindings and fallback values
+    process.env.DATABASE_URL = env.DATABASE_URL || process.env.DATABASE_URL;
+    process.env.JWT_ACCESS_SECRET = env.JWT_ACCESS_SECRET || process.env.JWT_ACCESS_SECRET || 'coachOS_access_secret_dev_2026_xK9mP2qL5nR8wT4v';
+    process.env.JWT_REFRESH_SECRET = env.JWT_REFRESH_SECRET || process.env.JWT_REFRESH_SECRET || 'coachOS_refresh_secret_dev_2026_aB3cD7eF1gH5iJ9k';
+    process.env.JWT_ACCESS_EXPIRES_IN = env.JWT_ACCESS_EXPIRES_IN || process.env.JWT_ACCESS_EXPIRES_IN || '15m';
+    process.env.OTP_EXPIRY_MINUTES = env.OTP_EXPIRY_MINUTES || process.env.OTP_EXPIRY_MINUTES || '10';
+    process.env.SMTP_HOST = env.SMTP_HOST || process.env.SMTP_HOST || 'smtp.gmail.com';
+    process.env.SMTP_PORT = env.SMTP_PORT || process.env.SMTP_PORT || '587';
+    process.env.SMTP_USER = env.SMTP_USER || process.env.SMTP_USER || 'officialrohitsatre@gmail.com';
+    process.env.SMTP_PASS = env.SMTP_PASS || process.env.SMTP_PASS || 'ntsqirkngneuaxgd';
+    process.env.NODE_ENV = env.NODE_ENV || process.env.NODE_ENV || 'production';
+
     const origin = request.headers.get('Origin') || '';
     const isAllowed = ALLOWED_ORIGINS.has(origin);
 
