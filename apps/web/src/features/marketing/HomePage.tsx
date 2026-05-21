@@ -89,9 +89,10 @@ export default function HomePage() {
     const fetchPlans = async () => {
       try {
         const { data } = await api.get('/public/plans');
-        setPlans(data.data);
+        setPlans(Array.isArray(data?.data) ? data.data : []);
       } catch (err) {
         console.error('Failed to fetch plans', err);
+        setPlans([]);
       } finally {
         setLoading(false);
       }
