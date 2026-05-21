@@ -486,7 +486,11 @@ export const superAdminController = {
 
       const plan = await prisma.plan.create({
         data: {
-          ...body,
+          name: body.name,
+          maxStudents: body.maxStudents,
+          maxStaff: body.maxStaff,
+          maxStorageMb: body.maxStorageMb,
+          priceMonthly: body.priceMonthly,
           featuresJson: body.featuresJson || {},
         },
       });
