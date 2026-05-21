@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../../lib/prisma';
+import { getPrisma } from '../../lib/prisma';
 import logger from '../../lib/logger';
 import { z } from 'zod';
 
@@ -47,7 +47,7 @@ export const attendanceController = {
       const isLateSubmission = attendanceDate < today;
 
       // Verify batch belongs to institute and teacher (if teacher role)
-      const batch = await prisma.batch.findFirst({
+      const batch = await getPrisma().batch.findFirst({
         where: { 
           id: body.batchId, 
           instituteId,
@@ -60,7 +60,7 @@ export const attendanceController = {
       }
 
       // Check for holidays
-      const holiday = await prisma.holiday.findFirst({
+      const holiday = await getPrisma().holiday.findFirst({
         where: { instituteId, date: attendanceDate },
       });
       if (holiday) {
@@ -73,7 +73,7 @@ export const attendanceController = {
       }
 
       // Check if existing records are locked
-      const existingRecords = await prisma.attendanceRecord.findMany({
+      const existingRecords = await getPrisma().attendanceRecord.findMany({
         where: { batchId: body.batchId, date: attendanceDate, instituteId },
       });
 
@@ -88,9 +88,9 @@ export const attendanceController = {
       }
 
       // Upsert each record
-      const results = await prisma.$transaction(
+      const results = await getPrisma().$transaction(
         body.records.map(record =>
-          prisma.attendanceRecord.upsert({
+          getPrisma().attendanceRecord.upsert({
             where: {
               batchId_studentId_date: {
                 batchId: body.batchId,
@@ -125,7 +125,7 @@ export const attendanceController = {
          const today = new Date();
          today.setHours(0, 0, 0, 0);
          
-         await prisma.staffAttendance.upsert({
+         await getPrisma().staffAttendance.upsert({
             where: {
                staffId_date: {
                   staffId: req.user!.userId,
@@ -146,16 +146,16 @@ export const attendanceController = {
       // Create in-app absence notifications
       const absentRecords = body.records.filter(r => r.status === 'absent');
       if (absentRecords.length > 0) {
-        const owners = await prisma.user.findMany({
+        const owners = await getPrisma().user.findMany({
           where: { instituteId, role: 'owner', status: 'active' }
         });
         if (owners.length > 0) {
           for (const rec of absentRecords) {
-            const stu = await prisma.user.findFirst({ where: { id: rec.studentId } });
+            const stu = await getPrisma().user.findFirst({ where: { id: rec.studentId } });
             if (stu) {
               const content = `Absence Alert: Student ${stu.name} was marked absent for batch "${batch.name}" on ${body.date}.`;
               for (const owner of owners) {
-                await prisma.notification.create({
+                await getPrisma().notification.create({
                   data: {
                     instituteId,
                     recipientId: owner.id,
@@ -171,7 +171,7 @@ export const attendanceController = {
       }
 
       // Audit log
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           instituteId,
           userId: req.user!.userId,
@@ -230,7 +230,7 @@ export const attendanceController = {
       const attendanceDate = new Date(date);
       
       // Verify batch permissions
-      const batch = await prisma.batch.findFirst({
+      const batch = await getPrisma().batch.findFirst({
         where: { 
           id: batchId, 
           instituteId,
@@ -242,7 +242,7 @@ export const attendanceController = {
         return;
       }
 
-      const records = await prisma.attendanceRecord.findMany({
+      const records = await getPrisma().attendanceRecord.findMany({
         where: { batchId, date: attendanceDate, instituteId },
         include: {
           student: { select: { id: true, name: true, phone: true } },
@@ -252,7 +252,7 @@ export const attendanceController = {
       });
 
       // Get all enrolled students for the batch (to identify unmarked)
-      const enrollments = await prisma.batchEnrollment.findMany({
+      const enrollments = await getPrisma().batchEnrollment.findMany({
         where: { batchId, status: 'active', instituteId },
         include: {
           batch: { select: { name: true } },
@@ -261,7 +261,7 @@ export const attendanceController = {
       const enrolledStudentIds = enrollments.map(e => e.studentId);
 
       // Get student profiles for enrolled students
-      const profiles = await prisma.studentProfile.findMany({
+      const profiles = await getPrisma().studentProfile.findMany({
         where: { id: { in: enrolledStudentIds } },
         include: { user: { select: { id: true, name: true, phone: true } } },
       });
@@ -310,7 +310,7 @@ export const attendanceController = {
       const since = new Date();
       since.setDate(since.getDate() - days);
 
-      const records = await prisma.attendanceRecord.findMany({
+      const records = await getPrisma().attendanceRecord.findMany({
         where: { studentId, instituteId, date: { gte: since } },
         include: { batch: { select: { id: true, name: true } } },
         orderBy: { date: 'desc' },
@@ -366,7 +366,7 @@ export const attendanceController = {
       const startDate = new Date(year, month - 1, 1);
       const endDate = new Date(year, month, 0); // Last day of month
 
-      const records = await prisma.attendanceRecord.findMany({
+      const records = await getPrisma().attendanceRecord.findMany({
         where: {
           batchId,
           instituteId,
@@ -387,7 +387,7 @@ export const attendanceController = {
       });
 
       // Get holidays for the month
-      const holidays = await prisma.holiday.findMany({
+      const holidays = await getPrisma().holiday.findMany({
         where: { instituteId, date: { gte: startDate, lte: endDate } },
       });
 
@@ -411,7 +411,7 @@ export const attendanceController = {
       const { id } = req.params;
       const body = updateRecordSchema.parse(req.body);
 
-      const record = await prisma.attendanceRecord.findFirst({
+      const record = await getPrisma().attendanceRecord.findFirst({
         where: { id, instituteId },
       });
       if (!record) {
@@ -425,7 +425,7 @@ export const attendanceController = {
         return;
       }
 
-      await prisma.attendanceRecord.update({
+      await getPrisma().attendanceRecord.update({
         where: { id },
         data: { status: body.status, note: body.note || null },
       });
@@ -452,7 +452,7 @@ export const attendanceController = {
         return;
       }
 
-      const result = await prisma.attendanceRecord.updateMany({
+      const result = await getPrisma().attendanceRecord.updateMany({
         where: { batchId, date: new Date(date), instituteId },
         data: { isLocked: true },
       });

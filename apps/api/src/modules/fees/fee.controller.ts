@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../../lib/prisma';
+import { getPrisma } from '../../lib/prisma';
 import logger from '../../lib/logger';
 import { z } from 'zod';
 
@@ -82,7 +82,7 @@ export const feeController = {
       const dueDate = new Date(body.year, body.month - 1, defaultDueDay);
 
       // Find all active enrollments with a fee plan
-      const enrollments = await prisma.batchEnrollment.findMany({
+      const enrollments = await getPrisma().batchEnrollment.findMany({
         where: { instituteId, status: 'active', feePlanId: { not: null } },
         include: { feePlan: true },
       });
@@ -95,7 +95,7 @@ export const feeController = {
         if (!enrollment.feePlan) continue;
         
         const created = await createFeeRecord(
-          prisma,
+          getPrisma(),
           instituteId,
           enrollment.studentId,
           enrollment.batchId,
@@ -108,7 +108,7 @@ export const feeController = {
         else skippedCount++;
       }
 
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           instituteId,
           userId: req.user!.userId,
@@ -142,7 +142,7 @@ export const feeController = {
       let { studentId } = req.params;
 
       // Resolve profile if user ID provided
-      const profile = await prisma.studentProfile.findFirst({
+      const profile = await getPrisma().studentProfile.findFirst({
         where: { OR: [{ id: studentId }, { userId: studentId }], instituteId }
       });
 
@@ -161,7 +161,7 @@ export const feeController = {
       const dueDate = new Date(year, month - 1, defaultDueDay);
 
       // Find active enrollments for this student
-      const enrollments = await prisma.batchEnrollment.findMany({
+      const enrollments = await getPrisma().batchEnrollment.findMany({
         where: { instituteId, studentId, status: 'active', feePlanId: { not: null } },
         include: { feePlan: true },
       });
@@ -174,7 +174,7 @@ export const feeController = {
       let createdCount = 0;
       for (const enrollment of enrollments) {
         const created = await createFeeRecord(
-          prisma,
+          getPrisma(),
           instituteId,
           enrollment.studentId,
           enrollment.batchId,
@@ -205,7 +205,7 @@ export const feeController = {
       const body = recordPaymentSchema.parse(req.body);
 
       // Verify the fee record
-      const feeRecord = await prisma.feeRecord.findFirst({
+      const feeRecord = await getPrisma().feeRecord.findFirst({
         where: { id: body.feeRecordId, instituteId },
       });
 
@@ -220,7 +220,7 @@ export const feeController = {
       }
 
       // We perform payment and receipt generation in a transaction
-      const result = await prisma.$transaction(async (tx) => {
+      const result = await getPrisma().$transaction(async (tx) => {
         // 1. Create the payment
         const payment = await tx.payment.create({
           data: {
@@ -266,7 +266,7 @@ export const feeController = {
         return { payment, receipt, newStatus };
       });
 
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           instituteId,
           userId: req.user!.userId,
@@ -296,8 +296,8 @@ export const feeController = {
       const today = new Date();
 
       const [allFees, allPayments] = await Promise.all([
-        prisma.feeRecord.findMany({ where: { instituteId } }),
-        prisma.payment.aggregate({ where: { instituteId, status: 'completed' }, _sum: { amount: true } })
+        getPrisma().feeRecord.findMany({ where: { instituteId } }),
+        getPrisma().payment.aggregate({ where: { instituteId, status: 'completed' }, _sum: { amount: true } })
       ]);
 
       let totalDues = 0;
@@ -315,7 +315,7 @@ export const feeController = {
       const totalCollected = Number(allPayments._sum.amount || 0);
 
       // Overdue List
-      const overdueListRaw = await prisma.feeRecord.findMany({
+      const overdueListRaw = await getPrisma().feeRecord.findMany({
         where: { instituteId, status: { not: 'paid' }, dueDate: { lt: today } },
         include: {
           student: { include: { user: { select: { name: true, phone: true } } } },
@@ -366,7 +366,7 @@ export const feeController = {
       let studentId = req.params.studentId;
 
       if (!studentId || studentId === 'me') {
-        const profile = await prisma.studentProfile.findUnique({
+        const profile = await getPrisma().studentProfile.findUnique({
           where: { userId: req.user!.userId }
         });
         if (!profile) {
@@ -376,7 +376,7 @@ export const feeController = {
         studentId = profile.id;
       } else {
         // Resolve profile if user ID provided
-        const profile = await prisma.studentProfile.findFirst({
+        const profile = await getPrisma().studentProfile.findFirst({
           where: { OR: [{ id: studentId }, { userId: studentId }], instituteId }
         });
         if (!profile) {
@@ -386,7 +386,7 @@ export const feeController = {
         studentId = profile.id;
       }
 
-      const recordsRaw = await prisma.feeRecord.findMany({
+      const recordsRaw = await getPrisma().feeRecord.findMany({
         where: { instituteId, studentId },
         include: {
           feePlan: { select: { name: true, frequency: true } },
@@ -451,7 +451,7 @@ export const feeController = {
       const instituteId = req.user!.instituteId!;
       const { receiptNumber } = req.params;
 
-      const receipt = await prisma.receipt.findFirst({
+      const receipt = await getPrisma().receipt.findFirst({
         where: { instituteId, receiptNumber },
         include: {
           institute: { select: { name: true, address: true, phone: true, email: true, logoUrl: true } },

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../../lib/prisma';
+import { getPrisma } from '../../lib/prisma';
 import logger from '../../lib/logger';
 import { z } from 'zod';
 
@@ -28,7 +28,7 @@ export const staffAttendanceController = {
       const isLateSubmission = attendanceDate < today;
 
       // Check for locks
-      const existing = await prisma.staffAttendance.findMany({
+      const existing = await getPrisma().staffAttendance.findMany({
         where: { instituteId, date: attendanceDate }
       });
 
@@ -40,7 +40,7 @@ export const staffAttendanceController = {
 
       // Perform upsert for each record
       const operations = records.map(record => 
-        prisma.staffAttendance.upsert({
+        getPrisma().staffAttendance.upsert({
           where: {
             staffId_date: {
               staffId: record.staffId,
@@ -72,11 +72,11 @@ export const staffAttendanceController = {
       // Absence Alerts
       const absents = records.filter(r => r.status === 'absent');
       if (absents.length > 0) {
-        const owners = await prisma.user.findMany({ where: { instituteId, role: 'owner' } });
+        const owners = await getPrisma().user.findMany({ where: { instituteId, role: 'owner' } });
         for (const owner of owners) {
           for (const abs of absents) {
-            const staffUser = await prisma.user.findFirst({ where: { id: abs.staffId } });
-            await prisma.notification.create({
+            const staffUser = await getPrisma().user.findFirst({ where: { id: abs.staffId } });
+            await getPrisma().notification.create({
               data: {
                 instituteId,
                 recipientId: owner.id,
@@ -109,7 +109,7 @@ export const staffAttendanceController = {
       const queryDate = date ? new Date(date as string) : new Date();
       queryDate.setHours(0, 0, 0, 0);
 
-      const attendance = await prisma.staffAttendance.findMany({
+      const attendance = await getPrisma().staffAttendance.findMany({
         where: { instituteId, date: queryDate }
       });
 
@@ -129,7 +129,7 @@ export const staffAttendanceController = {
       const startDate = new Date(year, month - 1, 1);
       const endDate = new Date(year, month, 0);
 
-      const attendance = await prisma.staffAttendance.findMany({
+      const attendance = await getPrisma().staffAttendance.findMany({
         where: {
           instituteId,
           date: { gte: startDate, lte: endDate }

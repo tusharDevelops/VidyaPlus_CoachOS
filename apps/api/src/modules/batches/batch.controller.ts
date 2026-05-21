@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../../lib/prisma';
+import { getPrisma } from '../../lib/prisma';
 import logger from '../../lib/logger';
 import { z } from 'zod';
 import { DAYS_OF_WEEK } from '@coachos/shared';
@@ -54,7 +54,7 @@ function timeOverlaps(s1: string, e1: string, s2: string, e2: string): boolean {
 
 async function detectConflicts(instituteId: string, daysJson: string[], startTime: string, endTime: string, room?: string, teacherId?: string, excludeBatchId?: string) {
   const conflicts: string[] = [];
-  const existingBatches = await prisma.batch.findMany({
+  const existingBatches = await getPrisma().batch.findMany({
     where: { instituteId, status: 'active', id: excludeBatchId ? { not: excludeBatchId } : undefined },
     include: { teacher: { select: { name: true } } },
   });
@@ -97,7 +97,7 @@ export const batchController = {
         ];
       }
 
-      const batches = await prisma.batch.findMany({
+      const batches = await getPrisma().batch.findMany({
         where,
         include: {
           teacher: { select: { id: true, name: true } },
@@ -126,7 +126,7 @@ export const batchController = {
       const instituteId = req.user!.instituteId!;
       const { id } = req.params;
 
-      const batch = await prisma.batch.findFirst({
+      const batch = await getPrisma().batch.findFirst({
         where: { 
           id, 
           instituteId,
@@ -151,7 +151,7 @@ export const batchController = {
 
       // Get student details for enrollments
       const studentIds = batch.enrollments.map(e => e.studentId);
-      const studentProfiles = await prisma.studentProfile.findMany({
+      const studentProfiles = await getPrisma().studentProfile.findMany({
         where: { id: { in: studentIds } },
         include: { user: { select: { id: true, name: true, phone: true, status: true } } },
       });
@@ -206,7 +206,7 @@ export const batchController = {
       const body = createBatchSchema.parse(req.body);
 
       // Check batch limit
-      const institute = await prisma.institute.findUnique({
+      const institute = await getPrisma().institute.findUnique({
         where: { id: instituteId },
         include: {
           plan: true,
@@ -241,7 +241,7 @@ export const batchController = {
       // Create FeePlan if fee info provided
       let feePlanId = null;
       if (body.feeAmount !== undefined && body.feeType) {
-        const feePlan = await prisma.feePlan.create({
+        const feePlan = await getPrisma().feePlan.create({
           data: {
             instituteId,
             name: `${body.name} - Default Fee`,
@@ -253,7 +253,7 @@ export const batchController = {
         feePlanId = feePlan.id;
       }
 
-      const batch = await prisma.batch.create({
+      const batch = await getPrisma().batch.create({
         data: {
           instituteId,
           name: body.name,
@@ -274,7 +274,7 @@ export const batchController = {
         }
       });
 
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           instituteId,
           userId: req.user!.userId,
@@ -305,7 +305,7 @@ export const batchController = {
       const { id } = req.params;
       const body = updateBatchSchema.parse(req.body);
 
-      const existing = await prisma.batch.findFirst({ where: { id, instituteId } });
+      const existing = await getPrisma().batch.findFirst({ where: { id, instituteId } });
       if (!existing) {
         res.status(404).json({ success: false, error: 'Batch not found', code: 'NOT_FOUND' });
         return;
@@ -332,7 +332,7 @@ export const batchController = {
       let feePlanId = existing.feePlanId;
       if (body.feeAmount !== undefined && body.feeType) {
         if (feePlanId) {
-          await prisma.feePlan.update({
+          await getPrisma().feePlan.update({
             where: { id: feePlanId },
             data: { 
               amount: body.feeAmount, 
@@ -341,7 +341,7 @@ export const batchController = {
             }
           });
         } else {
-          const newPlan = await prisma.feePlan.create({
+          const newPlan = await getPrisma().feePlan.create({
             data: {
               instituteId,
               name: `${body.name || existing.name} - Default Fee`,
@@ -354,10 +354,10 @@ export const batchController = {
         }
       }
 
-      // Remove fee fields from body before prisma.batch.update
+      // Remove fee fields from body before getPrisma().batch.update
       const { feeAmount, feeType, ...batchData } = body;
 
-      const batch = await prisma.batch.update({
+      const batch = await getPrisma().batch.update({
         where: { id },
         data: {
           ...batchData,
@@ -368,7 +368,7 @@ export const batchController = {
         },
       });
 
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           instituteId,
           userId: req.user!.userId,
@@ -397,13 +397,13 @@ export const batchController = {
       const instituteId = req.user!.instituteId!;
       const { id } = req.params;
 
-      const existing = await prisma.batch.findFirst({ where: { id, instituteId } });
+      const existing = await getPrisma().batch.findFirst({ where: { id, instituteId } });
       if (!existing) {
         res.status(404).json({ success: false, error: 'Batch not found', code: 'NOT_FOUND' });
         return;
       }
 
-      await prisma.$transaction(async (tx) => {
+      await getPrisma().$transaction(async (tx) => {
         // 1. Audit log (Before deletion)
         await tx.auditLog.create({
           data: { 
@@ -448,7 +448,7 @@ export const batchController = {
       const body = enrollSchema.parse(req.body);
 
       // Verify batch
-      const batch = await prisma.batch.findFirst({
+      const batch = await getPrisma().batch.findFirst({
         where: { id: batchId, instituteId },
         include: { _count: { select: { enrollments: { where: { status: 'active' } } } } },
       });
@@ -473,7 +473,7 @@ export const batchController = {
 
       for (const studentId of body.studentIds) {
         // Check if already enrolled
-        const existing = await prisma.batchEnrollment.findUnique({
+        const existing = await getPrisma().batchEnrollment.findUnique({
           where: { studentId_batchId: { studentId, batchId } },
         });
         if (existing && existing.status === 'active') {
@@ -485,12 +485,12 @@ export const batchController = {
 
         if (existing) {
           // Re-activate
-          await prisma.batchEnrollment.update({
+          await getPrisma().batchEnrollment.update({
             where: { id: existing.id },
             data: { status: 'active', feePlanId: effectiveFeePlanId },
           });
         } else {
-          await prisma.batchEnrollment.create({
+          await getPrisma().batchEnrollment.create({
             data: {
               instituteId,
               studentId,
@@ -503,7 +503,7 @@ export const batchController = {
         enrolled.push(studentId);
       }
 
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           instituteId,
           userId: req.user!.userId,
@@ -535,7 +535,7 @@ export const batchController = {
       const instituteId = req.user!.instituteId!;
       const { id: batchId, studentId } = req.params;
 
-      const enrollment = await prisma.batchEnrollment.findUnique({
+      const enrollment = await getPrisma().batchEnrollment.findUnique({
         where: { studentId_batchId: { studentId, batchId } },
       });
       if (!enrollment || enrollment.instituteId !== instituteId) {
@@ -543,7 +543,7 @@ export const batchController = {
         return;
       }
 
-      await prisma.batchEnrollment.delete({
+      await getPrisma().batchEnrollment.delete({
         where: { id: enrollment.id },
       });
 

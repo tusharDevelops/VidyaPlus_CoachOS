@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../../lib/prisma';
+import { getPrisma } from '../../lib/prisma';
 import logger from '../../lib/logger';
 import { z } from 'zod';
 
@@ -18,7 +18,7 @@ export const settingsController = {
     try {
       const instituteId = req.user!.instituteId!;
 
-      const institute = await prisma.institute.findFirst({
+      const institute = await getPrisma().institute.findFirst({
         where: { id: instituteId },
       });
 
@@ -40,7 +40,7 @@ export const settingsController = {
       const instituteId = req.user!.instituteId!;
       const body = updateInstituteProfileSchema.parse(req.body);
 
-      const institute = await prisma.institute.findFirst({
+      const institute = await getPrisma().institute.findFirst({
         where: { id: instituteId },
       });
 
@@ -49,7 +49,7 @@ export const settingsController = {
         return;
       }
 
-      const updated = await prisma.institute.update({
+      const updated = await getPrisma().institute.update({
         where: { id: instituteId },
         data: {
           name: body.name ?? undefined,

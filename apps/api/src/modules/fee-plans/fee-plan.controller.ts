@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../../lib/prisma';
+import { getPrisma } from '../../lib/prisma';
 import logger from '../../lib/logger';
 import { z } from 'zod';
 
@@ -33,7 +33,7 @@ export const feePlanController = {
     try {
       const instituteId = req.user!.instituteId!;
 
-      const feePlans = await prisma.feePlan.findMany({
+      const feePlans = await getPrisma().feePlan.findMany({
         where: { instituteId },
         include: {
           _count: { select: { enrollments: { where: { status: 'active' } } } },
@@ -60,7 +60,7 @@ export const feePlanController = {
       const instituteId = req.user!.instituteId!;
       const body = createFeePlanSchema.parse(req.body);
 
-      const feePlan = await prisma.feePlan.create({
+      const feePlan = await getPrisma().feePlan.create({
         data: {
           instituteId,
           name: body.name,
@@ -71,7 +71,7 @@ export const feePlanController = {
         },
       });
 
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           instituteId,
           userId: req.user!.userId,
@@ -102,15 +102,15 @@ export const feePlanController = {
       const { id } = req.params;
       const body = updateFeePlanSchema.parse(req.body);
 
-      const existing = await prisma.feePlan.findFirst({ where: { id, instituteId } });
+      const existing = await getPrisma().feePlan.findFirst({ where: { id, instituteId } });
       if (!existing) {
         res.status(404).json({ success: false, error: 'Fee plan not found', code: 'NOT_FOUND' });
         return;
       }
 
-      const feePlan = await prisma.feePlan.update({ where: { id }, data: body });
+      const feePlan = await getPrisma().feePlan.update({ where: { id }, data: body });
 
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           instituteId,
           userId: req.user!.userId,
@@ -139,14 +139,14 @@ export const feePlanController = {
       const instituteId = req.user!.instituteId!;
       const { id } = req.params;
 
-      const existing = await prisma.feePlan.findFirst({ where: { id, instituteId } });
+      const existing = await getPrisma().feePlan.findFirst({ where: { id, instituteId } });
       if (!existing) {
         res.status(404).json({ success: false, error: 'Fee plan not found', code: 'NOT_FOUND' });
         return;
       }
 
       // Check if any active enrollments use this plan
-      const activeUsage = await prisma.batchEnrollment.count({
+      const activeUsage = await getPrisma().batchEnrollment.count({
         where: { feePlanId: id, status: 'active' },
       });
       if (activeUsage > 0) {
@@ -158,7 +158,7 @@ export const feePlanController = {
         return;
       }
 
-      await prisma.feePlan.delete({ where: { id } });
+      await getPrisma().feePlan.delete({ where: { id } });
 
       res.json({ success: true, message: 'Fee plan deleted permanently' });
     } catch (error: any) {

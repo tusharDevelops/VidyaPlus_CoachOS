@@ -1,6 +1,6 @@
 
 import { Request, Response } from 'express';
-import prisma from '../../lib/prisma';
+import { getPrisma } from '../../lib/prisma';
 import logger from '../../lib/logger';
 import { authService } from '../auth/auth.service';
 import { z } from 'zod';
@@ -50,17 +50,17 @@ export const superAdminController = {
   async getKpis(_req: Request, res: Response) {
     try {
       const [totalInstitutes, activeInstitutes, totalUsers, totalStudents, expiringPlans, revenueResult] = await Promise.all([
-        prisma.institute.count(),
-        prisma.institute.count({ where: { status: 'active' } }),
-        prisma.user.count(),
-        prisma.user.count({ where: { role: 'student' } }),
-        prisma.institute.count({
+        getPrisma().institute.count(),
+        getPrisma().institute.count({ where: { status: 'active' } }),
+        getPrisma().user.count(),
+        getPrisma().user.count({ where: { role: 'student' } }),
+        getPrisma().institute.count({
           where: {
             status: 'active',
             // In a real app, filter by plan expiry date
           },
         }),
-        prisma.payment.aggregate({
+        getPrisma().payment.aggregate({
           where: { status: 'completed' },
           _sum: { amount: true }
         })
@@ -89,7 +89,7 @@ export const superAdminController = {
     try {
       const { userId } = req.params;
 
-      const targetUser = await prisma.user.findUnique({
+      const targetUser = await getPrisma().user.findUnique({
         where: { id: userId },
         include: { institute: true }
       });
@@ -103,7 +103,7 @@ export const superAdminController = {
       const tokens = await authService.generateTokens(targetUser);
 
       // Audit log the impersonation
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           userId: req.user!.userId,
           action: 'admin.impersonate',
@@ -154,7 +154,7 @@ export const superAdminController = {
       }
 
       const [institutes, total] = await Promise.all([
-        prisma.institute.findMany({
+        getPrisma().institute.findMany({
           where,
           include: {
             plan: { select: { id: true, name: true, priceMonthly: true } },
@@ -164,12 +164,12 @@ export const superAdminController = {
           skip,
           take: query.limit,
         }),
-        prisma.institute.count({ where }),
+        getPrisma().institute.count({ where }),
       ]);
 
       // Get owner info for each institute
       const instituteIds = institutes.map(i => i.id);
-      const owners = await prisma.user.findMany({
+      const owners = await getPrisma().user.findMany({
         where: { instituteId: { in: instituteIds }, role: 'owner' },
         select: { id: true, name: true, phone: true, email: true, instituteId: true },
       });
@@ -201,7 +201,7 @@ export const superAdminController = {
     try {
       const { id } = req.params;
 
-      const institute = await prisma.institute.findUnique({
+      const institute = await getPrisma().institute.findUnique({
         where: { id },
         include: {
           plan: true,
@@ -215,14 +215,14 @@ export const superAdminController = {
       }
 
       // Get user counts by role
-      const roleCounts = await prisma.user.groupBy({
+      const roleCounts = await getPrisma().user.groupBy({
         by: ['role'],
         where: { instituteId: id },
         _count: true,
       });
 
       // Get owner and staff
-      const users = await prisma.user.findMany({
+      const users = await getPrisma().user.findMany({
         where: { instituteId: id },
         select: { id: true, name: true, phone: true, email: true, role: true, status: true, lastLoginAt: true, createdAt: true },
         orderBy: { createdAt: 'asc' },
@@ -253,14 +253,14 @@ export const superAdminController = {
       const skip = (page - 1) * limit;
 
       const [logs, total] = await Promise.all([
-        prisma.auditLog.findMany({
+        getPrisma().auditLog.findMany({
           where: { instituteId: id },
           include: { user: { select: { name: true, role: true } } },
           orderBy: { createdAt: 'desc' },
           skip,
           take: limit,
         }),
-        prisma.auditLog.count({ where: { instituteId: id } }),
+        getPrisma().auditLog.count({ where: { instituteId: id } }),
       ]);
 
       res.json({
@@ -279,7 +279,7 @@ export const superAdminController = {
     try {
       const { id } = req.params;
 
-      const payments = await prisma.payment.findMany({
+      const payments = await getPrisma().payment.findMany({
         where: { instituteId: id },
         include: {
           feeRecord: { include: { feePlan: { select: { name: true } } } },
@@ -301,14 +301,14 @@ export const superAdminController = {
       const body = createInstituteSchema.parse(req.body);
 
       // Check subdomain uniqueness
-      const existing = await prisma.institute.findUnique({ where: { subdomain: body.subdomain } });
+      const existing = await getPrisma().institute.findUnique({ where: { subdomain: body.subdomain } });
       if (existing) {
         res.status(409).json({ success: false, error: 'Subdomain already taken', code: 'SUBDOMAIN_TAKEN' });
         return;
       }
 
       // Create institute + owner in a transaction
-      const result = await prisma.$transaction(async (tx) => {
+      const result = await getPrisma().$transaction(async (tx) => {
         const institute = await tx.institute.create({
           data: {
             name: body.name,
@@ -383,20 +383,20 @@ export const superAdminController = {
       const { id } = req.params;
       const body = updateInstituteSchema.parse(req.body);
 
-      const existing = await prisma.institute.findUnique({ where: { id } });
+      const existing = await getPrisma().institute.findUnique({ where: { id } });
       if (!existing) {
         res.status(404).json({ success: false, error: 'Institute not found', code: 'NOT_FOUND' });
         return;
       }
 
-      const updated = await prisma.institute.update({
+      const updated = await getPrisma().institute.update({
         where: { id },
         data: body,
         include: { plan: { select: { id: true, name: true } } },
       });
 
       // Audit log
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           userId: req.user!.userId,
           action: 'institute.update',
@@ -425,13 +425,13 @@ export const superAdminController = {
     try {
       const { id } = req.params;
 
-      const existing = await prisma.institute.findUnique({ where: { id } });
+      const existing = await getPrisma().institute.findUnique({ where: { id } });
       if (!existing) {
         res.status(404).json({ success: false, error: 'Institute not found', code: 'NOT_FOUND' });
         return;
       }
 
-      await prisma.$transaction(async (tx) => {
+      await getPrisma().$transaction(async (tx) => {
         // 1. Audit log (Before deletion)
         await tx.auditLog.create({
           data: {
@@ -459,7 +459,7 @@ export const superAdminController = {
   // ---------- List Plans ----------
   async listPlans(_req: Request, res: Response) {
     try {
-      const plans = await prisma.plan.findMany({
+      const plans = await getPrisma().plan.findMany({
         orderBy: { priceMonthly: 'asc' },
         include: { _count: { select: { institutes: true } } },
       });
@@ -484,7 +484,7 @@ export const superAdminController = {
 
       const body = schema.parse(req.body);
 
-      const plan = await prisma.plan.create({
+      const plan = await getPrisma().plan.create({
         data: {
           name: body.name,
           maxStudents: body.maxStudents,
@@ -523,7 +523,7 @@ export const superAdminController = {
 
       const body = schema.parse(req.body);
 
-      const plan = await prisma.plan.update({
+      const plan = await getPrisma().plan.update({
         where: { id },
         data: body,
       });
@@ -545,7 +545,7 @@ export const superAdminController = {
     try {
       const { id } = req.params;
 
-      const plan = await prisma.plan.findUnique({
+      const plan = await getPrisma().plan.findUnique({
         where: { id },
         include: { _count: { select: { institutes: true } } }
       });
@@ -567,10 +567,10 @@ export const superAdminController = {
       }
 
       // Perform deletion
-      await prisma.plan.delete({ where: { id } });
+      await getPrisma().plan.delete({ where: { id } });
 
       // Audit log
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           userId: req.user!.userId,
           action: 'plan.delete',

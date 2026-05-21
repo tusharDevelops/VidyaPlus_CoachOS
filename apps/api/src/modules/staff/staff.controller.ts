@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../../lib/prisma';
+import { getPrisma } from '../../lib/prisma';
 import logger from '../../lib/logger';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
@@ -52,7 +52,7 @@ export const staffController = {
         ];
       }
       
-      const staff = await prisma.user.findMany({
+      const staff = await getPrisma().user.findMany({
         where,
         orderBy: { createdAt: 'desc' },
       });
@@ -88,7 +88,7 @@ export const staffController = {
         return;
       }
 
-      const staff = await prisma.user.findFirst({
+      const staff = await getPrisma().user.findFirst({
         where: { 
           id, 
           instituteId,
@@ -149,7 +149,7 @@ export const staffController = {
       const body = createStaffSchema.parse(req.body);
 
       // Check if email already exists for this institute + role
-      const existing = await prisma.user.findFirst({
+      const existing = await getPrisma().user.findFirst({
         where: {
           instituteId,
           email: body.email,
@@ -171,7 +171,7 @@ export const staffController = {
         permissions = DEFAULT_ROLE_PERMISSIONS[body.role] || [];
       }
 
-      const staff = await prisma.user.create({
+      const staff = await getPrisma().user.create({
         data: {
           instituteId,
           name: body.name,
@@ -185,7 +185,7 @@ export const staffController = {
         }
       });
 
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           instituteId,
           userId: req.user!.userId,
@@ -226,7 +226,7 @@ export const staffController = {
       const { id } = req.params;
       const body = updateStaffSchema.parse(req.body);
 
-      const existing = await prisma.user.findFirst({
+      const existing = await getPrisma().user.findFirst({
         where: { id, instituteId, role: { notIn: ['owner', 'student'] } }
       });
 
@@ -247,7 +247,7 @@ export const staffController = {
         permissions = body.permissions;
       }
 
-      const updated = await prisma.user.update({
+      const updated = await getPrisma().user.update({
         where: { id },
         data: {
           name: body.name,
@@ -260,7 +260,7 @@ export const staffController = {
         }
       });
 
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           instituteId,
           userId: req.user!.userId,
@@ -300,7 +300,7 @@ export const staffController = {
       const instituteId = req.user!.instituteId!;
       const { id } = req.params;
 
-      const existing = await prisma.user.findFirst({
+      const existing = await getPrisma().user.findFirst({
         where: { id, instituteId, role: { notIn: ['owner', 'student'] } }
       });
 
@@ -309,11 +309,11 @@ export const staffController = {
         return;
       }
 
-      await prisma.user.delete({
+      await getPrisma().user.delete({
         where: { id },
       });
 
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           instituteId,
           userId: req.user!.userId,

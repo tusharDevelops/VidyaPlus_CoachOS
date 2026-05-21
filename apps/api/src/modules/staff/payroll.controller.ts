@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../../lib/prisma';
+import { getPrisma } from '../../lib/prisma';
 import logger from '../../lib/logger';
 import { z } from 'zod';
 
@@ -26,7 +26,7 @@ export const payrollController = {
       const body = recordPayrollSchema.parse(req.body);
 
       // Verify the staff user exists in this institute
-      const staff = await prisma.user.findFirst({
+      const staff = await getPrisma().user.findFirst({
         where: { id: body.staffId, instituteId, role: { notIn: ['owner', 'student'] } }
       });
 
@@ -36,7 +36,7 @@ export const payrollController = {
       }
 
       // Check if duplicate payroll record for the same month and year exists
-      const existing = await prisma.payrollRecord.findFirst({
+      const existing = await getPrisma().payrollRecord.findFirst({
         where: {
           instituteId,
           staffId: body.staffId,
@@ -51,7 +51,7 @@ export const payrollController = {
       }
 
       // Record the payroll
-      const payroll = await prisma.payrollRecord.create({
+      const payroll = await getPrisma().payrollRecord.create({
         data: {
           instituteId,
           staffId: body.staffId,
@@ -63,7 +63,7 @@ export const payrollController = {
         },
       });
 
-      await prisma.auditLog.create({
+      await getPrisma().auditLog.create({
         data: {
           instituteId,
           userId: req.user!.userId,
@@ -98,7 +98,7 @@ export const payrollController = {
         where.staffId = staffId;
       }
 
-      const history = await prisma.payrollRecord.findMany({
+      const history = await getPrisma().payrollRecord.findMany({
         where,
         include: {
           staff: { select: { name: true, phone: true, role: true } },
@@ -141,7 +141,7 @@ export const payrollController = {
         return;
       }
 
-      const staff = await prisma.user.findFirst({
+      const staff = await getPrisma().user.findFirst({
         where: { id: staffId as string, instituteId },
         select: { baseSalary: true, name: true }
       });
@@ -155,7 +155,7 @@ export const payrollController = {
       const endDate = new Date(parseInt(year as string), parseInt(month as string), 0);
       const totalDaysInMonth = endDate.getDate();
 
-      const attendance = await prisma.staffAttendance.findMany({
+      const attendance = await getPrisma().staffAttendance.findMany({
         where: {
           staffId: staffId as string,
           date: { gte: startDate, lte: endDate }

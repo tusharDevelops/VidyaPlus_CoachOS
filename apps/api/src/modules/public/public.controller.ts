@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../../lib/prisma';
+import { getPrisma } from '../../lib/prisma';
 import winston from 'winston';
 import bcrypt from 'bcryptjs';
 import { authService } from '../auth/auth.service';
@@ -16,7 +16,7 @@ export const publicController = {
   // ---------- List Plans for Marketing ----------
   async listPlans(_req: Request, res: Response) {
     try {
-      const plans = await prisma.plan.findMany({
+      const plans = await getPrisma().plan.findMany({
         where: { status: 'active' },
         orderBy: { priceMonthly: 'asc' },
         select: {
@@ -32,7 +32,7 @@ export const publicController = {
       });
       res.json({ success: true, data: plans });
     } catch (error: any) {
-      logger.error('Failed to list public plans', { error: error.message });
+      logger.error('Failed to list public plans', { error: error.stack || error.message });
       res.status(500).json({ success: false, error: 'Failed to fetch pricing plans' });
     }
   },
@@ -48,7 +48,7 @@ export const publicController = {
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       const hashedOtp = await bcrypt.hash(otp, 10);
       // Store OTP
-      await prisma.otpStore.create({
+      await getPrisma().otpStore.create({
         data: {
           email,
           hashedOtp,
@@ -73,7 +73,7 @@ export const publicController = {
         return res.status(400).json({ success: false, error: 'Missing required fields' });
       }
       // Retrieve OTP record
-      const otpRecord = await prisma.otpStore.findFirst({
+      const otpRecord = await getPrisma().otpStore.findFirst({
         where: { email, purpose: 'email_verify', verified: false, expiresAt: { gte: new Date() } },
         orderBy: { createdAt: 'desc' },
       });
@@ -82,14 +82,14 @@ export const publicController = {
       }
       const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
       if (!isMatch) {
-        await prisma.otpStore.update({
+        await getPrisma().otpStore.update({
           where: { id: otpRecord.id },
           data: { attempts: { increment: 1 } },
         });
         return res.status(400).json({ success: false, error: 'Invalid OTP' });
       }
       // Mark OTP as verified
-      await prisma.otpStore.update({
+      await getPrisma().otpStore.update({
         where: { id: otpRecord.id },
         data: { verified: true },
       });
@@ -97,7 +97,7 @@ export const publicController = {
       // Create institute with trial (14 days)
       const subdomain = await generateSubdomain(instituteName);
       const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
-      const institute = await prisma.institute.create({
+      const institute = await getPrisma().institute.create({
         data: {
           name: instituteName,
           subdomain,
@@ -110,7 +110,7 @@ export const publicController = {
 
       // Create owner user
       const passwordHash = await bcrypt.hash(password, 12);
-      const user = await prisma.user.create({
+      const user = await getPrisma().user.create({
         data: {
           instituteId: institute.id,
           name,

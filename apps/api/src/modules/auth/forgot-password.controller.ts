@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { authService } from './auth.service';
 import { z } from 'zod';
-import prisma from '../../lib/prisma';
+import { getPrisma } from '../../lib/prisma';
 import bcrypt from 'bcryptjs';
 import { sendOtpEmail } from '../../lib/mailer';
 import logger from '../../lib/logger';
@@ -31,7 +31,7 @@ export const forgotPasswordController = {
       const { email } = forgotPasswordSchema.parse(req.body);
 
       // Check if user exists as owner
-      const user = await prisma.user.findFirst({
+      const user = await getPrisma().user.findFirst({
         where: { email, status: 'active', role: 'owner' },
       });
 
@@ -47,7 +47,7 @@ export const forgotPasswordController = {
       const expiryMinutes = parseInt(process.env.OTP_EXPIRY_MINUTES || '10');
 
       // Create OTP in store
-      await prisma.otpStore.create({
+      await getPrisma().otpStore.create({
         data: {
           email,
           hashedOtp,
@@ -75,7 +75,7 @@ export const forgotPasswordController = {
     try {
       const { email, otp } = verifyOtpSchema.parse(req.body);
 
-      const otpRecord = await prisma.otpStore.findFirst({
+      const otpRecord = await getPrisma().otpStore.findFirst({
         where: { email, purpose: 'forgot_password' },
         orderBy: { createdAt: 'desc' },
       });
@@ -92,7 +92,7 @@ export const forgotPasswordController = {
 
       const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
       if (!isMatch) {
-        await prisma.otpStore.update({
+        await getPrisma().otpStore.update({
           where: { id: otpRecord.id },
           data: { attempts: { increment: 1 } },
         });
@@ -101,7 +101,7 @@ export const forgotPasswordController = {
       }
 
       // Mark as verified
-      await prisma.otpStore.update({
+      await getPrisma().otpStore.update({
         where: { id: otpRecord.id },
         data: { verified: true },
       });
@@ -120,7 +120,7 @@ export const forgotPasswordController = {
     try {
       const { email, otp, newPassword } = resetPasswordSchema.parse(req.body);
 
-      const otpRecord = await prisma.otpStore.findFirst({
+      const otpRecord = await getPrisma().otpStore.findFirst({
         where: { email, purpose: 'forgot_password' },
         orderBy: { createdAt: 'desc' },
       });
@@ -141,13 +141,13 @@ export const forgotPasswordController = {
       const passwordHash = await bcrypt.hash(newPassword, 12);
 
       // Update owner with this email
-      await prisma.user.updateMany({
+      await getPrisma().user.updateMany({
         where: { email, status: 'active', role: 'owner' },
         data: { passwordHash },
       });
 
       // Delete OTP record
-      await prisma.otpStore.delete({ where: { id: otpRecord.id } });
+      await getPrisma().otpStore.delete({ where: { id: otpRecord.id } });
 
       logger.info(`[AUTH] Password reset successful for ${email}`);
 

@@ -1,4 +1,4 @@
-import prisma from './prisma';
+import { getPrisma } from '../lib/prisma';
 
 /**
  * Generates a unique subdomain from an institute name.
@@ -16,7 +16,7 @@ export async function generateSubdomain(name: string): Promise<string> {
   if (!slug) slug = 'institute';
 
   // 2. Check for collision
-  const existing = await prisma.institute.findUnique({
+  const existing = await getPrisma().institute.findUnique({
     where: { subdomain: slug },
   });
 
