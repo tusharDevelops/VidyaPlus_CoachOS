@@ -10,5 +10,11 @@
   "vars": {
     "NODE_ENV": "production",
     "CLOUDFLARE_WORKER": "true"
+  },
+  "observability": {
+    "logs": {
+      "enabled": false,
+      "invocation_logs": true
+    }
   }
 }
