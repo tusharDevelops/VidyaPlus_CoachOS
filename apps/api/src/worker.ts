@@ -36,8 +36,27 @@ export default {
     }
 
     // Cloudflare's Request object has read-only properties that serverless-http tries to mutate.
-    // Cloning the request creates a mutable copy we can safely pass to express.
-    const mutableRequest = new Request(request);
+    // We use a Proxy to intercept these mutations and store them safely in a custom state object.
+    const customState: Record<string, any> = {};
+    const mutableRequest = new Proxy(request, {
+      get(target, prop, receiver) {
+        if (prop in customState) return customState[prop as string];
+        const value = Reflect.get(target, prop, receiver);
+        return typeof value === 'function' ? value.bind(target) : value;
+      },
+      set(target, prop, value) {
+        customState[prop as string] = value;
+        return true;
+      },
+      defineProperty(target, prop, descriptor) {
+        customState[prop as string] = descriptor.value;
+        return true;
+      },
+      deleteProperty(target, prop) {
+        delete customState[prop as string];
+        return true;
+      }
+    });
 
     let response: Response;
     try {
