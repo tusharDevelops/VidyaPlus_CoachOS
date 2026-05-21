@@ -106,7 +106,10 @@ export default {
       headers.set('Access-Control-Allow-Credentials', 'true');
     }
 
-    return new Response(body, {
+    const isNullBodyStatus = status === 204 || status === 304 || (status >= 100 && status < 200);
+    const responseBody = isNullBodyStatus ? null : body;
+
+    return new Response(responseBody, {
       status,
       headers
     });
