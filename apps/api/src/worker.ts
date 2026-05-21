@@ -1,6 +1,10 @@
 import serverless from "serverless-http";
 import app from "./app";
 import { Buffer } from "node:buffer";
+import { Pool, neonConfig } from "@neondatabase/serverless";
+import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaClient } from "@prisma/client";
+import { prismaStorage } from "./lib/prisma";
 
 process.env.CLOUDFLARE_WORKER = "true";
 
@@ -26,7 +30,7 @@ const expressHandler = serverless(app, {
 });
 
 export default {
-  async fetch(request: Request, env: any): Promise<Response> {
+  async fetch(request: Request, env: any, ctx: any): Promise<Response> {
     // Ensure process.env is defined
     if (typeof process === 'undefined') {
       (globalThis as any).process = { env: {} };
@@ -46,11 +50,34 @@ export default {
     process.env.SMTP_PASS = env.SMTP_PASS || process.env.SMTP_PASS || 'ntsqirkngneuaxgd';
     process.env.NODE_ENV = env.NODE_ENV || process.env.NODE_ENV || 'production';
 
+    // Set up WebSocket constructor for Neon Serverless inside this request context
+    if (typeof WebSocket !== 'undefined') {
+      neonConfig.webSocketConstructor = WebSocket;
+    }
+    const dbUrl = env.DATABASE_URL || process.env.DATABASE_URL;
+    const pool = new Pool({ connectionString: dbUrl });
+    const adapter = new PrismaNeon(pool);
+    const prisma = new PrismaClient({
+      adapter,
+      log: ['error'],
+    });
+
     const origin = request.headers.get('Origin') || '';
     const isAllowed = ALLOWED_ORIGINS.has(origin);
 
+    const cleanupPool = () => {
+      if (pool) {
+        if (ctx && typeof ctx.waitUntil === 'function') {
+          ctx.waitUntil(pool.end());
+        } else {
+          pool.end().catch(() => {});
+        }
+      }
+    };
+
     // Preflight — handle directly, never touch Express
     if (request.method === 'OPTIONS' && isAllowed) {
+      cleanupPool();
       return new Response(null, {
         status: 204,
         headers: {
@@ -81,8 +108,11 @@ export default {
 
     let result: any;
     try {
-      result = await (expressHandler as any)(event, env);
+      result = await prismaStorage.run(prisma, async () => {
+        return await (expressHandler as any)(event, env);
+      });
     } catch (err: any) {
+      cleanupPool();
       const body = JSON.stringify({ success: false, error: err?.message || 'Internal Server Error' });
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (isAllowed) {
@@ -91,6 +121,8 @@ export default {
       }
       return new Response(body, { status: 500, headers });
     }
+
+    cleanupPool();
 
     // If result is already a Response, just return it or inject CORS
     const isResponse = result instanceof Response;
