@@ -5,7 +5,8 @@
   "compatibility_date": "2026-05-19",
   "compatibility_flags": [
     "nodejs_compat",
-    "enable_nodejs_http_server_modules"
+    "enable_nodejs_http_server_modules",
+    "no_handle_cross_request_promise_resolution"
   ],
   "vars": {
     "NODE_ENV": "production",
