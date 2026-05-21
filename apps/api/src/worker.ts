@@ -61,6 +61,7 @@ export default {
     }
 
     // Inject CORS headers into the response
+    console.log(`[CORS DEBUG] Origin: "${origin}", isAllowed: ${isAllowed}, method: ${request.method}`);
     if (isAllowed && response) {
       try {
         const newHeaders = new Headers(response.headers);
