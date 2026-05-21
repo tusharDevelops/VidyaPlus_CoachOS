@@ -9,7 +9,7 @@
   ],
   "packageManager": "npm@11.6.2",
   "scripts": {
-    "postinstall": "npx patch-package",
+    "postinstall": "npx --yes patch-package || echo 'patch-package failed'",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",

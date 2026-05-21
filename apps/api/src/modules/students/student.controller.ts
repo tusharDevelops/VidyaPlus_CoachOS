@@ -304,7 +304,7 @@ export const studentController = {
         });
 
         // Enroll into batches if provided
-        const enrollments = [];
+        const enrollments: any[] = [];
         const now = new Date();
         
         // Admission and first month fees are both due immediately on registration day

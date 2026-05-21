@@ -155,7 +155,7 @@ export const batchController = {
         where: { id: { in: studentIds } },
         include: { user: { select: { id: true, name: true, phone: true, status: true } } },
       });
-      const profileMap = new Map(studentProfiles.map(p => [p.id, p]));
+      const profileMap = new Map<string, any>(studentProfiles.map(p => [p.id, p]));
 
       const students = batch.enrollments.map(e => {
         const profile = profileMap.get(e.studentId);
@@ -468,8 +468,8 @@ export const batchController = {
       }
 
       // Create enrollments
-      const enrolled = [];
-      const skipped = [];
+      const enrolled: any[] = [];
+      const skipped: any[] = [];
 
       for (const studentId of body.studentIds) {
         // Check if already enrolled
