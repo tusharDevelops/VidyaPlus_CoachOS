@@ -1,7 +1,6 @@
 import serverless from "serverless-http";
 import app from "./app";
 
-// Inject indicator variable for Edge environment
 process.env.CLOUDFLARE_WORKER = "true";
 
 const ALLOWED_ORIGINS = new Set([
@@ -15,7 +14,18 @@ const ALLOWED_ORIGINS = new Set([
   'https://vidya-plus-coach-os-student.vercel.app',
 ]);
 
-// Original serverless handler — pass through untouched
+function addCorsHeaders(response: Response, origin: string): Response {
+  const headers = new Headers(response.headers);
+  headers.set('Access-Control-Allow-Origin', origin);
+  headers.set('Access-Control-Allow-Credentials', 'true');
+  // Must create new response since headers may be immutable
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 const expressHandler = serverless(app);
 
 export default {
@@ -23,7 +33,7 @@ export default {
     const origin = request.headers.get('Origin') || '';
     const isAllowed = ALLOWED_ORIGINS.has(origin);
 
-    // Handle preflight OPTIONS directly — Express cors may not handle it well in Workers
+    // Preflight
     if (request.method === 'OPTIONS' && isAllowed) {
       return new Response(null, {
         status: 204,
@@ -37,7 +47,43 @@ export default {
       });
     }
 
-    // All other requests: let Express handle everything (including CORS headers)
-    return expressHandler(request, ...args) as Promise<Response>;
+    // Regular requests
+    try {
+      const response: any = await expressHandler(request, ...args);
+
+      if (!isAllowed) return response;
+
+      // Try standard Response cloning first
+      try {
+        return addCorsHeaders(response, origin);
+      } catch {
+        // Fallback: read body as text and rebuild
+        let bodyText = '';
+        let status = 200;
+        const headers = new Headers();
+        headers.set('Content-Type', 'application/json');
+
+        try { bodyText = await response.text(); } catch { bodyText = ''; }
+        try { status = response.status || 200; } catch { /* keep 200 */ }
+        try {
+          if (response.headers && typeof response.headers.forEach === 'function') {
+            response.headers.forEach((v: string, k: string) => headers.set(k, v));
+          }
+        } catch { /* keep defaults */ }
+
+        headers.set('Access-Control-Allow-Origin', origin);
+        headers.set('Access-Control-Allow-Credentials', 'true');
+
+        return new Response(bodyText, { status, headers });
+      }
+    } catch (err: any) {
+      const errorBody = JSON.stringify({ success: false, error: err?.message || 'Internal Server Error' });
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (isAllowed) {
+        headers['Access-Control-Allow-Origin'] = origin;
+        headers['Access-Control-Allow-Credentials'] = 'true';
+      }
+      return new Response(errorBody, { status: 500, headers });
+    }
   },
 };
