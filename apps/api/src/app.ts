@@ -69,7 +69,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Logging
-app.use(morgan('dev'));
+app.use(morgan('dev', {
+  skip: (req) => req.originalUrl === '/api/health' || req.url === '/api/health'
+}));
 
 // Health check
 app.get('/api/health', (_req, res) => {
