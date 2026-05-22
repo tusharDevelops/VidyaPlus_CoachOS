@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getPrisma } from '../../lib/prisma';
+import prisma from '../../lib/prisma';
 import logger from '../../lib/logger';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
@@ -44,7 +44,7 @@ const listQuerySchema = z.object({
 // Auto-generate student code: VP-{year}-{sequence}
 async function generateStudentCode(instituteId: string): Promise<string> {
   const year = new Date().getFullYear().toString().slice(-2);
-  const count = await getPrisma().studentProfile.count({ where: { instituteId } });
+  const count = await prisma.studentProfile.count({ where: { instituteId } });
   const sequence = (count + 1).toString().padStart(4, '0');
   return `VP-${year}-${sequence}`;
 }
@@ -69,20 +69,20 @@ export const studentController = {
       
       // Teacher isolation: Only show students in batches assigned to this teacher
       if (req.user!.role === 'teacher') {
-        const teacherBatches = await getPrisma().batch.findMany({
+        const teacherBatches = await prisma.batch.findMany({
           where: { teacherId: req.user!.userId, instituteId },
           select: { id: true }
         });
         const batchIds = teacherBatches.map(b => b.id);
         
-        const enrolledStudentIds = await getPrisma().batchEnrollment.findMany({
+        const enrolledStudentIds = await prisma.batchEnrollment.findMany({
           where: { batchId: { in: batchIds }, status: 'active', instituteId },
           select: { studentId: true }
         });
         
         // Note: enrolledStudentIds are studentProfile ids, but where is on User (where role='student')
         // We need to map StudentProfile IDs to User IDs
-        const profiles = await getPrisma().studentProfile.findMany({
+        const profiles = await prisma.studentProfile.findMany({
           where: { id: { in: enrolledStudentIds.map(e => e.studentId) } },
           select: { userId: true }
         });
@@ -100,7 +100,7 @@ export const studentController = {
       }
 
       const [users, total] = await Promise.all([
-        getPrisma().user.findMany({
+        prisma.user.findMany({
           where,
           include: {
             studentProfile: {
@@ -117,13 +117,13 @@ export const studentController = {
           skip,
           take: query.limit,
         }),
-        getPrisma().user.count({ where }),
+        prisma.user.count({ where }),
       ]);
 
       // If filtering by batch, do a second query
       let filteredUsers = users;
       if (query.batchId) {
-        const enrolledStudentIds = await getPrisma().batchEnrollment.findMany({
+        const enrolledStudentIds = await prisma.batchEnrollment.findMany({
           where: { batchId: query.batchId, status: 'active', instituteId },
           select: { studentId: true },
         });
@@ -133,7 +133,7 @@ export const studentController = {
 
       // Get batch enrollments for each student
       const profileIds = filteredUsers.map(u => u.studentProfile?.id).filter(Boolean) as string[];
-      const enrollments = await getPrisma().batchEnrollment.findMany({
+      const enrollments = await prisma.batchEnrollment.findMany({
         where: { studentId: { in: profileIds }, status: 'active', instituteId },
         include: { batch: { select: { id: true, name: true, subject: true } } },
       });
@@ -174,7 +174,7 @@ export const studentController = {
       const instituteId = req.user!.instituteId!;
       const { id } = req.params;
 
-      const user = await getPrisma().user.findFirst({
+      const user = await prisma.user.findFirst({
         where: { id, instituteId, role: 'student' },
         include: {
           studentProfile: true,
@@ -188,7 +188,7 @@ export const studentController = {
 
       // Get batch enrollments
       const enrollments = user.studentProfile
-        ? await getPrisma().batchEnrollment.findMany({
+        ? await prisma.batchEnrollment.findMany({
             where: { studentId: user.studentProfile.id, instituteId },
             include: {
               batch: { select: { id: true, name: true, subject: true, startTime: true, endTime: true, daysJson: true, status: true } },
@@ -199,7 +199,7 @@ export const studentController = {
 
       // Get fee records summary
       const feeRecords = user.studentProfile
-        ? await getPrisma().feeRecord.findMany({
+        ? await prisma.feeRecord.findMany({
             where: { studentId: user.studentProfile.id, instituteId },
             include: { feePlan: { select: { name: true } } },
             orderBy: { dueDate: 'desc' },
@@ -210,7 +210,7 @@ export const studentController = {
       // Get attendance summary (last 30 days)
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const attendanceSummary = await getPrisma().attendanceRecord.groupBy({
+      const attendanceSummary = await prisma.attendanceRecord.groupBy({
         by: ['status'],
         where: { studentId: id, instituteId, date: { gte: thirtyDaysAgo } },
         _count: { status: true },
@@ -247,7 +247,7 @@ export const studentController = {
       const body = createStudentSchema.parse(req.body);
 
       // Check plan limits
-      const institute = await getPrisma().institute.findUnique({
+      const institute = await prisma.institute.findUnique({
         where: { id: instituteId },
         include: { plan: true, _count: { select: { studentProfiles: true } } },
       });
@@ -261,7 +261,7 @@ export const studentController = {
       }
 
       // Check if student already exists (email must be unique per institute/role)
-      const existingEmail = await getPrisma().user.findFirst({
+      const existingEmail = await prisma.user.findFirst({
         where: { instituteId, email: body.email, role: 'student' },
       });
 
@@ -275,7 +275,7 @@ export const studentController = {
 
       const studentCode = await generateStudentCode(instituteId);
 
-      const result = await getPrisma().$transaction(async (tx) => {
+      const result = await prisma.$transaction(async (tx) => {
         // Create User
         const user = await tx.user.create({
           data: {
@@ -304,7 +304,7 @@ export const studentController = {
         });
 
         // Enroll into batches if provided
-        const enrollments: any[] = [];
+        const enrollments = [];
         const now = new Date();
         
         // Admission and first month fees are both due immediately on registration day
@@ -429,7 +429,7 @@ export const studentController = {
       const { id } = req.params;
       const body = updateStudentSchema.parse(req.body);
 
-      const existing = await getPrisma().user.findFirst({
+      const existing = await prisma.user.findFirst({
         where: { id, instituteId, role: 'student' },
         include: { studentProfile: true },
       });
@@ -440,7 +440,7 @@ export const studentController = {
 
       // Check duplicate phone
       if (body.phone && body.phone !== existing.phone) {
-        const duplicatePhone = await getPrisma().user.findFirst({
+        const duplicatePhone = await prisma.user.findFirst({
           where: { instituteId, phone: body.phone, role: 'student', id: { not: id } },
         });
         if (duplicatePhone) {
@@ -451,7 +451,7 @@ export const studentController = {
 
       // Check duplicate email
       if (body.email && body.email !== existing.email) {
-        const duplicateEmail = await getPrisma().user.findFirst({
+        const duplicateEmail = await prisma.user.findFirst({
           where: { email: body.email, id: { not: id } },
         });
         if (duplicateEmail) {
@@ -464,7 +464,7 @@ export const studentController = {
         }
       }
 
-      await getPrisma().$transaction(async (tx) => {
+      await prisma.$transaction(async (tx) => {
         await tx.user.update({
           where: { id },
           data: {
@@ -517,7 +517,7 @@ export const studentController = {
       const instituteId = req.user!.instituteId!;
       const { id } = req.params;
 
-      const existing = await getPrisma().user.findFirst({
+      const existing = await prisma.user.findFirst({
         where: { id, instituteId, role: 'student' },
       });
       if (!existing) {
@@ -525,7 +525,7 @@ export const studentController = {
         return;
       }
 
-      await getPrisma().$transaction(async (tx) => {
+      await prisma.$transaction(async (tx) => {
         // 1. Audit log (Before deletion to capture data if needed)
         await tx.auditLog.create({
           data: {
@@ -559,7 +559,7 @@ export const studentController = {
       const { id } = req.params;
       const { subject, content, title } = req.body;
 
-      const student = await getPrisma().user.findFirst({
+      const student = await prisma.user.findFirst({
         where: { id, instituteId, role: 'student' },
       });
 

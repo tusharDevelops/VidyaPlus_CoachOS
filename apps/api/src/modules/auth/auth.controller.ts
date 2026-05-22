@@ -153,8 +153,7 @@ export const authController = {
    */
   async me(req: Request, res: Response, next: NextFunction) {
     try {
-      const { getPrisma } = await import('../../lib/prisma');
-      const prisma = getPrisma();
+      const { default: prisma } = await import('../../lib/prisma');
       const user = await prisma.user.findUnique({
         where: { id: req.user!.userId },
         select: {

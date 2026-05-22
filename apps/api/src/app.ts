@@ -24,24 +24,12 @@ const app = express();
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: (process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,https://vidya-plus-coach-os-web.vercel.app,https://vidya-plus-coach-os-admin.vercel.app,https://vidya-plus-coach-os-staff.vercel.app,https://vidya-plus-coach-os-student.vercel.app').split(',').map(s => s.trim()),
+  origin: (process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:5174').split(',').map(s => s.trim()),
   credentials: true,
 }));
 
-// Rate limiting wrapper to bypass in Cloudflare Workers (forbidden global setInterval)
-const createLimiter = (options: any) => {
-  let limiter: any = null;
-  return (req: any, res: any, next: any) => {
-    if (process.env.CLOUDFLARE_WORKER === 'true') {
-      return next();
-    }
-    if (!limiter) limiter = rateLimit(options);
-    return limiter(req, res, next);
-  };
-};
-
-// Global rate limiting
-const limiter = createLimiter({
+// Rate limiting
+const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 2000, // 2000 requests per minute
   standardHeaders: true,
@@ -51,17 +39,12 @@ const limiter = createLimiter({
 app.use(limiter);
 
 // Auth rate limiting (stricter)
-const authLimiter = createLimiter({
+const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 1000, // Very lenient for active user/agent pair testing
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, error: 'Too many authentication attempts', code: 'AUTH_RATE_LIMITED' },
-});
-
-app.use((req, res, next) => {
-  console.log('EXPRESS URL:', req.url, req.path);
-  next();
 });
 
 // Body parsing
@@ -70,13 +53,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Logging
-const morganMiddleware = morgan('dev');
-app.use((req, res, next) => {
-  if (process.env.CLOUDFLARE_WORKER === 'true') {
-    return next();
-  }
-  return morganMiddleware(req, res, next);
-});
+app.use(morgan('dev'));
 
 // Health check
 app.get('/api/health', (_req, res) => {

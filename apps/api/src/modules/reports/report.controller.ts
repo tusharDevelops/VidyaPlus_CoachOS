@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getPrisma } from '../../lib/prisma';
+import prisma from '../../lib/prisma';
 import logger from '../../lib/logger';
 
 export const reportController = {
@@ -9,7 +9,7 @@ export const reportController = {
       const instituteId = req.user!.instituteId!;
 
       // 1. Total overview
-      const allFees = await getPrisma().feeRecord.findMany({
+      const allFees = await prisma.feeRecord.findMany({
         where: { instituteId },
       });
 
@@ -19,7 +19,7 @@ export const reportController = {
       const totalOutstanding = totalDues - totalCollected;
 
       // 2. Collection breakdown by batch
-      const batches = await getPrisma().batch.findMany({
+      const batches = await prisma.batch.findMany({
         where: { instituteId },
         include: {
           feeRecords: true,
@@ -79,7 +79,7 @@ export const reportController = {
     try {
       const instituteId = req.user!.instituteId!;
 
-      const records = await getPrisma().attendanceRecord.findMany({
+      const records = await prisma.attendanceRecord.findMany({
         where: { instituteId },
       });
 
@@ -89,7 +89,7 @@ export const reportController = {
       const late = records.filter(r => r.status === 'late').length;
 
       // Group by batch
-      const batches = await getPrisma().batch.findMany({
+      const batches = await prisma.batch.findMany({
         where: { instituteId },
       });
 

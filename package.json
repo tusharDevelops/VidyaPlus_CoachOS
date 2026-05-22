@@ -9,7 +9,6 @@
   ],
   "packageManager": "npm@11.6.2",
   "scripts": {
-    "postinstall": "npx --yes patch-package || echo 'patch-package failed'",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
@@ -25,9 +24,6 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  },
-  "dependencies": {
-    "patch-package": "^8.0.1"
   },
   "devDependencies": {
     "turbo": "^2.9.9"

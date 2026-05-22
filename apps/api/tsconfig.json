@@ -5,8 +5,7 @@
     "lib": ["ES2022"],
     "outDir": "./dist",
     "rootDir": "./src",
-    "strict": false,
-    "noImplicitAny": false,
+    "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -16,8 +15,8 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "baseUrl": ".",
-    "types": ["node", "@cloudflare/workers-types"]
+"baseUrl": ".",
+
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

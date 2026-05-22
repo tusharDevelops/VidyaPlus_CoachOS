@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { getPrisma } from '../../lib/prisma';
+import prisma from '../../lib/prisma';
 import logger from '../../lib/logger';
 import { DEFAULT_ROLE_PERMISSIONS, JwtPayload, Permission } from '@coachos/shared';
 
@@ -50,7 +50,7 @@ export const authService = {
     const refreshToken = generateRefreshToken();
 
     const tokenHash = await bcrypt.hash(refreshToken, 10);
-    await getPrisma().refreshToken.create({
+    await prisma.refreshToken.create({
       data: {
         userId: user.id,
         tokenHash,
@@ -65,7 +65,7 @@ export const authService = {
    * Login with phone + password (for Owner, Staff, Teacher, Accountant)
    */
   async loginWithPassword(email: string, password: string) {
-    const user = await getPrisma().user.findFirst({
+    const user = await prisma.user.findFirst({
       where: {
         email,
         status: 'active',
@@ -107,7 +107,7 @@ export const authService = {
 
     // Store refresh token in DB
     const tokenHash = await bcrypt.hash(refreshToken, 10);
-    await getPrisma().refreshToken.create({
+    await prisma.refreshToken.create({
       data: {
         userId: user.id,
         tokenHash,
@@ -116,7 +116,7 @@ export const authService = {
     });
 
     // Update last login
-    await getPrisma().user.update({
+    await prisma.user.update({
       where: { id: user.id },
       data: { lastLoginAt: new Date() },
     });
@@ -143,7 +143,7 @@ export const authService = {
    * Login with email + password (for Super Admin)
    */
   async loginSuperAdmin(email: string, password: string) {
-    const user = await getPrisma().user.findFirst({
+    const user = await prisma.user.findFirst({
       where: { email, role: 'super_admin', status: 'active' },
     });
 
@@ -167,7 +167,7 @@ export const authService = {
     const refreshToken = generateRefreshToken();
 
     const tokenHash = await bcrypt.hash(refreshToken, 10);
-    await getPrisma().refreshToken.create({
+    await prisma.refreshToken.create({
       data: {
         userId: user.id,
         tokenHash,
@@ -175,7 +175,7 @@ export const authService = {
       },
     });
 
-    await getPrisma().user.update({
+    await prisma.user.update({
       where: { id: user.id },
       data: { lastLoginAt: new Date() },
     });
@@ -199,7 +199,7 @@ export const authService = {
    */
   async sendLoginOtp(email: string, portal: 'student' | 'staff') {
     // Check for lockout
-    const recentAttempts = await getPrisma().otpStore.count({
+    const recentAttempts = await prisma.otpStore.count({
       where: {
         email,
         purpose: 'login',
@@ -219,7 +219,7 @@ export const authService = {
     const roleFilter = portal === 'student' ? 'student' : { in: ['teacher', 'accountant', 'staff', 'admin', 'custom'] };
 
     // Check if any user exists with this email for the portal
-    const users = await getPrisma().user.findMany({
+    const users = await prisma.user.findMany({
       where: { 
         email, 
         role: roleFilter, 
@@ -240,7 +240,7 @@ export const authService = {
     const hashedOtp = await bcrypt.hash(otp, 10);
 
     // Upsert OTP store
-    await getPrisma().otpStore.create({
+    await prisma.otpStore.create({
       data: {
         email,
         hashedOtp,
@@ -263,7 +263,7 @@ export const authService = {
    * Verify login OTP
    */
   async verifyLoginOtp(email: string, otp: string, portal: 'student' | 'staff') {
-    const otpRecord = await getPrisma().otpStore.findFirst({
+    const otpRecord = await prisma.otpStore.findFirst({
       where: { email, purpose: 'login', verified: false, expiresAt: { gte: new Date() } },
       orderBy: { createdAt: 'desc' },
     });
@@ -278,7 +278,7 @@ export const authService = {
 
     const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
     if (!isMatch) {
-      await getPrisma().otpStore.update({
+      await prisma.otpStore.update({
         where: { id: otpRecord.id },
         data: { attempts: { increment: 1 } },
       });
@@ -286,11 +286,11 @@ export const authService = {
     }
 
     // OTP is valid
-    await getPrisma().otpStore.update({ where: { id: otpRecord.id }, data: { verified: true } });
+    await prisma.otpStore.update({ where: { id: otpRecord.id }, data: { verified: true } });
 
     // Fetch users for this portal
     const roleFilter = portal === 'student' ? 'student' : { in: ['teacher', 'accountant', 'staff', 'admin', 'custom'] };
-    const users = await getPrisma().user.findMany({
+    const users = await prisma.user.findMany({
       where: { email, role: roleFilter, status: 'active' },
       include: { institute: true },
     });
@@ -306,7 +306,7 @@ export const authService = {
     if (users.length === 1) {
       const user = users[0];
       const { accessToken, refreshToken } = await this.generateTokens(user);
-      await getPrisma().user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
+      await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
       
       const permissions = (user.permissionsJson as Permission[]).length > 0
         ? (user.permissionsJson as Permission[])
@@ -331,7 +331,7 @@ export const authService = {
 
     // Multiple profiles - generate a short-lived session token
     const sessionToken = crypto.randomBytes(32).toString('hex');
-    await getPrisma().otpStore.update({
+    await prisma.otpStore.update({
       where: { id: otpRecord.id },
       data: { sessionToken },
     });
@@ -353,7 +353,7 @@ export const authService = {
    * Select a profile after OTP verification
    */
   async selectProfile(sessionToken: string, userId: string) {
-    const otpRecord = await getPrisma().otpStore.findFirst({
+    const otpRecord = await prisma.otpStore.findFirst({
       where: { sessionToken, purpose: 'login', verified: true, expiresAt: { gte: new Date() } },
     });
 
@@ -361,7 +361,7 @@ export const authService = {
       throw Object.assign(new Error('Invalid or expired session'), { statusCode: 401, code: 'INVALID_SESSION' });
     }
 
-    const user = await getPrisma().user.findFirst({
+    const user = await prisma.user.findFirst({
       where: { id: userId, email: otpRecord.email, status: 'active' },
       include: { institute: true },
     });
@@ -372,10 +372,10 @@ export const authService = {
 
     // Generate tokens
     const { accessToken, refreshToken } = await this.generateTokens(user);
-    await getPrisma().user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
+    await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
 
     // Invalidate session to prevent reuse
-    await getPrisma().otpStore.delete({ where: { id: otpRecord.id } });
+    await prisma.otpStore.delete({ where: { id: otpRecord.id } });
 
     const permissions = (user.permissionsJson as Permission[]).length > 0
       ? (user.permissionsJson as Permission[])
@@ -405,7 +405,7 @@ export const authService = {
     const expiryMinutes = parseInt(process.env.OTP_EXPIRY_MINUTES || '10');
     const hashedOtp = await bcrypt.hash(otp, 10);
 
-    await getPrisma().otpStore.create({
+    await prisma.otpStore.create({
       data: {
         email,
         hashedOtp,
@@ -426,7 +426,7 @@ export const authService = {
    * Verify email verification OTP
    */
   async verifyEmailOtp(email: string, otp: string) {
-    const otpRecord = await getPrisma().otpStore.findFirst({
+    const otpRecord = await prisma.otpStore.findFirst({
       where: { email, purpose: 'email_verify', verified: false, expiresAt: { gte: new Date() } },
       orderBy: { createdAt: 'desc' },
     });
@@ -437,14 +437,14 @@ export const authService = {
 
     const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
     if (!isMatch) {
-      await getPrisma().otpStore.update({
+      await prisma.otpStore.update({
         where: { id: otpRecord.id },
         data: { attempts: { increment: 1 } },
       });
       throw Object.assign(new Error('Invalid OTP'), { statusCode: 400, code: 'INVALID_OTP' });
     }
 
-    await getPrisma().otpStore.update({ where: { id: otpRecord.id }, data: { verified: true } });
+    await prisma.otpStore.update({ where: { id: otpRecord.id }, data: { verified: true } });
     return { verified: true };
   },
 
@@ -452,7 +452,7 @@ export const authService = {
    * Refresh access token using refresh token
    */
   async refreshAccessToken(refreshToken: string) {
-    const tokenRecords = await getPrisma().refreshToken.findMany({
+    const tokenRecords = await prisma.refreshToken.findMany({
       where: {
         revokedAt: null,
         expiresAt: { gte: new Date() },
@@ -495,7 +495,7 @@ export const authService = {
    * Logout — revoke refresh token
    */
   async logout(userId: string) {
-    await getPrisma().refreshToken.updateMany({
+    await prisma.refreshToken.updateMany({
       where: { userId, revokedAt: null },
       data: { revokedAt: new Date() },
     });

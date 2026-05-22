@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getPrisma } from '../../lib/prisma';
+import prisma from '../../lib/prisma';
 import logger from '../../lib/logger';
 import { z } from 'zod';
 
@@ -14,12 +14,12 @@ export const walletController = {
     try {
       const instituteId = req.user!.instituteId!;
 
-      const institute = await getPrisma().institute.findUnique({
+      const institute = await prisma.institute.findUnique({
         where: { id: instituteId },
         select: { walletBalance: true },
       });
 
-      const transactions = await getPrisma().walletTransaction.findMany({
+      const transactions = await prisma.walletTransaction.findMany({
         where: { instituteId },
         orderBy: { createdAt: 'desc' },
         take: 50,
@@ -48,7 +48,7 @@ export const walletController = {
       logger.info(`Processing mock payment of ₹${amount} via ${paymentMethod} for institute ${instituteId}`);
 
       // In a real scenario, this would be a webhook from Razorpay/Stripe
-      const transaction = await getPrisma().$transaction(async (tx) => {
+      const transaction = await prisma.$transaction(async (tx) => {
         // 1. Create wallet transaction
         const walletTx = await tx.walletTransaction.create({
           data: {

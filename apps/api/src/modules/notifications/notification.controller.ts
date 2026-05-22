@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getPrisma } from '../../lib/prisma';
+import prisma from '../../lib/prisma';
 import logger from '../../lib/logger';
 import { z } from 'zod';
 
@@ -13,7 +13,7 @@ export const notificationController = {
       const recipientId = req.user!.userId;
       const instituteId = req.user!.instituteId!;
 
-      const notifications = await getPrisma().notification.findMany({
+      const notifications = await prisma.notification.findMany({
         where: {
           instituteId,
           recipientId,
@@ -48,7 +48,7 @@ export const notificationController = {
       const recipientId = req.user!.userId;
       const { id } = req.params;
 
-      const existing = await getPrisma().notification.findFirst({
+      const existing = await prisma.notification.findFirst({
         where: { id, recipientId },
       });
 
@@ -57,7 +57,7 @@ export const notificationController = {
         return;
       }
 
-      const updated = await getPrisma().notification.update({
+      const updated = await prisma.notification.update({
         where: { id },
         data: { status: 'read' },
       });
@@ -74,7 +74,7 @@ export const notificationController = {
     try {
       const recipientId = req.user!.userId;
 
-      await getPrisma().notification.updateMany({
+      await prisma.notification.updateMany({
         where: { recipientId, status: { not: 'read' } },
         data: { status: 'read' },
       });
@@ -95,7 +95,7 @@ export const notificationController = {
       threeDaysLater.setDate(today.getDate() + 3);
 
       // Find fee records that are unpaid and due within the next 3 days
-      const upcomingFees = await getPrisma().feeRecord.findMany({
+      const upcomingFees = await prisma.feeRecord.findMany({
         where: {
           instituteId,
           status: 'unpaid',
@@ -116,7 +116,7 @@ export const notificationController = {
       }
 
       // Find the institute owner(s) who should receive this alert
-      const owners = await getPrisma().user.findMany({
+      const owners = await prisma.user.findMany({
         where: { instituteId, role: 'owner', status: 'active' }
       });
 
@@ -136,7 +136,7 @@ export const notificationController = {
         const content = `Reminder: Fee of ₹${amount.toLocaleString()} for student ${studentName} under plan "${planName}" is due on ${dueDate}.`;
 
         // Check if there's already a recent reminder for this fee record
-        const recent = await getPrisma().notification.findFirst({
+        const recent = await prisma.notification.findFirst({
           where: {
             instituteId,
             content: { contains: `student ${studentName}` },
@@ -148,7 +148,7 @@ export const notificationController = {
 
         // Create for every owner
         for (const owner of owners) {
-          await getPrisma().notification.create({
+          await prisma.notification.create({
             data: {
               instituteId,
               recipientId: owner.id,
