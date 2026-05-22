@@ -23,8 +23,24 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
+
+const allowedOrigins = (process.env.CORS_ORIGIN || '').split(',').map(s => s.trim()).filter(Boolean);
+
 app.use(cors({
-  origin: (process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:5174').split(',').map(s => s.trim()),
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl)
+    if (!origin) return callback(null, true);
+    
+    const isAllowed = allowedOrigins.includes(origin) || 
+                      origin.endsWith('.vercel.app') || 
+                      /^http:\/\/localhost:\d+$/.test(origin);
+                      
+    if (isAllowed) {
+      callback(null, origin);
+    } else {
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  },
   credentials: true,
 }));
 
