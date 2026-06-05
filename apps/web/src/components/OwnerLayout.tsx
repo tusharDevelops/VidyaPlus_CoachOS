@@ -15,7 +15,7 @@ const NAV_ITEMS = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: Bell, label: 'Notifications', path: '/notifications' },
   { icon: TrendingUp, label: 'Reports', path: '/reports', permission: 'fees.view' },
-  { icon: Wallet, label: 'Wallet', path: '/wallet', permission: 'fees.view' },
+  { icon: Wallet, label: 'Wallet', path: '/wallet', permission: 'wallet.view' },
   { icon: Settings, label: 'Settings', path: '/settings', permission: 'settings.manage' },
 ];
 
