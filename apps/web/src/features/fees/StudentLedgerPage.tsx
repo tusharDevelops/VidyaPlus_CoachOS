@@ -106,7 +106,7 @@ export default function StudentLedgerPage() {
   return (
     <div className="animate-fade-in space-y-8">
       {/* Header - Atmospheric Revenue Context */}
-      <div className="hero-backdrop rounded-lg border border-hairline p-8 flex items-center justify-between">
+      <div className="hero-backdrop rounded-lg border border-hairline p-3 sm:p-8 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <button onClick={() => navigate(-1)} className="p-2.5 text-ink hover:bg-canvas rounded-full transition-all border border-hairline bg-canvas/50 shadow-sm">
             <ArrowLeft className="w-5 h-5" />
@@ -229,7 +229,7 @@ export default function StudentLedgerPage() {
       {/* Payment Modal */}
       {showPaymentModal && selectedRecord && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-ink/60 backdrop-blur-sm animate-fade-in" onClick={() => setShowPaymentModal(false)}>
-          <div className="w-full max-w-md bg-canvas rounded-lg shadow-premium p-10 animate-slide-up border border-hairline" onClick={e => e.stopPropagation()}>
+          <div className="w-full max-w-md bg-canvas rounded-lg shadow-premium p-4 sm:p-10 animate-slide-up border border-hairline" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-10">
               <h2 className="text-xl font-black text-ink tracking-tight uppercase tracking-widest">Add Payment</h2>
               <button onClick={() => setShowPaymentModal(false)} className="p-2 text-steel hover:text-ink hover:bg-surface rounded-full transition-all">

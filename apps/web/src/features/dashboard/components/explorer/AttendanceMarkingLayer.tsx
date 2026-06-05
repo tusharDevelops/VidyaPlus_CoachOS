@@ -102,7 +102,7 @@ export default function AttendanceMarkingLayer({ batchId, onNavigate }: Attendan
   return (
     <div className="space-y-6">
       {/* Header with Stats */}
-      <div className="bg-canvas border border-hairline rounded-2xl p-6 sm:p-8">
+      <div className="bg-canvas border border-hairline rounded-2xl p-6 sm:p-3 sm:p-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -153,7 +153,7 @@ export default function AttendanceMarkingLayer({ batchId, onNavigate }: Attendan
           <button 
             onClick={handleSave}
             disabled={saving || Object.keys(attendance).length === 0}
-            className="flex-1 sm:flex-none h-12 px-8 bg-ink text-canvas hover:bg-ink/90 disabled:opacity-50 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center transition-all shadow-lg"
+            className="flex-1 sm:flex-none h-12 px-3 sm:px-8 bg-ink text-canvas hover:bg-ink/90 disabled:opacity-50 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center transition-all shadow-lg"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
             Save Attendance

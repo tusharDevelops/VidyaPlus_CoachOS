@@ -52,14 +52,14 @@ export default function BatchesPage() {
         </div>
         <button 
           onClick={() => { setEditBatch(null); setShowModal(true); }} 
-          className="mint-btn-primary h-12 px-8 text-[10px] uppercase tracking-[0.2em]"
+          className="mint-btn-primary h-12 px-3 sm:px-8 text-[10px] uppercase tracking-[0.2em]"
         >
           <Plus className="w-4 h-4" /> Add New Class
         </button>
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="mint-card h-64 animate-pulse bg-surface/50" />
           ))}
@@ -76,7 +76,7 @@ export default function BatchesPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
           {batches.map(batch => {
              const occupancy = (batch.enrolledStudents / batch.capacity) * 100;
              const isFull = occupancy >= 95;
@@ -84,7 +84,7 @@ export default function BatchesPage() {
               <div key={batch.id} className="mint-card p-0 flex flex-col group relative overflow-hidden bg-canvas">
                 <div className="absolute top-0 right-0 w-40 h-40 bg-brand-green/5 blur-3xl -mr-20 -mt-20 pointer-events-none" />
                 
-                <div className="p-8 pb-4">
+                <div className="p-3 sm:p-8 pb-4">
                   <div className="flex items-start justify-between mb-6">
                       <div className="space-y-2 overflow-hidden">
                          <h3 className="text-lg font-black text-ink truncate tracking-tight">{batch.name}</h3>
@@ -168,7 +168,7 @@ export default function BatchesPage() {
                   </div>
                 </div>
 
-                <div className="mt-auto px-8 py-6 bg-surface/50 border-t border-hairline space-y-3">
+                <div className="mt-auto px-3 sm:px-8 py-6 bg-surface/50 border-t border-hairline space-y-3">
                    <div className="flex items-center justify-between">
                       <span className="text-[9px] font-black text-slate uppercase tracking-widest flex items-center gap-1.5">
                         <Users className="w-3.5 h-3.5 text-stone" /> Capacity ({batch.enrolledStudents}/{batch.capacity})

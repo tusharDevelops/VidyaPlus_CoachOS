@@ -53,7 +53,7 @@ export default function ForgotPasswordPage() {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 hero-backdrop">
-        <div className="w-full max-w-[440px] bg-canvas rounded-lg p-10 border border-hairline text-center space-y-6 animate-fade-in shadow-premium">
+        <div className="w-full max-w-[440px] bg-canvas rounded-lg p-4 sm:p-10 border border-hairline text-center space-y-6 animate-fade-in shadow-premium">
           <div className="w-20 h-20 bg-brand-green/10 rounded-full flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-10 h-10 text-brand-green" />
           </div>
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
           <p className="text-[11px] font-semibold text-steel uppercase tracking-[0.5px] mt-2">Security Center</p>
         </div>
 
-        <div className="bg-canvas rounded-lg p-8 sm:p-10 border border-hairline shadow-premium">
+        <div className="bg-canvas rounded-lg p-3 sm:p-8 sm:p-4 sm:p-10 border border-hairline shadow-premium">
           <button
             onClick={() => step === 'email' ? navigate('/login') : setStep(step === 'reset' ? 'otp' : 'email')}
             className="flex items-center gap-2 text-[10px] font-bold text-steel hover:text-ink transition-colors uppercase tracking-[1px] mb-6"

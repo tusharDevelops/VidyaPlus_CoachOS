@@ -106,7 +106,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-canvas text-ink font-sans">
       <header className="sticky top-0 z-40 bg-canvas/90 backdrop-blur-md border-b border-hairline-soft">
-        <div className="max-w-[1280px] mx-auto h-16 px-5 sm:px-8 flex items-center justify-between gap-5">
+        <div className="max-w-[1280px] mx-auto h-16 px-3 sm:px-3 sm:px-8 flex items-center justify-between gap-5">
           <button onClick={() => navigate('/')} className="flex items-center gap-3">
             <span className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <GraduationCap className="w-5 h-5 text-brand-green" />
@@ -328,7 +328,7 @@ export default function HomePage() {
 
       <main>
         <section className="hero-backdrop border-b border-hairline-soft overflow-hidden">
-          <div className="max-w-[1280px] mx-auto px-5 sm:px-8 pt-20 sm:pt-24 lg:pt-28 pb-12 lg:pb-16">
+          <div className="max-w-[1280px] mx-auto px-3 sm:px-3 sm:px-8 pt-20 sm:pt-24 lg:pt-28 pb-12 lg:pb-16">
             <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-12 lg:gap-16 items-center">
               <div className="max-w-2xl">
                 <div className="inline-flex items-center gap-2 rounded-full bg-canvas border border-hairline px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.5px] text-steel mb-6">
@@ -336,10 +336,10 @@ export default function HomePage() {
                   Coaching center ERP for modern institutes
                 </div>
 
-                <h1 className="text-[42px] sm:text-[56px] lg:text-[72px] leading-[1.05] font-semibold tracking-[-2px] text-ink">
+                <h1 className="text-[32px] min-[360px]:text-[42px] sm:text-[56px] lg:text-[72px] leading-[1.05] font-semibold tracking-[-2px] text-ink">
                   Run your coaching business from one calm command center.
                 </h1>
-                <p className="mt-6 text-lg leading-[1.5] text-charcoal max-w-xl">
+                <p className="mt-6 text-base sm:text-lg leading-[1.5] text-charcoal max-w-xl">
                   CoachOS brings student records, fees, attendance, staff, reminders, and reports into a polished operating system built for growing institutes.
                 </p>
 
@@ -363,7 +363,7 @@ export default function HomePage() {
         </section>
 
         <section className="bg-canvas py-10 border-b border-hairline-soft">
-          <div className="max-w-[1280px] mx-auto px-5 sm:px-8">
+          <div className="max-w-[1280px] mx-auto px-3 sm:px-3 sm:px-8">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {LOGOS.map((logo) => (
                 <div key={logo} className="h-16 flex items-center justify-center text-sm font-medium text-steel">
@@ -375,10 +375,10 @@ export default function HomePage() {
         </section>
 
         <section id="product" className="py-20 lg:py-24 bg-canvas">
-          <div className="max-w-[1280px] mx-auto px-5 sm:px-8">
+          <div className="max-w-[1280px] mx-auto px-3 sm:px-3 sm:px-8">
             <div className="max-w-3xl mb-12">
               <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-steel mb-3">Product</p>
-              <h2 className="text-4xl sm:text-5xl font-semibold tracking-[-1px] text-ink leading-[1.1]">
+              <h2 className="text-3xl sm:text-5xl font-semibold tracking-[-1px] text-ink leading-[1.1]">
                 Dense enough for daily operations. Polished enough for every stakeholder.
               </h2>
             </div>
@@ -398,10 +398,10 @@ export default function HomePage() {
         </section>
 
         <section id="modules" className="py-20 lg:py-24 bg-surface border-y border-hairline-soft">
-          <div className="max-w-[1280px] mx-auto px-5 sm:px-8 grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-12 items-start">
+          <div className="max-w-[1280px] mx-auto px-3 sm:px-3 sm:px-8 grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-12 items-start">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-steel mb-3">Modules</p>
-              <h2 className="text-4xl sm:text-5xl font-semibold tracking-[-1px] text-ink leading-[1.1]">
+              <h2 className="text-3xl sm:text-5xl font-semibold tracking-[-1px] text-ink leading-[1.1]">
                 Every core workflow, arranged for fast scanning.
               </h2>
               <p className="mt-5 text-base leading-[1.5] text-charcoal">
@@ -423,7 +423,7 @@ export default function HomePage() {
         </section>
 
         <section id="pricing" className="py-20 lg:py-24 bg-canvas">
-          <div className="max-w-[1280px] mx-auto px-5 sm:px-8">
+          <div className="max-w-[1280px] mx-auto px-3 sm:px-3 sm:px-8">
 
             {/* Section Header */}
             <div className="text-center mb-14">
@@ -440,7 +440,7 @@ export default function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {loading ? (
                 [1, 2, 3].map(i => (
-                  <div key={i} className="mint-card p-8 animate-pulse">
+                  <div key={i} className="mint-card p-3 sm:p-8 animate-pulse">
                     <div className="h-7 bg-surface rounded w-2/5 mb-2" />
                     <div className="h-3 bg-surface rounded w-1/3 mb-5" />
                     <div className="h-4 bg-surface rounded w-3/4 mb-8" />
@@ -487,7 +487,7 @@ export default function HomePage() {
                   return (
                     <div
                       key={plan.id}
-                      className={`relative flex flex-col rounded-lg p-8 transition-all ${
+                      className={`relative flex flex-col rounded-lg p-3 sm:p-8 transition-all ${
                         isFeatured
                           ? 'border-2 border-brand-green bg-canvas shadow-[rgba(0,212,164,0.08)_0px_8px_24px]'
                           : 'border border-hairline bg-canvas'
@@ -564,7 +564,7 @@ export default function HomePage() {
         </section>
 
         <section id="security" className="bg-canvas-dark text-on-dark py-16">
-          <div className="max-w-[1280px] mx-auto px-5 sm:px-8 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          <div className="max-w-[1280px] mx-auto px-3 sm:px-3 sm:px-8 flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-8">
             <div className="max-w-2xl">
               <div className="flex items-center gap-2 text-brand-green mb-4">
                 <ShieldCheck className="w-5 h-5" />
@@ -629,18 +629,18 @@ function ProductMockup() {
           })}
         </aside>
 
-        <div className="col-span-2 sm:col-span-1 p-5 sm:p-6 bg-canvas">
+        <div className="col-span-2 sm:col-span-1 p-4 sm:p-6 bg-canvas">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-steel">Today</p>
-              <h3 className="text-[28px] leading-[1.25] font-semibold text-ink">Institute overview</h3>
+              <h3 className="text-[24px] sm:text-[28px] leading-[1.25] font-semibold text-ink">Institute overview</h3>
             </div>
-            <div className="h-9 rounded-full bg-primary text-on-primary px-4 inline-flex items-center justify-center text-sm font-medium">
+            <div className="h-9 rounded-full bg-primary text-on-primary px-4 inline-flex items-center justify-center text-sm font-medium self-start sm:self-auto">
               Collect fee
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+          <div className="grid grid-cols-1 min-[360px]:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
             {[
               ['Students', '1,248'],
               ['Collected', 'INR 4.8L'],
@@ -657,8 +657,9 @@ function ProductMockup() {
             ))}
           </div>
 
-          <div className="rounded-lg border border-hairline overflow-hidden">
-            <div className="grid grid-cols-4 bg-surface text-[11px] font-semibold uppercase tracking-[0.5px] text-steel">
+          <div className="rounded-lg border border-hairline overflow-x-auto">
+            <div className="min-w-[400px]">
+              <div className="grid grid-cols-4 bg-surface text-[11px] font-semibold uppercase tracking-[0.5px] text-steel">
               <div className="px-4 py-3">Student</div>
               <div className="px-4 py-3">Batch</div>
               <div className="px-4 py-3">Status</div>
@@ -681,6 +682,7 @@ function ProductMockup() {
                 <div className="px-4 py-4 text-right text-ink font-mono">{balance}</div>
               </div>
             ))}
+            </div>
           </div>
         </div>
       </div>

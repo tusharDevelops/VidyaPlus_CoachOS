@@ -172,7 +172,7 @@ export default function StaffModal({ isOpen, onClose, staff, onSuccess }: StaffM
   return (
     <div className="fixed inset-0 z-[100] bg-ink/40 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
       <div className="bg-canvas rounded-[2rem] shadow-premium w-full max-w-3xl overflow-hidden animate-slide-up flex flex-col h-[85vh] border border-hairline">
-        <div className="px-8 py-6 border-b border-hairline flex items-center justify-between bg-surface/30">
+        <div className="px-3 sm:px-8 py-6 border-b border-hairline flex items-center justify-between bg-surface/30">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-brand-green/10 rounded-2xl">
               <Shield className="w-6 h-6 text-brand-green" />
@@ -191,7 +191,7 @@ export default function StaffModal({ isOpen, onClose, staff, onSuccess }: StaffM
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-8">
           {error && (
             <div className="mb-6 p-4 bg-brand-error/10 border border-brand-error/20 rounded-xl text-brand-error text-xs font-bold uppercase tracking-widest text-center">
               {error}
@@ -355,11 +355,11 @@ export default function StaffModal({ isOpen, onClose, staff, onSuccess }: StaffM
           )}
         </div>
 
-        <div className="px-8 py-6 border-t border-hairline bg-surface/30 flex justify-end gap-3">
+        <div className="px-3 sm:px-8 py-6 border-t border-hairline bg-surface/30 flex justify-end gap-3">
           <button onClick={onClose}
             className="px-6 py-3 text-xs font-bold text-slate hover:text-ink transition-all">Cancel</button>
           <button form="staff-form" type="submit" disabled={loading || (step === 'otp' && otp.length !== 6)}
-            className="mint-btn-primary flex items-center gap-2 px-8 py-3 rounded-2xl">
+            className="mint-btn-primary flex items-center gap-2 px-3 sm:px-8 py-3 rounded-2xl">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
             {step === 'form' && email && !staff ? 'Send Verification' : 'Save Changes'}
           </button>

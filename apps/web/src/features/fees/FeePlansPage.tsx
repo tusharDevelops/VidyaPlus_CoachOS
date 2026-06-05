@@ -131,7 +131,7 @@ function CreateFeePlanModal({ onClose, onCreated }: { onClose: () => void; onCre
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-ink/60 backdrop-blur-sm animate-fade-in" onClick={onClose}>
-      <div className="w-full max-w-md bg-canvas rounded-2xl shadow-premium p-10 animate-slide-up border border-hairline" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-md bg-canvas rounded-2xl shadow-premium p-4 sm:p-10 animate-slide-up border border-hairline" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-xl font-bold text-ink tracking-tight uppercase tracking-widest">New Fee Plan</h2>
           <button onClick={onClose} className="p-2 text-steel hover:text-ink hover:bg-surface rounded-xl transition-all">

@@ -41,10 +41,10 @@ export default function StaffGroupsLayer({ onNavigate }: StaffGroupsLayerProps) 
           <button 
             key={group.id}
             onClick={() => onNavigate('STAFF')}
-            className="text-left bg-canvas rounded-2xl border border-hairline p-8 hover:shadow-premium transition-all group relative overflow-hidden"
+            className="text-left bg-canvas rounded-2xl border border-hairline p-3 sm:p-8 hover:shadow-premium transition-all group relative overflow-hidden"
           >
             {/* Background Decorative Icon */}
-            <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
+            <div className="absolute top-0 right-0 p-3 sm:p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
               <group.icon className="w-32 h-32" />
             </div>
 

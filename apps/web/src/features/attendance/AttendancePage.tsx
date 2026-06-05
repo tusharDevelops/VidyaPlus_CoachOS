@@ -222,7 +222,7 @@ export default function AttendancePage() {
                     const currentStatus = attendance[student.userId];
                     return (
                       <div key={student.userId}
-                        className={`flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-8 py-5 gap-4 transition-all ${currentStatus ? 'bg-slate-50/30' : ''}`}>
+                        className={`flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-3 sm:px-8 py-5 gap-4 transition-all ${currentStatus ? 'bg-slate-50/30' : ''}`}>
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-2xl bg-primary-50 border border-primary-100 flex items-center justify-center text-primary-700 text-base font-black shadow-sm overflow-hidden flex-shrink-0">
                             {student.name.charAt(0)}
@@ -267,7 +267,7 @@ export default function AttendancePage() {
                   <div className="flex items-center gap-4">
                     {saved && <span className="text-sm font-bold text-emerald-600 flex items-center gap-1.5"><CheckCircle2 className="w-5 h-5" /> Saved!</span>}
                     <button onClick={handleSave} disabled={saving || markedCount === 0 || isAllLocked}
-                      className="px-8 py-3 rounded-2xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 disabled:opacity-50 flex items-center gap-2 shadow-xl shadow-slate-900/10 active:scale-[0.98] transition-all">
+                      className="px-3 sm:px-8 py-3 rounded-2xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 disabled:opacity-50 flex items-center gap-2 shadow-xl shadow-slate-900/10 active:scale-[0.98] transition-all">
                       {saving ? <><Loader2 className="w-5 h-5 animate-spin" /> Saving...</> : <><CheckCircle2 className="w-5 h-5" /> Save Attendance</>}
                     </button>
                   </div>

@@ -70,7 +70,7 @@ export default function RegisterPage() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 hero-backdrop overflow-hidden">
         <div className="relative w-full max-w-[440px] animate-fade-in">
-          <div className="bg-canvas rounded-lg p-8 sm:p-10 border border-hairline shadow-2xl">
+          <div className="bg-canvas rounded-lg p-3 sm:p-8 sm:p-4 sm:p-10 border border-hairline shadow-2xl">
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 border border-primary/20 mb-5">
                 <ShieldCheck className="w-7 h-7 text-brand-green" />
@@ -141,7 +141,7 @@ export default function RegisterPage() {
           <p className="text-steel text-sm mt-2 font-medium">Start your 14-day free trial</p>
         </div>
 
-        <div className="bg-canvas rounded-lg p-8 sm:p-10 border border-hairline shadow-2xl relative">
+        <div className="bg-canvas rounded-lg p-3 sm:p-8 sm:p-4 sm:p-10 border border-hairline shadow-2xl relative">
           <div className="absolute -top-px left-10 right-10 h-px bg-gradient-to-r from-transparent via-brand-green/50 to-transparent" />
           
           {error && (

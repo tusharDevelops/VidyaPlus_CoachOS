@@ -182,7 +182,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
           <X className="w-5 h-5" />
         </button>
 
-        <div className="p-8 sm:p-10">
+        <div className="p-3 sm:p-8 sm:p-4 sm:p-10">
           {/* Logo & Intro */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary border border-hairline mb-4">

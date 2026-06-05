@@ -102,7 +102,7 @@ export default function BatchModal({ batch, onClose, onSaved }: BatchModalProps)
         className="w-full max-w-2xl bg-canvas rounded-lg shadow-premium overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[90vh] animate-slide-up border border-hairline" 
         onClick={e => e.stopPropagation()}
       >
-        <div className="px-5 sm:px-8 py-5 sm:py-6 border-b border-hairline flex items-center justify-between bg-canvas sticky top-0 z-20">
+        <div className="px-3 sm:px-3 sm:px-8 py-5 sm:py-6 border-b border-hairline flex items-center justify-between bg-canvas sticky top-0 z-20">
           <div>
             <h2 className="text-lg sm:text-xl font-black text-ink tracking-tight uppercase tracking-[0.05em]">{isEdit ? 'Edit Class Details' : 'Add New Class'}</h2>
             <p className="text-[9px] font-black text-slate mt-1 uppercase tracking-[0.2em] opacity-50">Set up class name, fees, and weekly schedule.</p>
@@ -112,7 +112,7 @@ export default function BatchModal({ batch, onClose, onSaved }: BatchModalProps)
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-5 sm:p-8 space-y-8 sm:space-y-10 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-5 sm:p-3 sm:p-8 space-y-8 sm:space-y-10 custom-scrollbar">
           {error && (
             <div className="p-4 sm:p-5 bg-brand-error/10 border border-brand-error/20 rounded-md text-brand-error text-[10px] font-black uppercase tracking-widest flex items-center gap-3">
               <AlertTriangle className="w-5 h-5 flex-shrink-0" /> {error}
@@ -151,7 +151,7 @@ export default function BatchModal({ batch, onClose, onSaved }: BatchModalProps)
 
             <FormSection icon={IndianRupee} title="Fee Structure">
                <div className="p-4 sm:p-6 bg-surface/30 rounded-xl border border-hairline space-y-6 sm:space-y-8">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-3 sm:gap-8">
                      <div className="space-y-2.5">
                         <label className="flex items-center gap-2 text-[10px] font-black text-slate uppercase tracking-widest ml-1 opacity-70">
                            <Ticket className="w-3.5 h-3.5 text-brand-tag" /> One-time / Admission Fee
@@ -214,7 +214,7 @@ export default function BatchModal({ batch, onClose, onSaved }: BatchModalProps)
           </form>
         </div>
 
-        <div className="px-5 sm:px-8 py-5 sm:py-6 bg-canvas border-t border-hairline flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 sm:gap-6 sticky bottom-0 z-20">
+        <div className="px-3 sm:px-3 sm:px-8 py-5 sm:py-6 bg-canvas border-t border-hairline flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 sm:gap-6 sticky bottom-0 z-20">
           <button type="button" onClick={onClose} className="order-2 sm:order-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate hover:text-ink transition-all py-3 sm:py-0">
             Cancel
           </button>

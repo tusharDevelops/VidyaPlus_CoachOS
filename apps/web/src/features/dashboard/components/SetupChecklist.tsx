@@ -131,7 +131,7 @@ export default function SetupWizard({ stats, institute, onRefresh }: SetupWizard
 
   if (isAllComplete) {
     return (
-      <div className="mint-card p-8 bg-brand-green-soft border-brand-green/20 flex flex-col md:flex-row items-center justify-between gap-6 animate-fade-in">
+      <div className="mint-card p-3 sm:p-8 bg-brand-green-soft border-brand-green/20 flex flex-col md:flex-row items-center justify-between gap-6 animate-fade-in">
         <div className="flex items-center gap-6">
           <div className="w-16 h-16 rounded-full bg-white shadow-sm flex items-center justify-center text-brand-green border-4 border-brand-green/10">
             <Trophy className="w-8 h-8" />
@@ -143,7 +143,7 @@ export default function SetupWizard({ stats, institute, onRefresh }: SetupWizard
         </div>
         <button 
           onClick={() => navigate('/reports')}
-          className="mint-btn-brand whitespace-nowrap h-12 px-8"
+          className="mint-btn-brand whitespace-nowrap h-12 px-3 sm:px-8"
         >
           Explore Analytics
         </button>

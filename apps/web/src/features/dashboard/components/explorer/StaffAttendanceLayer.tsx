@@ -102,8 +102,8 @@ export default function StaffAttendanceLayer({ onNavigate }: StaffAttendanceLaye
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Header with Stats */}
-      <div className="bg-canvas border border-hairline rounded-3xl p-6 sm:p-10 shadow-premium-subtle">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+      <div className="bg-canvas border border-hairline rounded-3xl p-6 sm:p-4 sm:p-10 shadow-premium-subtle">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-8">
           <div>
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 bg-brand-green/10 rounded-2xl flex items-center justify-center border border-brand-green/20">
@@ -128,7 +128,7 @@ export default function StaffAttendanceLayer({ onNavigate }: StaffAttendanceLaye
              </div>
              <button 
                onClick={markAllPresent}
-               className="h-14 px-8 bg-canvas border border-hairline text-ink hover:bg-surface rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center transition-all shadow-sm group"
+               className="h-14 px-3 sm:px-8 bg-canvas border border-hairline text-ink hover:bg-surface rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center transition-all shadow-sm group"
              >
                <CheckCircle2 className="w-4 h-4 mr-3 text-brand-green group-hover:scale-110 transition-transform" />
                Mark All Present
@@ -181,7 +181,7 @@ export default function StaffAttendanceLayer({ onNavigate }: StaffAttendanceLaye
             filteredStaff.map((member) => {
               const currentStatus = attendance[member.id];
               return (
-                <div key={member.id} className={`flex flex-col lg:flex-row lg:items-center justify-between p-8 gap-8 transition-all ${currentStatus ? 'bg-surface/40' : 'hover:bg-surface/20'}`}>
+                <div key={member.id} className={`flex flex-col lg:flex-row lg:items-center justify-between p-3 sm:p-8 gap-3 sm:gap-8 transition-all ${currentStatus ? 'bg-surface/40' : 'hover:bg-surface/20'}`}>
                   <div className="flex items-center gap-6">
                     <div className="w-16 h-16 rounded-2xl bg-canvas border-2 border-hairline flex items-center justify-center text-xl font-black text-ink shadow-sm shrink-0">
                       {member.name.charAt(0)}

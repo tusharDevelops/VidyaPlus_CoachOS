@@ -37,7 +37,7 @@ export default function OverviewGridLayer({ onNavigate }: OverviewGridLayerProps
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <button 
         onClick={() => onNavigate('BATCHES')}
-        className="text-left bg-canvas rounded-lg border border-hairline p-8 hover:shadow-premium transition-all group relative overflow-hidden"
+        className="text-left bg-canvas rounded-lg border border-hairline p-3 sm:p-8 hover:shadow-premium transition-all group relative overflow-hidden"
       >
         <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
           <GraduationCap className="w-32 h-32" />
@@ -48,7 +48,7 @@ export default function OverviewGridLayer({ onNavigate }: OverviewGridLayerProps
         </div>
         
         <h2 className="text-2xl font-black text-ink mb-2 uppercase tracking-tight">Batches & Students</h2>
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex flex-wrap items-center gap-4 mb-4">
            {loading ? (
               <Loader2 className="w-4 h-4 animate-spin text-steel" />
            ) : (
@@ -72,7 +72,7 @@ export default function OverviewGridLayer({ onNavigate }: OverviewGridLayerProps
 
       <button 
         onClick={() => onNavigate('STAFF')}
-        className="text-left bg-canvas rounded-lg border border-hairline p-8 hover:shadow-premium transition-all group relative overflow-hidden"
+        className="text-left bg-canvas rounded-lg border border-hairline p-3 sm:p-8 hover:shadow-premium transition-all group relative overflow-hidden"
       >
         <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
           <Users className="w-32 h-32" />
@@ -83,7 +83,7 @@ export default function OverviewGridLayer({ onNavigate }: OverviewGridLayerProps
         </div>
         
         <h2 className="text-2xl font-black text-ink mb-2 uppercase tracking-tight">Staff Team</h2>
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex flex-wrap items-center gap-4 mb-4">
            {loading ? (
               <Loader2 className="w-4 h-4 animate-spin text-steel" />
            ) : (

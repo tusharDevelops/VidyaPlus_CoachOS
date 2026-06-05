@@ -129,7 +129,7 @@ export default function FeeCollectionDrawer({ studentId, onClose, onSuccess }: F
       <div className="fixed inset-y-0 right-0 z-[160] w-full max-w-xl bg-canvas shadow-premium flex flex-col animate-slide-in-right overflow-hidden rounded-l-2xl border-l border-hairline">
         
         {/* Simple Header */}
-        <div className="px-8 py-10 border-b border-hairline bg-surface/50 flex-shrink-0">
+        <div className="px-3 sm:px-8 py-10 border-b border-hairline bg-surface/50 flex-shrink-0">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <h2 className="text-xl font-bold text-ink tracking-tight">Student Fee Status</h2>
@@ -164,7 +164,7 @@ export default function FeeCollectionDrawer({ studentId, onClose, onSuccess }: F
 
         {/* Next Payment Info Banner */}
         {!loading && student && (
-          <div className="px-8 py-3 bg-brand-green/5 border-b border-brand-green/10 flex items-center justify-between">
+          <div className="px-3 sm:px-8 py-3 bg-brand-green/5 border-b border-brand-green/10 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Clock className="w-3.5 h-3.5 text-brand-green-deep" />
               <span className="text-[10px] font-bold text-brand-green-deep uppercase tracking-widest">Next Billing Cycle</span>
@@ -180,7 +180,7 @@ export default function FeeCollectionDrawer({ studentId, onClose, onSuccess }: F
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto p-8 space-y-6">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-8 space-y-6">
           {loading && !student ? (
             <div className="flex flex-col items-center justify-center h-64">
               <Loader2 className="w-8 h-8 text-brand-green animate-spin" />
@@ -273,7 +273,7 @@ export default function FeeCollectionDrawer({ studentId, onClose, onSuccess }: F
 
         {/* Payment Form Panel */}
         {showPaymentForm && selectedRecord && (
-          <div className="absolute inset-x-0 bottom-0 z-[170] bg-canvas border-t border-hairline shadow-premium p-8 animate-slide-up rounded-t-2xl">
+          <div className="absolute inset-x-0 bottom-0 z-[170] bg-canvas border-t border-hairline shadow-premium p-3 sm:p-8 animate-slide-up rounded-t-2xl">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-sm font-bold text-ink uppercase tracking-widest">Add Payment</h3>
               <button onClick={() => setShowPaymentForm(false)} className="p-2 text-steel hover:text-ink hover:bg-surface rounded-xl transition-all">

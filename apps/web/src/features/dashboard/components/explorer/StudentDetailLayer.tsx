@@ -93,7 +93,7 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
   return (
     <div className="bg-canvas border border-hairline rounded-lg overflow-hidden">
       {/* Profile Header */}
-      <div className="p-6 sm:p-8 bg-surface border-b border-hairline">
+      <div className="p-6 sm:p-3 sm:p-8 bg-surface border-b border-hairline">
         <div className="flex flex-col md:flex-row gap-6 md:items-center">
           <div className="w-20 h-20 rounded-lg bg-canvas border border-hairline flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
             {student.photoUrl ? (
@@ -192,7 +192,7 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
       </div>
 
       {/* Content Layer */}
-      <div className="p-6 sm:p-8 min-h-[400px]">
+      <div className="p-6 sm:p-3 sm:p-8 min-h-[400px]">
         {activeTab === 'fees' && (
           <div className="space-y-8 animate-fade-in">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -271,7 +271,7 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
                   <p className="text-xs text-steel mt-1 max-w-xs mx-auto">This student has no generated dues. You can generate them now based on their assigned plan.</p>
                   <button 
                     onClick={generateDue}
-                    className="mt-8 mint-btn-primary py-3 px-8 text-[11px] uppercase tracking-widest shadow-lg shadow-brand-green/10"
+                    className="mt-8 mint-btn-primary py-3 px-3 sm:px-8 text-[11px] uppercase tracking-widest shadow-lg shadow-brand-green/10"
                   >
                     <Plus className="w-4 h-4 mr-2" /> Generate Dues Now
                   </button>
@@ -319,9 +319,9 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
 
         {activeTab === 'messages' && (
           <div className="space-y-10 animate-fade-in max-w-5xl">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-8">
               {/* WhatsApp Section */}
-              <div className="p-5 sm:p-8 bg-surface border border-hairline rounded-2xl space-y-6">
+              <div className="p-5 sm:p-3 sm:p-8 bg-surface border border-hairline rounded-2xl space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
                   <h3 className="text-sm font-black text-ink uppercase tracking-widest flex items-center">
                     <MessageSquare className="w-4 h-4 mr-2 text-brand-green" /> WhatsApp Dispatch
@@ -364,7 +364,7 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
               </div>
 
               {/* Email Section */}
-              <div className="p-5 sm:p-8 bg-surface border border-hairline rounded-2xl space-y-6">
+              <div className="p-5 sm:p-3 sm:p-8 bg-surface border border-hairline rounded-2xl space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
                   <h3 className="text-sm font-black text-ink uppercase tracking-widest flex items-center">
                     <Mail className="w-4 h-4 mr-2 text-brand-blue" /> Email Channel

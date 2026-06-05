@@ -75,7 +75,7 @@ export default function StudentsPage() {
         </div>
         <button 
           onClick={(e) => { e.stopPropagation(); setEditStudent(null); setShowModal(true); }} 
-          className="mint-btn-primary h-12 px-8 text-[10px] uppercase tracking-[0.2em]"
+          className="mint-btn-primary h-12 px-3 sm:px-8 text-[10px] uppercase tracking-[0.2em]"
         >
           <Plus className="w-4 h-4" /> Add New Student
         </button>
@@ -119,7 +119,7 @@ export default function StudentsPage() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-hairline bg-surface/30">
-                <th className="px-8 py-5 text-[9px] font-black text-slate uppercase tracking-[0.2em]">Full Name</th>
+                <th className="px-3 sm:px-8 py-5 text-[9px] font-black text-slate uppercase tracking-[0.2em]">Full Name</th>
                 <th className="px-6 py-5 text-[9px] font-black text-slate uppercase tracking-[0.2em] text-center">Status</th>
                 <th className="px-6 py-5 text-[9px] font-black text-slate uppercase tracking-[0.2em]">Fee Status</th>
                 <th className="px-6 py-5 text-[9px] font-black text-slate uppercase tracking-[0.2em]">Assigned Classes</th>
@@ -130,7 +130,7 @@ export default function StudentsPage() {
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i} className="animate-pulse">
-                    <td className="px-8 py-5"><div className="h-12 w-48 bg-surface rounded-md" /></td>
+                    <td className="px-3 sm:px-8 py-5"><div className="h-12 w-48 bg-surface rounded-md" /></td>
                     <td className="px-6 py-5"><div className="h-6 w-20 bg-surface rounded-full mx-auto" /></td>
                     <td className="px-6 py-5"><div className="h-6 w-32 bg-surface rounded-full" /></td>
                     <td className="px-6 py-5"><div className="h-6 w-40 bg-surface rounded-md" /></td>
@@ -139,7 +139,7 @@ export default function StudentsPage() {
                 ))
               ) : students.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-8 py-24 text-center">
+                  <td colSpan={5} className="px-3 sm:px-8 py-24 text-center">
                     <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mx-auto mb-6 border border-hairline text-stone opacity-50">
                       <Users className="w-8 h-8" />
                     </div>
@@ -149,7 +149,7 @@ export default function StudentsPage() {
                 </tr>
               ) : students.map(s => (
                 <tr key={s.id} className="group hover:bg-surface/50 transition-colors cursor-pointer" onClick={() => navigate(`/students/${s.id}`)}>
-                  <td className="px-8 py-6">
+                  <td className="px-3 sm:px-8 py-6">
                     <div className="flex items-center gap-5">
                       <div className="w-11 h-11 rounded-md bg-surface border border-hairline flex items-center justify-center text-ink text-sm font-black shadow-sm group-hover:scale-105 transition-transform overflow-hidden uppercase">
                         {s.photoUrl ? <img src={s.photoUrl} className="w-full h-full object-cover" /> : s.name.charAt(0)}

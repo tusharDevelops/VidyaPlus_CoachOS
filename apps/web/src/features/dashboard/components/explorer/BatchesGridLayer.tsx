@@ -127,7 +127,7 @@ export default function BatchesGridLayer({ onNavigate }: BatchesGridLayerProps) 
                   {batch.subject || 'General'} • {batch.startTime} - {batch.endTime}
                 </p>
                 
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-hairline-soft">
+                <div className="flex flex-wrap items-center justify-between mt-4 pt-4 border-t border-hairline-soft gap-3">
                   <div className="flex items-center text-xs font-bold text-steel uppercase tracking-widest">
                     <Users className="w-3.5 h-3.5 mr-1.5" />
                     <span>{batch.enrolledStudents} / {batch.capacity} Students</span>

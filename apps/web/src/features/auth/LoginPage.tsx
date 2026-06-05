@@ -33,7 +33,7 @@ export default function LoginPage() {
           <p className="text-[11px] font-semibold text-steel uppercase tracking-[0.5px] mt-2">CoachOS Management Platform</p>
         </div>
 
-        <div className="bg-canvas rounded-lg p-8 sm:p-10 border border-hairline">
+        <div className="bg-canvas rounded-lg p-3 sm:p-8 sm:p-4 sm:p-10 border border-hairline">
           <div className="mb-8">
             <h2 className="text-[28px] leading-tight font-semibold text-ink">Sign In</h2>
             <p className="text-steel text-sm mt-2">Enter your credentials to access the platform</p>

@@ -93,7 +93,7 @@ export default function StaffPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-3 sm:px-8 py-10 animate-fade-in">
       {/* Cinematic Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div className="space-y-2">
@@ -187,7 +187,7 @@ export default function StaffPage() {
 
           {activeTab === 'attendance' && (
             <div className="mint-card bg-canvas p-0 overflow-hidden border border-hairline">
-               <div className="p-8 border-b border-hairline flex flex-col sm:flex-row items-start sm:items-center justify-between bg-surface/30 gap-4">
+               <div className="p-3 sm:p-8 border-b border-hairline flex flex-col sm:flex-row items-start sm:items-center justify-between bg-surface/30 gap-4">
                   <div className="flex items-center gap-4">
                      <div className="p-3 bg-brand-green/10 rounded-2xl">
                         <Calendar className="w-6 h-6 text-brand-green" />
@@ -207,9 +207,9 @@ export default function StaffPage() {
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-hairline bg-surface/20">
-                        <th className="px-8 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Team Member</th>
-                        <th className="px-8 py-4 text-[10px] font-black text-slate uppercase tracking-widest text-center">Status</th>
-                        <th className="px-8 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Mark Attendance</th>
+                        <th className="px-3 sm:px-8 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Team Member</th>
+                        <th className="px-3 sm:px-8 py-4 text-[10px] font-black text-slate uppercase tracking-widest text-center">Status</th>
+                        <th className="px-3 sm:px-8 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Mark Attendance</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-hairline">
@@ -217,7 +217,7 @@ export default function StaffPage() {
                         const record = dailyAttendance.find(r => r.staffId === staff.id);
                         return (
                           <tr key={staff.id} className="hover:bg-surface/30 transition-colors">
-                            <td className="px-8 py-5">
+                            <td className="px-3 sm:px-8 py-5">
                                <div className="flex items-center gap-3">
                                   <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-[10px] font-bold text-brand-green border border-hairline">
                                      {staff.name.charAt(0)}
@@ -228,7 +228,7 @@ export default function StaffPage() {
                                   </div>
                                </div>
                             </td>
-                            <td className="px-8 py-5 text-center">
+                            <td className="px-3 sm:px-8 py-5 text-center">
                                {record ? (
                                   <span className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border ${
                                     record.status === 'present' ? 'bg-brand-green/10 text-brand-green-deep border-brand-green/20' :
@@ -243,7 +243,7 @@ export default function StaffPage() {
                                   </span>
                                )}
                             </td>
-                            <td className="px-8 py-5">
+                            <td className="px-3 sm:px-8 py-5">
                                <div className="flex items-center gap-2">
                                   <button onClick={() => handleMark(staff.id, 'present')} disabled={marking}
                                     className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
@@ -277,7 +277,7 @@ export default function StaffPage() {
           {activeTab === 'roles' && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                <div className="lg:col-span-1 space-y-6">
-                  <div className="mint-card bg-brand-green-deep text-white p-8">
+                  <div className="mint-card bg-brand-green-deep text-white p-3 sm:p-8">
                      <Shield className="w-10 h-10 mb-4 opacity-50" />
                       <h3 className="text-xl font-bold mb-2">Permissions & Roles</h3>
                       <p className="text-white/70 text-sm leading-relaxed mb-6">Control what each team member can see or edit. Use standard roles or create custom settings.</p>

@@ -152,7 +152,7 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
           {step === 'form' && (
             <form id="student-form" onSubmit={handleSubmit} className="space-y-8 sm:space-y-12 animate-fade-in">
               <FormSection icon={User} title="Basic Details">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-3 sm:gap-8">
                   <Field label="Full Name" name="name" value={form.name} onChange={handleChange} required placeholder="Student's Name" />
                   <Field label="Phone Number" name="phone" value={form.phone} onChange={handleChange} required placeholder="Contact Number" />
                   <Field label="Email Address" name="email" value={form.email} onChange={handleChange} type="email" required placeholder="email@example.com" />
@@ -161,7 +161,7 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
               </FormSection>
 
               <FormSection icon={Users} title="Parent / Guardian Details">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-3 sm:gap-8">
                   <Field label="Parent's Name" name="parentName" value={form.parentName} onChange={handleChange} placeholder="Name" />
                   <Field label="Parent's Phone" name="parentPhone" value={form.parentPhone} onChange={handleChange} placeholder="Contact Number" />
                 </div>
@@ -212,7 +212,7 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
 
                   {/* Fee Summary Card */}
                   {(feeSummary.admissionTotal > 0 || feeSummary.recurringAmount > 0) && (
-                    <div className="mt-8 bg-surface/50 border border-hairline rounded-2xl p-6 sm:p-8 animate-fade-in">
+                    <div className="mt-8 bg-surface/50 border border-hairline rounded-2xl p-6 sm:p-3 sm:p-8 animate-fade-in">
                        <h4 className="text-[10px] font-black text-ink uppercase tracking-widest mb-6 opacity-60">Investment Summary</h4>
                        <div className="space-y-4">
                           {feeSummary.admissionTotal > 0 && (

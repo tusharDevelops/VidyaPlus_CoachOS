@@ -245,7 +245,7 @@ export default function WalletPage() {
       ) : wallet ? (
         <>
           {/* ── Balance Hero ── */}
-          <div className="relative overflow-hidden rounded-lg bg-ink p-6 sm:p-8">
+          <div className="relative overflow-hidden rounded-lg bg-ink p-6 sm:p-3 sm:p-8">
             {/* Decorative gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-brand-green/15 via-transparent to-brand-green/5 pointer-events-none" />
             <div className="absolute top-0 right-0 w-48 h-48 bg-brand-green/10 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl pointer-events-none" />
@@ -254,7 +254,7 @@ export default function WalletPage() {
               <p className="text-xs font-semibold text-on-dark-muted uppercase tracking-wider">
                 Your Balance
               </p>
-              <h2 className="text-4xl sm:text-5xl font-semibold text-on-dark mt-2">
+              <h2 className="text-3xl sm:text-5xl font-semibold text-on-dark mt-2">
                 <AnimatedBalance value={balance} />
               </h2>
               <div className="flex items-center gap-2 mt-3">
@@ -518,7 +518,7 @@ export default function WalletPage() {
 
             {/* ── Processing ── */}
             {modal.kind === 'processing' && (
-              <div className="p-8 text-center">
+              <div className="p-3 sm:p-8 text-center">
                 <RefreshCw className="w-10 h-10 text-brand-green animate-spin mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-ink">Processing…</h3>
                 <p className="text-sm text-steel mt-1">Please wait while we process your payment.</p>
