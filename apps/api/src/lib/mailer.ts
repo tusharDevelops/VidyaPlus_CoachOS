@@ -1,16 +1,4 @@
-import nodemailer from 'nodemailer';
 import logger from './logger';
-
-// Load SMTP config from environment variables
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: Number(process.env.SMTP_PORT) === 465, 
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
 
 interface SendEmailParams {
   to: string;
@@ -21,49 +9,43 @@ interface SendEmailParams {
 }
 
 /**
- * Generic email sender that supports Resend HTTP API (if RESEND_API_KEY is defined)
- * or falls back to traditional SMTP.
+ * Sends email using Resend HTTP API.
+ * If RESEND_API_KEY is not defined, it logs the email to the console for local debugging.
  */
 async function sendEmail({ to, subject, html, text, fromName = 'CoachOS' }: SendEmailParams): Promise<void> {
   const resendApiKey = process.env.RESEND_API_KEY;
 
-  if (resendApiKey) {
-    const fromEmail = process.env.MAIL_FROM || 'onboarding@resend.dev';
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${resendApiKey}`,
-      },
-      body: JSON.stringify({
-        from: `"${fromName}" <${fromEmail}>`,
-        to: [to],
-        subject,
-        html,
-        text,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Resend API error (${response.status}): ${errorText}`);
-    }
-
-    logger.info(`[MAIL] Email sent via Resend API to ${to}`);
+  if (!resendApiKey) {
+    logger.warn(`[MAIL] RESEND_API_KEY is not configured. Email NOT sent. printing content:`);
+    logger.warn(`To: ${to}`);
+    logger.warn(`Subject: ${subject}`);
+    logger.warn(`Text: ${text}`);
+    logger.warn(`HTML: ${html}`);
     return;
   }
 
-  // Fallback to SMTP
-  const mailOptions = {
-    from: `"${fromName}" <${process.env.SMTP_USER}>`,
-    to,
-    subject,
-    text,
-    html,
-  };
+  const fromEmail = process.env.MAIL_FROM || 'onboarding@resend.dev';
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${resendApiKey}`,
+    },
+    body: JSON.stringify({
+      from: `"${fromName}" <${fromEmail}>`,
+      to: [to],
+      subject,
+      html,
+      text,
+    }),
+  });
 
-  await transporter.sendMail(mailOptions);
-  logger.info(`[MAIL] Email sent via SMTP to ${to}`);
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Resend API error (${response.status}): ${errorText}`);
+  }
+
+  logger.info(`[MAIL] Email sent via Resend API to ${to}`);
 }
 
 /**
