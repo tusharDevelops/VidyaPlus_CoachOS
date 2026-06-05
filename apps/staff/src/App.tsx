@@ -37,6 +37,8 @@ function PlaceholderPage({ title }: { title: string }) {
   );
 }
 
+import * as Sentry from '@sentry/react';
+
 export default function App() {
   const { isAuthenticated, fetchUser } = useAuthStore();
 
@@ -53,34 +55,36 @@ export default function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public */}
-        <Route path="/login" element={<PublicOnly><LoginPage /></PublicOnly>} />
+    <Sentry.ErrorBoundary fallback={<div className="p-8 text-center"><p className="text-red-500 font-bold mb-2">Oops! Something went wrong.</p><p className="text-sm text-gray-500">Our team has been notified. Please refresh the page.</p></div>}>
+      <BrowserRouter>
+        <Routes>
+          {/* Public */}
+          <Route path="/login" element={<PublicOnly><LoginPage /></PublicOnly>} />
 
-        {/* Protected — Staff Layout */}
-        <Route element={
-          <ProtectedRoute>
-            <StaffLayout />
-          </ProtectedRoute>
-        }>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/fees" element={<FeeDashboardPage />} />
-          <Route path="/fees/plans" element={<FeePlansPage />} />
-          <Route path="/fees/student/:studentId" element={<StudentLedgerPage />} />
-          <Route path="/fees/receipt/:receiptNumber" element={<ReceiptView />} />
-          <Route path="/reports" element={<ReportsPage />} />
-          <Route path="/wallet" element={<PlaceholderPage title="Wallet" />} />
-          <Route path="/marketing" element={<PlaceholderPage title="Marketing Campaigns" />} />
-          <Route path="/notifications" element={<PlaceholderPage title="Notifications" />} />
-          <Route path="/my-profile" element={<MyProfilePage />} />
-          <Route path="/my-attendance" element={<MyAttendancePage />} />
-          <Route path="/my-salary" element={<MySalaryPage />} />
-        </Route>
+          {/* Protected — Staff Layout */}
+          <Route element={
+            <ProtectedRoute>
+              <StaffLayout />
+            </ProtectedRoute>
+          }>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/fees" element={<FeeDashboardPage />} />
+            <Route path="/fees/plans" element={<FeePlansPage />} />
+            <Route path="/fees/student/:studentId" element={<StudentLedgerPage />} />
+            <Route path="/fees/receipt/:receiptNumber" element={<ReceiptView />} />
+            <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/wallet" element={<PlaceholderPage title="Wallet" />} />
+            <Route path="/marketing" element={<PlaceholderPage title="Marketing Campaigns" />} />
+            <Route path="/notifications" element={<PlaceholderPage title="Notifications" />} />
+            <Route path="/my-profile" element={<MyProfilePage />} />
+            <Route path="/my-attendance" element={<MyAttendancePage />} />
+            <Route path="/my-salary" element={<MySalaryPage />} />
+          </Route>
 
-        {/* Catch-all */}
-        <Route path="*" element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Catch-all */}
+          <Route path="*" element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />} />
+        </Routes>
+      </BrowserRouter>
+    </Sentry.ErrorBoundary>
   );
 }

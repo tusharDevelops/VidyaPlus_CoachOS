@@ -21,7 +21,7 @@ export function initSentry() {
     replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
   });
 
-  Sentry.setTag('app', 'web');
+  Sentry.setTag('app', 'admin');
 
-  console.log('Sentry initialized successfully for Web.');
+  console.log('Sentry initialized successfully for Admin Web.');
 }

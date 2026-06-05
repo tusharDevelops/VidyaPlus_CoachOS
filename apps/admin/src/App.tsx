@@ -10,6 +10,8 @@ import InstituteDetailPage from './features/institutes/InstituteDetailPage';
 import PlanManagementPage from './features/plans/PlanManagementPage';
 import PlatformSettingsPage from './features/settings/PlatformSettingsPage';
 
+import * as Sentry from '@sentry/react';
+
 export default function App() {
   const { isAuthenticated } = useAdminAuthStore();
 
@@ -20,24 +22,26 @@ export default function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<PublicOnlyRoute />}>
-          <Route path="/login" element={<AdminLoginPage />} />
-        </Route>
-
-        <Route element={<ProtectedRoute />}>
-          <Route element={<AdminLayout />}>
-            <Route path="/dashboard" element={<AdminDashboardPage />} />
-            <Route path="/institutes" element={<InstitutesListPage />} />
-            <Route path="/institutes/:id" element={<InstituteDetailPage />} />
-            <Route path="/plans" element={<PlanManagementPage />} />
-            <Route path="/settings" element={<PlatformSettingsPage />} />
+    <Sentry.ErrorBoundary fallback={<div className="p-8 text-center"><p className="text-red-500 font-bold mb-2">Oops! Something went wrong.</p><p className="text-sm text-gray-500">Our team has been notified. Please refresh the page.</p></div>}>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<PublicOnlyRoute />}>
+            <Route path="/login" element={<AdminLoginPage />} />
           </Route>
-        </Route>
 
-        <Route path="*" element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />} />
-      </Routes>
-    </BrowserRouter>
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AdminLayout />}>
+              <Route path="/dashboard" element={<AdminDashboardPage />} />
+              <Route path="/institutes" element={<InstitutesListPage />} />
+              <Route path="/institutes/:id" element={<InstituteDetailPage />} />
+              <Route path="/plans" element={<PlanManagementPage />} />
+              <Route path="/settings" element={<PlatformSettingsPage />} />
+            </Route>
+          </Route>
+
+          <Route path="*" element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />} />
+        </Routes>
+      </BrowserRouter>
+    </Sentry.ErrorBoundary>
   );
 }

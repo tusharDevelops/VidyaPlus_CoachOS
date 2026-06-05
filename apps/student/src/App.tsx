@@ -24,6 +24,8 @@ function PublicOnly({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+import * as Sentry from '@sentry/react';
+
 export default function App() {
   const { isAuthenticated, fetchUser } = useAuthStore();
 
@@ -41,27 +43,29 @@ export default function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public */}
-        <Route path="/login" element={<PublicOnly><LoginPage /></PublicOnly>} />
+    <Sentry.ErrorBoundary fallback={<div className="p-8 text-center"><p className="text-red-500 font-bold mb-2">Oops! Something went wrong.</p><p className="text-sm text-gray-500">Our team has been notified. Please refresh the page.</p></div>}>
+      <BrowserRouter>
+        <Routes>
+          {/* Public */}
+          <Route path="/login" element={<PublicOnly><LoginPage /></PublicOnly>} />
 
-        {/* Protected — Student Layout */}
-        <Route element={
-          <ProtectedRoute>
-            <StudentLayout />
-          </ProtectedRoute>
-        }>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/attendance" element={<MyAttendancePage />} />
-          <Route path="/fees" element={<MyFeesPage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/profile" element={<MyProfilePage />} />
-        </Route>
+          {/* Protected — Student Layout */}
+          <Route element={
+            <ProtectedRoute>
+              <StudentLayout />
+            </ProtectedRoute>
+          }>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/attendance" element={<MyAttendancePage />} />
+            <Route path="/fees" element={<MyFeesPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/profile" element={<MyProfilePage />} />
+          </Route>
 
-        {/* Catch-all */}
-        <Route path="*" element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Catch-all */}
+          <Route path="*" element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />} />
+        </Routes>
+      </BrowserRouter>
+    </Sentry.ErrorBoundary>
   );
 }
