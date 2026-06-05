@@ -21,6 +21,9 @@ import publicRoutes from './modules/public/public.routes';
 
 const app = express();
 
+// Trust proxy for rate limiting behind reverse proxies (like Render, Cloudflare, etc.)
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 
