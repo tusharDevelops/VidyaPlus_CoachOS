@@ -5,7 +5,7 @@ import prisma from '../../lib/prisma';
 import logger from '../../lib/logger';
 
 export const walletWebhookHandler = Webhooks({
-  webhookKey: process.env.DODO_PAYMENTS_WEBHOOK_KEY!,
+  webhookKey: process.env.DODO_PAYMENTS_WEBHOOK_KEY || 'dummy_secret_to_prevent_startup_crash_123',
   onPayload: async (payload: any) => {
     try {
       // We only care about payment.succeeded events
