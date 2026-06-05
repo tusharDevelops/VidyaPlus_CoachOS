@@ -164,7 +164,7 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-hairline px-4 bg-canvas sticky top-0 z-10">
+      <div className="flex overflow-x-auto whitespace-nowrap border-b border-hairline px-4 bg-canvas sticky top-0 z-10 hide-scrollbar">
         <button 
           onClick={() => setActiveTab('fees')}
           className={`px-4 py-4 text-xs font-bold uppercase tracking-widest border-b-2 transition-all ${
@@ -277,7 +277,7 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
                   </button>
                 </div>
               ) : (
-                <div className="bg-canvas border border-hairline rounded-lg overflow-hidden">
+                <div className="bg-canvas border border-hairline rounded-lg overflow-x-auto">
                   <table className="w-full text-left text-sm">
                     <thead className="bg-surface border-b border-hairline">
                       <tr>

@@ -187,7 +187,7 @@ export default function StaffPage() {
 
           {activeTab === 'attendance' && (
             <div className="mint-card bg-canvas p-0 overflow-hidden border border-hairline">
-               <div className="p-8 border-b border-hairline flex items-center justify-between bg-surface/30">
+               <div className="p-8 border-b border-hairline flex flex-col sm:flex-row items-start sm:items-center justify-between bg-surface/30 gap-4">
                   <div className="flex items-center gap-4">
                      <div className="p-3 bg-brand-green/10 rounded-2xl">
                         <Calendar className="w-6 h-6 text-brand-green" />

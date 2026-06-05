@@ -235,7 +235,7 @@ export default function StaffDetailLayer({ staffId, onNavigate }: StaffDetailLay
 
             <div className="space-y-4">
               <h3 className="text-sm font-black text-ink uppercase tracking-widest opacity-60">Payment History</h3>
-              <div className="bg-canvas border border-hairline rounded-2xl overflow-hidden shadow-sm">
+              <div className="bg-canvas border border-hairline rounded-2xl overflow-x-auto shadow-sm">
                 <table className="w-full text-left">
                   <thead className="bg-surface border-b border-hairline">
                     <tr>

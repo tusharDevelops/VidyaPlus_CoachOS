@@ -321,7 +321,7 @@ export default function WalletPage() {
                   <Banknote className="w-5 h-5 text-brand-green" />
                   <h2 className="text-base font-semibold text-ink">Add Money</h2>
                 </div>
-                <p className="text-xs text-steel mb-5">Choose an amount and payment method.</p>
+                <p className="text-xs text-steel mb-5">Choose an amount to add.</p>
 
                 {/* Quick Amount Picks */}
                 <div className="mb-5">

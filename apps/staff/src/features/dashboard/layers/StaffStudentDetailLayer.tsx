@@ -328,7 +328,7 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
                   )}
                 </div>
               ) : (
-                <div className="bg-canvas border border-hairline rounded-[2rem] overflow-hidden shadow-sm">
+                <div className="bg-canvas border border-hairline rounded-[2rem] overflow-x-auto shadow-sm">
                   <table className="w-full text-left text-sm">
                     <thead className="bg-surface border-b border-hairline">
                       <tr>
