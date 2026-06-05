@@ -1,4 +1,5 @@
 import winston from 'winston';
+import * as Sentry from '@sentry/node';
 
 const logger = winston.createLogger({
   level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
@@ -20,5 +21,21 @@ const logger = winston.createLogger({
     }),
   ],
 });
+
+// Intercept manual logger.error calls to send them to Sentry
+const originalError = logger.error.bind(logger);
+logger.error = (message: any, ...meta: any[]) => {
+  if (process.env.SENTRY_DSN) {
+    if (message instanceof Error) {
+      Sentry.captureException(message, { extra: meta[0] });
+    } else {
+      Sentry.captureMessage(typeof message === 'string' ? message : JSON.stringify(message), {
+        level: 'error',
+        extra: meta[0],
+      });
+    }
+  }
+  return originalError(message, ...meta);
+};
 
 export default logger;

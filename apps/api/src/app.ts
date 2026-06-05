@@ -1,4 +1,8 @@
+import { initSentry } from './lib/sentry';
+initSentry();
+
 import express from 'express';
+import * as Sentry from '@sentry/node';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -97,6 +101,7 @@ app.use('/api/v1/settings', settingsRoutes);
 app.use('/api/v1/wallet', walletRoutes);
 
 // 404 and error handlers (must be last)
+Sentry.setupExpressErrorHandler(app);
 app.use(notFoundHandler);
 app.use(errorHandler);
 

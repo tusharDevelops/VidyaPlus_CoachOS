@@ -10,8 +10,9 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@coachos/ui": "*",
     "@coachos/shared": "*",
+    "@coachos/ui": "*",
+    "@sentry/react": "^10.56.0",
     "@tanstack/react-query": "^5.50.0",
     "axios": "^1.7.0",
     "lucide-react": "^0.400.0",

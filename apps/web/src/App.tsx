@@ -21,6 +21,8 @@ import SettingsPage from './features/settings/SettingsPage';
 import WalletPage from './features/wallet/WalletPage';
 
 
+import * as Sentry from '@sentry/react';
+
 export default function App() {
   const { isAuthenticated, fetchUser } = useAuthStore();
 
@@ -39,41 +41,43 @@ export default function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
+    <Sentry.ErrorBoundary fallback={<div className="p-8 text-center"><p className="text-red-500 font-bold mb-2">Oops! Something went wrong.</p><p className="text-sm text-gray-500">Our team has been notified. Please refresh the page.</p></div>}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
 
-        {/* Public routes — Now redirecting to landing modal */}
-        <Route element={<PublicOnlyRoute />}>
-          <Route path="/login" element={<Navigate to="/?auth=login" replace />} />
-          <Route path="/register" element={<Navigate to="/?auth=register" replace />} />
-        </Route>
-
-        {/* Protected routes with Owner layout */}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<OwnerLayout />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            {/* Phase 2 — Live modules */}
-            <Route path="/students" element={<StudentsPage />} />
-            <Route path="/batches" element={<BatchesPage />} />
-            <Route path="/fees" element={<FeeDashboardPage />} />
-            <Route path="/fees/plans" element={<FeePlansPage />} />
-            <Route path="/fees/student/:studentId" element={<StudentLedgerPage />} />
-            <Route path="/fees/receipt/:receiptNumber" element={<ReceiptView />} />
-            {/* Phase 3+ — Placeholders */}
-            <Route path="/attendance" element={<AttendancePage />} />
-            <Route path="/notifications" element={<NotificationPage />} />
-            <Route path="/reports" element={<ReportsPage />} />
-            <Route path="/staff" element={<StaffPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/wallet" element={<WalletPage />} />
-
+          {/* Public routes — Now redirecting to landing modal */}
+          <Route element={<PublicOnlyRoute />}>
+            <Route path="/login" element={<Navigate to="/?auth=login" replace />} />
+            <Route path="/register" element={<Navigate to="/?auth=register" replace />} />
           </Route>
-        </Route>
 
-        <Route path="*" element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Protected routes with Owner layout */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<OwnerLayout />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              {/* Phase 2 — Live modules */}
+              <Route path="/students" element={<StudentsPage />} />
+              <Route path="/batches" element={<BatchesPage />} />
+              <Route path="/fees" element={<FeeDashboardPage />} />
+              <Route path="/fees/plans" element={<FeePlansPage />} />
+              <Route path="/fees/student/:studentId" element={<StudentLedgerPage />} />
+              <Route path="/fees/receipt/:receiptNumber" element={<ReceiptView />} />
+              {/* Phase 3+ — Placeholders */}
+              <Route path="/attendance" element={<AttendancePage />} />
+              <Route path="/notifications" element={<NotificationPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/staff" element={<StaffPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/wallet" element={<WalletPage />} />
+
+            </Route>
+          </Route>
+
+          <Route path="*" element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />} />
+        </Routes>
+      </BrowserRouter>
+    </Sentry.ErrorBoundary>
   );
 }
 
