@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+// @ts-ignore - TS module resolution complains, but Node resolves this correctly at runtime
 import { Webhooks } from '@dodopayments/express';
 import prisma from '../../lib/prisma';
 import logger from '../../lib/logger';
