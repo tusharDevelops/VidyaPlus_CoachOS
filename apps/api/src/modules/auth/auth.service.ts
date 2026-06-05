@@ -65,20 +65,32 @@ export const authService = {
    * Login with phone + password (for Owner, Staff, Teacher, Accountant)
    */
   async loginWithPassword(email: string, password: string) {
+    logger.info(`[AUTH] loginWithPassword attempt for email: "${email}"`);
     const user = await prisma.user.findFirst({
       where: {
-        email,
+        email: {
+          equals: email,
+          mode: 'insensitive',
+        },
         status: 'active',
         role: 'owner',
       },
       include: { institute: true },
     });
 
-    if (!user || !user.passwordHash) {
+    if (!user) {
+      logger.warn(`[AUTH] loginWithPassword failed: user not found or not active owner for email "${email}"`);
+      throw Object.assign(new Error('Invalid email or password'), { statusCode: 401, code: 'INVALID_CREDENTIALS' });
+    }
+
+    if (!user.passwordHash) {
+      logger.warn(`[AUTH] loginWithPassword failed: user "${email}" has no passwordHash`);
       throw Object.assign(new Error('Invalid email or password'), { statusCode: 401, code: 'INVALID_CREDENTIALS' });
     }
 
     const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+    logger.info(`[AUTH] loginWithPassword - password comparison result for "${email}": ${isValidPassword}`);
+
     if (!isValidPassword) {
       throw Object.assign(new Error('Invalid email or password'), { statusCode: 401, code: 'INVALID_CREDENTIALS' });
     }
@@ -143,15 +155,31 @@ export const authService = {
    * Login with email + password (for Super Admin)
    */
   async loginSuperAdmin(email: string, password: string) {
+    logger.info(`[AUTH] loginSuperAdmin attempt for email: "${email}"`);
     const user = await prisma.user.findFirst({
-      where: { email, role: 'super_admin', status: 'active' },
+      where: {
+        email: {
+          equals: email,
+          mode: 'insensitive',
+        },
+        role: 'super_admin',
+        status: 'active',
+      },
     });
 
-    if (!user || !user.passwordHash) {
+    if (!user) {
+      logger.warn(`[AUTH] loginSuperAdmin failed: user not found for "${email}"`);
+      throw Object.assign(new Error('Invalid credentials'), { statusCode: 401, code: 'INVALID_CREDENTIALS' });
+    }
+
+    if (!user.passwordHash) {
+      logger.warn(`[AUTH] loginSuperAdmin failed: user "${email}" has no passwordHash`);
       throw Object.assign(new Error('Invalid credentials'), { statusCode: 401, code: 'INVALID_CREDENTIALS' });
     }
 
     const isValid = await bcrypt.compare(password, user.passwordHash);
+    logger.info(`[AUTH] loginSuperAdmin - password comparison result for "${email}": ${isValid}`);
+
     if (!isValid) {
       throw Object.assign(new Error('Invalid credentials'), { statusCode: 401, code: 'INVALID_CREDENTIALS' });
     }
