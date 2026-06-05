@@ -41,7 +41,7 @@ type FilterType = 'all' | 'credit' | 'debit';
 
 type ModalState =
   | { kind: 'none' }
-  | { kind: 'confirm'; amount: number; method: string }
+  | { kind: 'confirm'; amount: number }
   | { kind: 'processing' }
   | { kind: 'success'; amount: number; newBalance: number }
   | { kind: 'error'; message: string };
@@ -50,11 +50,6 @@ type ModalState =
 
 const QUICK_AMOUNTS = [100, 200, 500, 1_000, 2_000, 5_000];
 
-const PAYMENT_METHODS = [
-  { key: 'upi', label: 'UPI', icon: Smartphone, hint: 'Google Pay, PhonePe, etc.' },
-  { key: 'card', label: 'Card', icon: CreditCard, hint: 'Debit or credit card' },
-  { key: 'netbanking', label: 'Net Banking', icon: Landmark, hint: 'Online bank transfer' },
-] as const;
 
 /* ────────────────── Animated Balance ────────────────────── */
 
@@ -118,7 +113,7 @@ export default function WalletPage() {
   // Add-money form
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
   const [customAmount, setCustomAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<string>('upi');
+
 
   // Modal
   const [modal, setModal] = useState<ModalState>({ kind: 'none' });
@@ -183,14 +178,13 @@ export default function WalletPage() {
   /* ── Top-up flow ── */
   const openConfirm = () => {
     if (!canAdd) return;
-    const method = PAYMENT_METHODS.find(m => m.key === paymentMethod)?.label ?? paymentMethod;
-    setModal({ kind: 'confirm', amount, method });
+    setModal({ kind: 'confirm', amount });
   };
 
   const executeTopUp = async () => {
     setModal({ kind: 'processing' });
     try {
-      const response = await api.post('/wallet/top-up', { amount, paymentMethod });
+      const response = await api.post('/wallet/top-up', { amount });
       
       if (response.data?.data?.checkout_url) {
         // Redirect to Dodo Payments secure checkout
@@ -377,37 +371,6 @@ export default function WalletPage() {
                   </div>
                 </div>
 
-                {/* Payment Method */}
-                <div className="mb-6">
-                  <label className="text-[11px] font-semibold text-steel uppercase tracking-wider block mb-2.5">
-                    Pay via
-                  </label>
-                  <div className="space-y-2">
-                    {PAYMENT_METHODS.map(({ key, label, icon: Icon, hint }) => (
-                      <button
-                        key={key}
-                        type="button"
-                        onClick={() => setPaymentMethod(key)}
-                        className={`w-full flex items-center gap-3 p-3 rounded-md border transition-all text-left ${
-                          paymentMethod === key
-                            ? 'border-brand-green bg-brand-green-soft'
-                            : 'border-hairline hover:border-brand-green/30 hover:bg-surface'
-                        }`}
-                      >
-                        <Icon className={`w-4 h-4 flex-shrink-0 ${paymentMethod === key ? 'text-brand-green-deep' : 'text-steel'}`} />
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-medium ${paymentMethod === key ? 'text-ink' : 'text-ink'}`}>{label}</p>
-                          <p className="text-[11px] text-steel leading-tight">{hint}</p>
-                        </div>
-                        {paymentMethod === key && (
-                          <div className="w-5 h-5 rounded-full bg-brand-green flex items-center justify-center flex-shrink-0">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-ink" />
-                          </div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
 
                 {/* Add Money Button */}
                 <button
@@ -539,7 +502,7 @@ export default function WalletPage() {
                 </div>
                 <h3 className="text-lg font-semibold text-ink">Confirm Payment</h3>
                 <p className="text-sm text-steel mt-2">
-                  You are adding <span className="font-semibold text-ink">₹{modal.amount.toLocaleString('en-IN')}</span> to your wallet via <span className="font-semibold text-ink">{modal.method}</span>.
+                  You are adding <span className="font-semibold text-ink">₹{modal.amount.toLocaleString('en-IN')}</span> to your wallet.
                 </p>
 
                 <div className="flex gap-3 mt-6">
