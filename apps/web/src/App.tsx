@@ -8,6 +8,7 @@ import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import DashboardPage from './features/dashboard/DashboardPage';
 import StudentsPage from './features/students/StudentsPage';
+import StudentProfilePage from './features/students/StudentProfilePage';
 import BatchesPage from './features/batches/BatchesPage';
 import FeePlansPage from './features/fees/FeePlansPage';
 import FeeDashboardPage from './features/fees/FeeDashboardPage';
@@ -58,6 +59,7 @@ export default function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               {/* Phase 2 — Live modules */}
               <Route path="/students" element={<StudentsPage />} />
+              <Route path="/students/:studentId" element={<StudentProfilePage />} />
               <Route path="/batches" element={<BatchesPage />} />
               <Route path="/fees" element={<FeeDashboardPage />} />
               <Route path="/fees/plans" element={<FeePlansPage />} />

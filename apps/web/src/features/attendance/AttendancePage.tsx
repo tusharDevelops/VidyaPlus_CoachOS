@@ -159,7 +159,7 @@ export default function AttendancePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
           <div className="bg-white rounded-3xl shadow-premium p-6 border border-slate-100">
-            <div className="flex gap-4 items-end">
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end">
               <div className="flex-1">
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Batch</label>
                 <select value={selectedBatch} onChange={e => setSelectedBatch(e.target.value)}
@@ -168,7 +168,7 @@ export default function AttendancePage() {
                   {batches.map(b => <option key={b.id} value={b.id}>{b.name} {b.subject ? `(${b.subject})` : ''}</option>)}
                 </select>
               </div>
-              <div className="w-48">
+              <div className="w-full sm:w-48">
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Date</label>
                 <input type="date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-bold focus:border-primary-500 outline-none transition-all" />
@@ -181,9 +181,9 @@ export default function AttendancePage() {
           </div>
 
           {summary && !loading && (
-            <div className="flex gap-4">
+            <div className="grid grid-cols-2 sm:flex sm:flex-row flex-wrap gap-4">
               {[
-                { label: 'Total', value: summary.total, color: 'bg-slate-100 text-slate-600' },
+                { label: 'Total', value: summary.total, color: 'bg-slate-100 text-slate-600 col-span-2 sm:col-span-1' },
                 { label: 'Present', value: summary.present, color: 'bg-emerald-50 text-emerald-700' },
                 { label: 'Absent', value: summary.absent, color: 'bg-rose-50 text-rose-700' },
                 { label: 'Late', value: summary.late, color: 'bg-amber-50 text-amber-700' },
@@ -222,9 +222,9 @@ export default function AttendancePage() {
                     const currentStatus = attendance[student.userId];
                     return (
                       <div key={student.userId}
-                        className={`flex items-center justify-between px-8 py-5 transition-all ${currentStatus ? 'bg-slate-50/30' : ''}`}>
+                        className={`flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-8 py-5 gap-4 transition-all ${currentStatus ? 'bg-slate-50/30' : ''}`}>
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-2xl bg-primary-50 border border-primary-100 flex items-center justify-center text-primary-700 text-base font-black shadow-sm overflow-hidden">
+                          <div className="w-12 h-12 rounded-2xl bg-primary-50 border border-primary-100 flex items-center justify-center text-primary-700 text-base font-black shadow-sm overflow-hidden flex-shrink-0">
                             {student.name.charAt(0)}
                           </div>
                           <div>

@@ -294,9 +294,23 @@ export default function StudentsPage() {
                      </button>
                      <button 
                        onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === s.id ? null : s.id); }}
-                       className={`ml-auto p-2.5 rounded-lg transition-all border flex items-center justify-center ${activeMenu === s.id ? 'bg-ink text-canvas border-ink shadow-lg' : 'text-stone border-hairline hover:bg-surface'}`}
+                       className={`ml-auto p-2.5 rounded-lg transition-all border flex items-center justify-center relative ${activeMenu === s.id ? 'bg-ink text-canvas border-ink shadow-lg z-50' : 'text-stone border-hairline hover:bg-surface'}`}
                      >
                        <MoreVertical className="w-4 h-4" />
+                       {activeMenu === s.id && (
+                          <div className="absolute right-0 top-full mt-2 w-48 bg-canvas rounded-lg shadow-premium border border-hairline z-[100] py-2 animate-slide-up origin-top-right text-ink">
+                             <MenuAction icon={BookOpen} label="Classes" onClick={() => { setEditStudent(s); setShowModal(true); setActiveMenu(null); }} />
+                             <MenuAction icon={MessageSquare} label="Message" onClick={() => { setActiveMenu(null); }} />
+                             <div className="h-px bg-hairline my-1.5" />
+                             <MenuAction 
+                               icon={s.status === 'active' ? Ban : UserCheck} 
+                               label={s.status === 'active' ? 'Deactivate' : 'Activate'} 
+                               color={s.status === 'active' ? 'text-brand-error' : 'text-brand-green-deep'}
+                               onClick={() => { toggleStatus(s); setActiveMenu(null); }} 
+                             />
+                             <MenuAction icon={Trash2} label="Remove" color="text-brand-error" onClick={() => { deleteStudent(s.id); setActiveMenu(null); }} />
+                          </div>
+                       )}
                      </button>
                   </div>
                 </div>

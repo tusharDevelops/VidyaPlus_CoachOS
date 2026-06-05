@@ -118,14 +118,14 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <div className="relative group">
+          <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+            <div className="relative group w-full sm:w-auto">
               <button 
-                className="px-4 py-2 bg-ink text-canvas hover:bg-ink/90 rounded-lg text-xs font-bold uppercase tracking-widest flex items-center transition-all shadow-lg"
+                className="w-full sm:w-auto justify-center px-4 py-2 bg-ink text-canvas hover:bg-ink/90 rounded-lg text-xs font-bold uppercase tracking-widest flex items-center transition-all shadow-lg"
               >
                 <MessageSquare className="w-3.5 h-3.5 mr-2" /> Connect
               </button>
-              <div className="absolute right-0 mt-2 w-48 bg-canvas rounded-xl shadow-premium border border-hairline z-20 py-2 hidden group-hover:block animate-slide-up origin-top-right">
+              <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-full sm:w-48 bg-canvas rounded-xl shadow-premium border border-hairline z-50 py-2 hidden group-hover:block animate-slide-up origin-top">
                 <button onClick={() => { setActiveTab('messages'); window.scrollTo({ top: 400, behavior: 'smooth' }); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-ink hover:bg-surface">
                   <MessageSquare className="w-4 h-4 text-brand-green" /> WhatsApp
                 </button>
@@ -143,19 +143,19 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
 
             <button 
               onClick={generateDue}
-              className="px-4 py-2 bg-brand-green/10 text-brand-green-deep hover:bg-brand-green/20 rounded-lg text-xs font-bold uppercase tracking-widest flex items-center transition-all"
+              className="flex-1 sm:flex-none justify-center px-4 py-2 bg-brand-green/10 text-brand-green-deep hover:bg-brand-green/20 rounded-lg text-xs font-bold uppercase tracking-widest flex items-center transition-all"
             >
-              <HistoryIcon className="w-3.5 h-3.5 mr-2" /> Sync Ledger
+              <HistoryIcon className="w-3.5 h-3.5 sm:mr-2" /> <span className="hidden sm:inline">Sync Ledger</span>
             </button>
             <button 
               onClick={() => setShowEditModal(true)}
-              className="px-4 py-2 bg-canvas border border-hairline text-ink hover:bg-surface rounded-lg text-xs font-bold uppercase tracking-widest flex items-center transition-all shadow-sm"
+              className="flex-1 sm:flex-none justify-center px-4 py-2 bg-canvas border border-hairline text-ink hover:bg-surface rounded-lg text-xs font-bold uppercase tracking-widest flex items-center transition-all shadow-sm"
             >
-              <Edit2 className="w-3.5 h-3.5 mr-2" /> Edit
+              <Edit2 className="w-3.5 h-3.5 sm:mr-2" /> <span className="hidden sm:inline">Edit</span>
             </button>
             <button 
               onClick={deleteStudent}
-              className="px-4 py-2 bg-brand-error/10 text-brand-error border border-brand-error/20 rounded-lg hover:bg-brand-error hover:text-canvas transition-all text-xs font-bold uppercase tracking-widest"
+              className="flex-none justify-center px-4 py-2 bg-brand-error/10 text-brand-error border border-brand-error/20 rounded-lg hover:bg-brand-error hover:text-canvas transition-all text-xs font-bold uppercase tracking-widest"
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -321,8 +321,8 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
           <div className="space-y-10 animate-fade-in max-w-5xl">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* WhatsApp Section */}
-              <div className="p-8 bg-surface border border-hairline rounded-2xl space-y-6">
-                <div className="flex items-center justify-between mb-2">
+              <div className="p-5 sm:p-8 bg-surface border border-hairline rounded-2xl space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
                   <h3 className="text-sm font-black text-ink uppercase tracking-widest flex items-center">
                     <MessageSquare className="w-4 h-4 mr-2 text-brand-green" /> WhatsApp Dispatch
                   </h3>
@@ -364,8 +364,8 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
               </div>
 
               {/* Email Section */}
-              <div className="p-8 bg-surface border border-hairline rounded-2xl space-y-6">
-                <div className="flex items-center justify-between mb-2">
+              <div className="p-5 sm:p-8 bg-surface border border-hairline rounded-2xl space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
                   <h3 className="text-sm font-black text-ink uppercase tracking-widest flex items-center">
                     <Mail className="w-4 h-4 mr-2 text-brand-blue" /> Email Channel
                   </h3>
