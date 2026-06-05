@@ -64,7 +64,7 @@ export const walletController = {
           instituteId,
           type: 'wallet_topup'
         },
-        return_url: `${process.env.CORS_ORIGIN?.split(',')[0] || 'http://localhost:5173'}/wallet?status=success`,
+        return_url: `${req.headers.origin || process.env.CORS_ORIGIN?.split(',')[0] || 'http://localhost:5173'}/wallet?status=success`,
       });
 
       res.json({
