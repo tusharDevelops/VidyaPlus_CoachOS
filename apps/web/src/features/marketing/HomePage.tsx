@@ -5,7 +5,8 @@ import { useAuthStore } from '../../stores/auth.store';
 import AuthModal from '../auth/AuthModal';
 import {
   ArrowRight, BarChart3, Bell, BookOpen, CalendarCheck, CheckCircle2,
-  CreditCard, GraduationCap, IndianRupee, Layers3, ShieldCheck, Users, Shield, UserCog, ExternalLink, ChevronDown, Sun, Moon
+  CreditCard, GraduationCap, IndianRupee, Layers3, ShieldCheck, Users, Shield, UserCog, ExternalLink, ChevronDown, Sun, Moon,
+  Menu, X
 } from 'lucide-react';
 
 const LOGOS = ['Aakash Prep', 'BrightPath', 'Narayana Local', 'Focus Academy', 'MeritHub', 'LearnWell'];
@@ -52,6 +53,8 @@ export default function HomePage() {
     mode: 'login' 
   });
   const [isPortalsOpen, setIsPortalsOpen] = useState(false);
+  const [isMobilePortalsOpen, setIsMobilePortalsOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
 
   const toggleDarkMode = () => {
@@ -199,9 +202,129 @@ export default function HomePage() {
             >
               {isAuthenticated ? 'Open dashboard' : 'Get started'}
             </button>
+
+            {/* Mobile hamburger button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-steel hover:bg-surface transition-colors"
+              aria-label="Toggle Menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
       </header>
+
+      {/* Mobile Drawer Navigation */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 top-16 z-30 bg-canvas lg:hidden animate-in fade-in slide-in-from-top-5 duration-200 border-b border-hairline overflow-y-auto">
+          <div className="p-6 space-y-6">
+            <nav className="flex flex-col gap-4 text-base font-medium text-steel">
+              <a 
+                href="#product" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="hover:text-ink transition-colors py-2 border-b border-hairline-soft"
+              >
+                Product
+              </a>
+              <a 
+                href="#modules" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="hover:text-ink transition-colors py-2 border-b border-hairline-soft"
+              >
+                Modules
+              </a>
+              <a 
+                href="#pricing" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="hover:text-ink transition-colors py-2 border-b border-hairline-soft"
+              >
+                Pricing
+              </a>
+              
+              <div className="space-y-2 py-2">
+                <button 
+                  onClick={() => setIsMobilePortalsOpen(!isMobilePortalsOpen)}
+                  className="flex items-center justify-between w-full hover:text-ink transition-colors text-left font-medium text-steel"
+                >
+                  <span>Portals</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${isMobilePortalsOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {isMobilePortalsOpen && (
+                  <div className="pl-4 mt-2 space-y-3 border-l border-hairline-soft">
+                    <a 
+                      href="https://vidya-plus-coach-os-web.vercel.app/" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-3 py-1 text-sm text-steel hover:text-ink"
+                    >
+                      <GraduationCap className="w-4 h-4 text-brand-green" />
+                      <span>Owner Portal</span>
+                    </a>
+                    <a 
+                      href="https://vidya-plus-coach-os-staff.vercel.app/" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-3 py-1 text-sm text-steel hover:text-ink"
+                    >
+                      <UserCog className="w-4 h-4 text-brand-purple" />
+                      <span>Staff Portal</span>
+                    </a>
+                    <a 
+                      href="https://vidya-plus-coach-os-student.vercel.app/" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-3 py-1 text-sm text-steel hover:text-ink"
+                    >
+                      <BookOpen className="w-4 h-4 text-brand-green" />
+                      <span>Student App</span>
+                    </a>
+                    <a 
+                      href="https://vidya-plus-coach-os-admin.vercel.app/" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-3 py-1 text-sm text-steel hover:text-ink"
+                    >
+                      <Shield className="w-4 h-4 text-brand-blue" />
+                      <span>Admin Console</span>
+                    </a>
+                  </div>
+                )}
+              </div>
+            </nav>
+            
+            <div className="pt-6 border-t border-hairline-soft flex flex-col gap-3">
+              <button 
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setAuthModal({ open: true, mode: 'login' });
+                }} 
+                className="w-full justify-center mint-btn-secondary py-3 text-base flex items-center"
+              >
+                Sign in
+              </button>
+              <button 
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  if (isAuthenticated) {
+                    navigate('/dashboard');
+                  } else {
+                    setAuthModal({ open: true, mode: 'register' });
+                  }
+                }} 
+                className="w-full justify-center mint-btn-brand py-3 text-base flex items-center"
+              >
+                {isAuthenticated ? 'Open dashboard' : 'Get started'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main>
         <section className="hero-backdrop border-b border-hairline-soft overflow-hidden">
