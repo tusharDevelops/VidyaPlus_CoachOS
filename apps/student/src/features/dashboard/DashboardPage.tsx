@@ -169,7 +169,7 @@ export default function DashboardPage() {
                 </div>
               ))
             ) : (
-              <div className="p-10 text-center text-steel text-sm italic">No attendance records yet</div>
+              <div className="p-5 sm:p-10 text-center text-steel text-sm italic">No attendance records yet</div>
             )}
           </div>
         </div>

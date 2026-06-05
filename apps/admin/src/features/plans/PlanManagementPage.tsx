@@ -82,7 +82,7 @@ export default function PlanManagementPage() {
         {plans.map((plan, index) => {
           const featured = index === 1 || plan.name.toLowerCase().includes('lift');
           return (
-            <div key={plan.id} className={`bg-canvas rounded-lg p-8 border transition-colors ${
+            <div key={plan.id} className={`bg-canvas rounded-lg p-4 sm:p-8 border transition-colors ${
               featured ? 'border-2 border-brand-green shadow-[rgba(0,212,164,0.08)_0px_8px_24px]' :
               plan.status === 'active' ? 'border-hairline' : 'border-danger-200 opacity-75'
             }`}>
@@ -195,7 +195,7 @@ function PlanModal({ plan, onClose, onSaved }: { plan: Plan | null, onClose: () 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/40 backdrop-blur-sm animate-fade-in" onClick={onClose}>
-      <div className="w-full max-w-lg bg-canvas rounded-lg p-8 border border-hairline" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-lg bg-canvas rounded-lg p-4 sm:p-8 border border-hairline" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-semibold text-ink tracking-[-0.5px]">
             {plan ? `Configure ${plan.name}` : 'Design New Subscription Tier'}

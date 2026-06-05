@@ -32,7 +32,7 @@ export default function StaffStaffGroupsLayer({ onNavigate }: StaffStaffGroupsLa
   ];
 
   return (
-    <PermissionGate permission="staff.view" fallback={<div className="p-8 text-center text-slate font-bold">You don't have permission to view this section.</div>}>
+    <PermissionGate permission="staff.view" fallback={<div className="p-4 sm:p-8 text-center text-slate font-bold">You don't have permission to view this section.</div>}>
       <div className="space-y-8 animate-fade-in">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-black text-ink uppercase tracking-tight">Staff Management / Groups</h2>
@@ -43,10 +43,10 @@ export default function StaffStaffGroupsLayer({ onNavigate }: StaffStaffGroupsLa
             <button 
               key={group.id}
               onClick={() => onNavigate('STAFF')}
-              className="text-left bg-canvas rounded-2xl border border-hairline p-8 hover:shadow-premium transition-all group relative overflow-hidden"
+              className="text-left bg-canvas rounded-2xl border border-hairline p-4 sm:p-8 hover:shadow-premium transition-all group relative overflow-hidden"
             >
               {/* Background Decorative Icon */}
-              <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
+              <div className="absolute top-0 right-0 p-4 sm:p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
                 <group.icon className="w-32 h-32" />
               </div>
 

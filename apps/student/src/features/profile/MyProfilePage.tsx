@@ -204,7 +204,7 @@ export default function MyProfilePage() {
               </div>
             ))
           ) : (
-            <div className="mint-card p-8 text-center text-steel text-sm italic">
+            <div className="mint-card p-4 sm:p-8 text-center text-steel text-sm italic">
               No active batch enrollments found.
             </div>
           )}

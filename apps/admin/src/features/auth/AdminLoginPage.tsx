@@ -57,7 +57,7 @@ export default function AdminLoginPage() {
           <p className="text-[11px] font-semibold text-steel uppercase tracking-[0.5px] mt-2">Super Admin Console</p>
         </div>
 
-        <div className="bg-canvas rounded-lg p-8 sm:p-10 border border-hairline">
+        <div className="bg-canvas rounded-lg p-4 sm:p-8 sm:p-10 border border-hairline">
           <div className="mb-8">
             <h2 className="text-[28px] leading-tight font-semibold text-ink">Operator Login</h2>
             <p className="text-steel text-sm mt-2">Access the global platform management console</p>

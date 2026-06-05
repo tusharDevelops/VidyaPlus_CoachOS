@@ -149,7 +149,7 @@ export default function StaffLayout() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar - Always visible, compact on mobile */}
-        <header className="h-16 sticky top-0 z-40 bg-canvas/80 backdrop-blur-md border-b border-hairline px-4 sm:px-8 flex items-center justify-between gap-4 flex-shrink-0">
+        <header className="h-16 sticky top-0 z-40 bg-canvas/80 backdrop-blur-md border-b border-hairline px-4 sm:px-4 sm:px-8 flex items-center justify-between gap-4 flex-shrink-0">
           <div className="flex items-center gap-3">
              {/* Mobile Logo Only */}
              <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 rounded-lg hover:bg-surface text-ink-muted">
@@ -207,7 +207,7 @@ export default function StaffLayout() {
 
         {/* Page Body */}
         <main className="flex-1">
-          <div className="max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-8 animate-fade-in">
+          <div className="max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-4 sm:p-8 animate-fade-in">
             <Outlet />
           </div>
         </main>

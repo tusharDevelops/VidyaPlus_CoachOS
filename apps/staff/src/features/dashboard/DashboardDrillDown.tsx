@@ -13,7 +13,7 @@ import { DrillDepth } from './types';
 
 function AccessDeniedLayer({ onBack }: { onBack: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center py-24 px-8 text-center bg-canvas border border-hairline rounded-[2.5rem] space-y-6 shadow-premium-subtle animate-fade-in">
+    <div className="flex flex-col items-center justify-center py-24 px-4 sm:px-8 text-center bg-canvas border border-hairline rounded-[2.5rem] space-y-6 shadow-premium-subtle animate-fade-in">
       <div className="w-20 h-20 bg-brand-error/10 rounded-full flex items-center justify-center text-brand-error">
         <ShieldAlert className="w-10 h-10" />
       </div>
@@ -25,7 +25,7 @@ function AccessDeniedLayer({ onBack }: { onBack: () => void }) {
       </div>
       <button 
         onClick={onBack}
-        className="px-8 py-3 bg-ink text-canvas rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-ink/90 transition-all shadow-premium"
+        className="px-4 sm:px-8 py-3 bg-ink text-canvas rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-ink/90 transition-all shadow-premium"
       >
         Return to Dashboard
       </button>

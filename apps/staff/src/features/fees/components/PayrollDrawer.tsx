@@ -134,7 +134,7 @@ export default function PayrollDrawer({ staffId, onClose, onSuccess }: PayrollDr
       <div className="fixed inset-y-0 right-0 z-[160] w-full max-w-xl bg-canvas shadow-premium flex flex-col animate-slide-in-right overflow-hidden rounded-l-[2rem] border-l border-hairline">
         
         {/* Header */}
-        <div className="bg-surface/30 px-8 py-10 border-b border-hairline flex-shrink-0">
+        <div className="bg-surface/30 px-4 sm:px-8 py-10 border-b border-hairline flex-shrink-0">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-xl font-bold text-ink tracking-tight">Staff Salary Ledger</h2>
@@ -168,7 +168,7 @@ export default function PayrollDrawer({ staffId, onClose, onSuccess }: PayrollDr
         </div>
 
         {/* List Content */}
-        <div className="flex-1 overflow-y-auto p-8 space-y-6 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 scrollbar-hide">
           {loading && !staff ? (
             <div className="flex flex-col items-center justify-center h-64">
               <Loader2 className="w-8 h-8 text-brand-green animate-spin" />
@@ -196,7 +196,7 @@ export default function PayrollDrawer({ staffId, onClose, onSuccess }: PayrollDr
                            </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-8 mb-6">
+                        <div className="grid grid-cols-2 gap-4 sm:gap-8 mb-6">
                            <div className="space-y-1">
                               <p className="text-[9px] font-black text-stone uppercase tracking-widest">Disbursed Amount</p>
                               <p className="text-lg font-black text-ink font-mono">₹{record.amount.toLocaleString()}</p>
@@ -231,14 +231,14 @@ export default function PayrollDrawer({ staffId, onClose, onSuccess }: PayrollDr
         {/* Payout Form Overlay */}
         {showPayoutForm && (
           <div className="absolute inset-0 z-[170] bg-canvas flex flex-col animate-slide-up">
-            <div className="px-8 py-6 border-b border-hairline flex items-center justify-between flex-shrink-0">
+            <div className="px-4 sm:px-8 py-6 border-b border-hairline flex items-center justify-between flex-shrink-0">
                <h3 className="text-sm font-black text-ink uppercase tracking-widest">Disburse Payout</h3>
                <button onClick={() => setShowPayoutForm(false)} className="p-2 text-slate hover:text-ink hover:bg-surface rounded-xl transition-all">
                  <X className="w-5 h-5" />
                </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-8 space-y-8 scrollbar-hide">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-8 scrollbar-hide">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-stone uppercase tracking-widest px-1">Period</label>
@@ -328,7 +328,7 @@ export default function PayrollDrawer({ staffId, onClose, onSuccess }: PayrollDr
               </div>
             </div>
 
-            <div className="p-8 border-t border-hairline bg-surface/30 flex-shrink-0">
+            <div className="p-4 sm:p-8 border-t border-hairline bg-surface/30 flex-shrink-0">
                <button onClick={submitPayout} disabled={processing || !payoutAmount}
                  className="mint-btn-primary w-full py-4 rounded-[1.5rem] flex items-center justify-center gap-3 text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-brand-green/20">
                  {processing ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}

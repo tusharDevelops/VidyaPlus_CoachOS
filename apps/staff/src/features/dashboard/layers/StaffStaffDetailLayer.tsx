@@ -93,8 +93,8 @@ export default function StaffStaffDetailLayer({ staffId, onNavigate }: StaffDeta
   return (
     <div className="bg-canvas border border-hairline rounded-3xl overflow-hidden animate-fade-in shadow-premium-subtle">
       {/* Profile Header */}
-      <div className="p-8 bg-surface border-b border-hairline">
-        <div className="flex flex-col md:flex-row gap-8 md:items-center">
+      <div className="p-4 sm:p-8 bg-surface border-b border-hairline">
+        <div className="flex flex-col md:flex-row gap-4 sm:gap-8 md:items-center">
           <div className="w-24 h-24 rounded-2xl bg-canvas border-2 border-hairline flex items-center justify-center shrink-0 overflow-hidden shadow-md">
             <span className="text-3xl font-black text-ink">{staff.name.charAt(0)}</span>
           </div>
@@ -194,7 +194,7 @@ export default function StaffStaffDetailLayer({ staffId, onNavigate }: StaffDeta
       </div>
 
       {/* Content Layer */}
-      <div className="p-8 min-h-[500px]">
+      <div className="p-4 sm:p-8 min-h-[500px]">
         {activeTab === 'payroll' && (
           <div className="space-y-8 animate-fade-in">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -215,12 +215,12 @@ export default function StaffStaffDetailLayer({ staffId, onNavigate }: StaffDeta
             {hasPermission('settings.manage') && (
               <div className="flex flex-wrap gap-4 pt-2">
                 <button 
-                  className="mint-btn-brand h-12 px-8"
+                  className="mint-btn-brand h-12 px-4 sm:px-8"
                 >
                   <DollarSign className="w-4 h-4 mr-2" />
                   Disburse Salary
                 </button>
-                <button className="h-12 px-8 bg-surface border border-hairline text-ink hover:bg-canvas rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center transition-all">
+                <button className="h-12 px-4 sm:px-8 bg-surface border border-hairline text-ink hover:bg-canvas rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center transition-all">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Bonus
                 </button>
@@ -265,9 +265,9 @@ export default function StaffStaffDetailLayer({ staffId, onNavigate }: StaffDeta
 
         {activeTab === 'messages' && (
           <div className="space-y-10 animate-fade-in max-w-5xl">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
               {/* WhatsApp Section */}
-              <div className="p-8 bg-surface border border-hairline rounded-3xl space-y-6">
+              <div className="p-4 sm:p-8 bg-surface border border-hairline rounded-3xl space-y-6">
                 <h3 className="text-sm font-black text-ink uppercase tracking-widest flex items-center">
                   <MessageSquare className="w-4 h-4 mr-2 text-brand-green" /> WhatsApp Channel
                 </h3>
@@ -288,7 +288,7 @@ export default function StaffStaffDetailLayer({ staffId, onNavigate }: StaffDeta
               </div>
 
               {/* Email Section */}
-              <div className="p-8 bg-surface border border-hairline rounded-3xl space-y-6">
+              <div className="p-4 sm:p-8 bg-surface border border-hairline rounded-3xl space-y-6">
                 <h3 className="text-sm font-black text-ink uppercase tracking-widest flex items-center">
                   <Mail className="w-4 h-4 mr-2 text-brand-blue" /> Professional Email
                 </h3>

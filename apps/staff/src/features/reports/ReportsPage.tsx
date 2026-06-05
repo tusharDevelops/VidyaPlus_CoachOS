@@ -104,7 +104,7 @@ export default function ReportsPage() {
         <div className="space-y-8 animate-fade-in">
           {/* Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-8 bg-white border border-surface-100 rounded-3xl shadow-card flex items-center justify-between hover:shadow-premium transition-shadow duration-300">
+            <div className="p-4 sm:p-8 bg-white border border-surface-100 rounded-3xl shadow-card flex items-center justify-between hover:shadow-premium transition-shadow duration-300">
               <div>
                 <p className="text-sm text-surface-500 font-bold uppercase tracking-wider">Total Dues Generated</p>
                 <h3 className="text-3xl font-black text-surface-900 mt-2">₹{feeData.totalDues.toLocaleString()}</h3>
@@ -115,7 +115,7 @@ export default function ReportsPage() {
               </div>
             </div>
 
-            <div className="p-8 bg-white border border-surface-100 rounded-3xl shadow-card flex items-center justify-between hover:shadow-premium transition-shadow duration-300">
+            <div className="p-4 sm:p-8 bg-white border border-surface-100 rounded-3xl shadow-card flex items-center justify-between hover:shadow-premium transition-shadow duration-300">
               <div>
                 <p className="text-sm text-surface-500 font-bold uppercase tracking-wider">Total Fees Collected</p>
                 <h3 className="text-3xl font-black text-accent-700 mt-2">₹{feeData.totalCollected.toLocaleString()}</h3>
@@ -126,7 +126,7 @@ export default function ReportsPage() {
               </div>
             </div>
 
-            <div className="p-8 bg-white border border-surface-100 rounded-3xl shadow-card flex items-center justify-between hover:shadow-premium transition-shadow duration-300">
+            <div className="p-4 sm:p-8 bg-white border border-surface-100 rounded-3xl shadow-card flex items-center justify-between hover:shadow-premium transition-shadow duration-300">
               <div>
                 <p className="text-sm text-surface-500 font-bold uppercase tracking-wider">Total Outstanding</p>
                 <h3 className="text-3xl font-black text-danger-600 mt-2">₹{feeData.totalOutstanding.toLocaleString()}</h3>
@@ -140,7 +140,7 @@ export default function ReportsPage() {
 
           {/* Batch Performance Breakdown */}
           <div className="bg-white rounded-3xl shadow-card border border-surface-100 overflow-hidden">
-            <div className="px-8 py-6 border-b border-surface-100 flex items-center justify-between bg-surface-50/50">
+            <div className="px-4 sm:px-8 py-6 border-b border-surface-100 flex items-center justify-between bg-surface-50/50">
               <h3 className="font-bold text-surface-900 text-xl">Breakdown by Batch</h3>
               <span className="text-[11px] font-bold text-primary-700 bg-primary-50/50 px-3 py-1.5 rounded-lg uppercase tracking-widest border border-primary-100/50">Financial Performance</span>
             </div>
@@ -148,22 +148,22 @@ export default function ReportsPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-surface-50/50 text-[11px] uppercase tracking-widest text-surface-400 font-bold border-b border-surface-100">
-                    <th className="px-8 py-5">Batch Name</th>
-                    <th className="px-8 py-5">Paid Collections</th>
-                    <th className="px-8 py-5">Pending Balances</th>
-                    <th className="px-8 py-5">Total Billings</th>
+                    <th className="px-4 sm:px-8 py-5">Batch Name</th>
+                    <th className="px-4 sm:px-8 py-5">Paid Collections</th>
+                    <th className="px-4 sm:px-8 py-5">Pending Balances</th>
+                    <th className="px-4 sm:px-8 py-5">Total Billings</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-surface-100">
                   {feeData.batchSummary.length === 0 ? (
-                    <tr><td colSpan={4} className="px-8 py-10 text-center text-surface-400">No batch records found.</td></tr>
+                    <tr><td colSpan={4} className="px-4 sm:px-8 py-10 text-center text-surface-400">No batch records found.</td></tr>
                   ) : (
                     feeData.batchSummary.map(b => (
                       <tr key={b.batchId} className="hover:bg-surface-50/50 transition-colors">
-                        <td className="px-8 py-5 font-bold text-surface-900">{b.batchName}</td>
-                        <td className="px-8 py-5 font-bold text-accent-700">₹{b.collected.toLocaleString()}</td>
-                        <td className="px-8 py-5 font-bold text-danger-600">₹{b.outstanding.toLocaleString()}</td>
-                        <td className="px-8 py-5 font-bold text-surface-700">₹{b.total.toLocaleString()}</td>
+                        <td className="px-4 sm:px-8 py-5 font-bold text-surface-900">{b.batchName}</td>
+                        <td className="px-4 sm:px-8 py-5 font-bold text-accent-700">₹{b.collected.toLocaleString()}</td>
+                        <td className="px-4 sm:px-8 py-5 font-bold text-danger-600">₹{b.outstanding.toLocaleString()}</td>
+                        <td className="px-4 sm:px-8 py-5 font-bold text-surface-700">₹{b.total.toLocaleString()}</td>
                       </tr>
                     ))
                   )}
@@ -178,7 +178,7 @@ export default function ReportsPage() {
         <div className="space-y-8 animate-fade-in">
           {/* Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="p-8 bg-white border border-surface-100 rounded-3xl shadow-card flex items-center justify-between hover:shadow-premium transition-shadow duration-300">
+            <div className="p-4 sm:p-8 bg-white border border-surface-100 rounded-3xl shadow-card flex items-center justify-between hover:shadow-premium transition-shadow duration-300">
               <div>
                 <p className="text-sm text-surface-500 font-bold uppercase tracking-wider">Attendance Rate</p>
                 <h3 className="text-3xl font-black text-surface-900 mt-2">{attendanceData.attendanceRate}%</h3>
@@ -189,7 +189,7 @@ export default function ReportsPage() {
               </div>
             </div>
 
-            <div className="p-8 bg-white border border-surface-100 rounded-3xl shadow-card flex items-center justify-between hover:shadow-premium transition-shadow duration-300">
+            <div className="p-4 sm:p-8 bg-white border border-surface-100 rounded-3xl shadow-card flex items-center justify-between hover:shadow-premium transition-shadow duration-300">
               <div>
                 <p className="text-sm text-surface-500 font-bold uppercase tracking-wider">Present Checkins</p>
                 <h3 className="text-3xl font-black text-accent-700 mt-2">{attendanceData.present}</h3>
@@ -200,7 +200,7 @@ export default function ReportsPage() {
               </div>
             </div>
 
-            <div className="p-8 bg-white border border-surface-100 rounded-3xl shadow-card flex items-center justify-between hover:shadow-premium transition-shadow duration-300">
+            <div className="p-4 sm:p-8 bg-white border border-surface-100 rounded-3xl shadow-card flex items-center justify-between hover:shadow-premium transition-shadow duration-300">
               <div>
                 <p className="text-sm text-surface-500 font-bold uppercase tracking-wider">Absences Logged</p>
                 <h3 className="text-3xl font-black text-danger-600 mt-2">{attendanceData.absent}</h3>
@@ -211,7 +211,7 @@ export default function ReportsPage() {
               </div>
             </div>
 
-            <div className="p-8 bg-white border border-surface-100 rounded-3xl shadow-card flex items-center justify-between hover:shadow-premium transition-shadow duration-300">
+            <div className="p-4 sm:p-8 bg-white border border-surface-100 rounded-3xl shadow-card flex items-center justify-between hover:shadow-premium transition-shadow duration-300">
               <div>
                 <p className="text-sm text-surface-500 font-bold uppercase tracking-wider">Late Entries</p>
                 <h3 className="text-3xl font-black text-surface-700 mt-2">{attendanceData.late}</h3>
@@ -225,7 +225,7 @@ export default function ReportsPage() {
 
           {/* Attendance breakdown by batch */}
           <div className="bg-white rounded-3xl shadow-card border border-surface-100 overflow-hidden">
-            <div className="px-8 py-6 border-b border-surface-100 flex items-center justify-between bg-surface-50/50">
+            <div className="px-4 sm:px-8 py-6 border-b border-surface-100 flex items-center justify-between bg-surface-50/50">
               <h3 className="font-bold text-surface-900 text-xl">Attendance by Batch</h3>
               <span className="text-[11px] font-bold text-primary-700 bg-primary-50/50 px-3 py-1.5 rounded-lg uppercase tracking-widest border border-primary-100/50">Student Matrix</span>
             </div>
@@ -233,28 +233,28 @@ export default function ReportsPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-surface-50/50 text-[11px] uppercase tracking-widest text-surface-400 font-bold border-b border-surface-100">
-                    <th className="px-8 py-5">Batch Name</th>
-                    <th className="px-8 py-5">Attendance Rate</th>
-                    <th className="px-8 py-5">Present</th>
-                    <th className="px-8 py-5">Absent</th>
-                    <th className="px-8 py-5">Total Records</th>
+                    <th className="px-4 sm:px-8 py-5">Batch Name</th>
+                    <th className="px-4 sm:px-8 py-5">Attendance Rate</th>
+                    <th className="px-4 sm:px-8 py-5">Present</th>
+                    <th className="px-4 sm:px-8 py-5">Absent</th>
+                    <th className="px-4 sm:px-8 py-5">Total Records</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-surface-100">
                   {attendanceData.batchSummary.length === 0 ? (
-                    <tr><td colSpan={5} className="px-8 py-10 text-center text-surface-400">No attendance trends found.</td></tr>
+                    <tr><td colSpan={5} className="px-4 sm:px-8 py-10 text-center text-surface-400">No attendance trends found.</td></tr>
                   ) : (
                     attendanceData.batchSummary.map(b => (
                       <tr key={b.batchId} className="hover:bg-surface-50/50 transition-colors">
-                        <td className="px-8 py-5 font-bold text-surface-900">{b.batchName}</td>
-                        <td className="px-8 py-5">
+                        <td className="px-4 sm:px-8 py-5 font-bold text-surface-900">{b.batchName}</td>
+                        <td className="px-4 sm:px-8 py-5">
                           <span className={`px-3 py-1 text-sm font-bold rounded-xl ${b.attendanceRate >= 75 ? 'bg-accent-50 text-accent-700 border border-accent-100' : 'bg-danger-50 text-danger-700 border border-danger-100'}`}>
                             {b.attendanceRate}%
                           </span>
                         </td>
-                        <td className="px-8 py-5 font-bold text-accent-700">{b.present}</td>
-                        <td className="px-8 py-5 font-bold text-danger-600">{b.absent}</td>
-                        <td className="px-8 py-5 font-bold text-surface-600">{b.total}</td>
+                        <td className="px-4 sm:px-8 py-5 font-bold text-accent-700">{b.present}</td>
+                        <td className="px-4 sm:px-8 py-5 font-bold text-danger-600">{b.absent}</td>
+                        <td className="px-4 sm:px-8 py-5 font-bold text-surface-600">{b.total}</td>
                       </tr>
                     ))
                   )}

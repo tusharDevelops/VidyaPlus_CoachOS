@@ -157,7 +157,7 @@ export default function StaffAttendanceLayer({ batchId, onNavigate }: Attendance
           <button 
             onClick={handleSave}
             disabled={saving || Object.keys(attendance).length === 0 || !hasPermission('attendance.mark')}
-            className="flex-1 sm:flex-none h-12 px-8 bg-ink text-canvas hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center transition-all shadow-lg"
+            className="flex-1 sm:flex-none h-12 px-4 sm:px-8 bg-ink text-canvas hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center transition-all shadow-lg"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
             Save Attendance

@@ -137,7 +137,7 @@ export default function MyAttendancePage() {
               );
             })
           ) : (
-            <div className="p-8 text-center text-steel text-sm italic">No batch enrollment data available.</div>
+            <div className="p-4 sm:p-8 text-center text-steel text-sm italic">No batch enrollment data available.</div>
           )}
         </div>
       </div>

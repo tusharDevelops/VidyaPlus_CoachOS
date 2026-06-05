@@ -126,8 +126,8 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
   return (
     <div className="bg-canvas border border-hairline rounded-[2.5rem] overflow-hidden animate-fade-in shadow-premium-subtle">
       {/* Profile Header */}
-      <div className="p-8 sm:p-10 bg-surface border-b border-hairline">
-        <div className="flex flex-col md:flex-row gap-8 md:items-center">
+      <div className="p-4 sm:p-8 sm:p-10 bg-surface border-b border-hairline">
+        <div className="flex flex-col md:flex-row gap-4 sm:gap-8 md:items-center">
           <div className="w-24 h-24 rounded-3xl bg-canvas border-2 border-hairline flex items-center justify-center shrink-0 overflow-hidden shadow-md group">
             {student.photoUrl ? (
               <img src={student.photoUrl} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
@@ -216,7 +216,7 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-hairline px-8 bg-canvas sticky top-0 z-10">
+      <div className="flex border-b border-hairline px-4 sm:px-8 bg-canvas sticky top-0 z-10">
         {hasPermission('fees.view') && (
           <TabButton 
             active={activeTab === 'fees'} 
@@ -237,7 +237,7 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
       </div>
 
       {/* Content Layer */}
-      <div className="p-10 min-h-[500px]">
+      <div className="p-5 sm:p-10 min-h-[500px]">
         {activeTab === 'fees' && hasPermission('fees.view') && (
           <div className="space-y-10 animate-fade-in">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -249,7 +249,7 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
             <div className="flex flex-wrap gap-4">
               {hasPermission('fees.collect') && (
                 <button 
-                  className="mint-btn-brand h-14 px-8 text-[11px]"
+                  className="mint-btn-brand h-14 px-4 sm:px-8 text-[11px]"
                   onClick={() => setShowFeeDrawer(true)}
                 >
                   <IndianRupee className="w-4 h-4 mr-2" />
@@ -265,7 +265,7 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
                     alert('No payment receipts available for this student yet.');
                   }
                 }}
-                className="h-14 px-8 bg-surface border border-hairline rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-canvas transition-all flex items-center"
+                className="h-14 px-4 sm:px-8 bg-surface border border-hairline rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-canvas transition-all flex items-center"
               >
                 <Receipt className="w-4 h-4 mr-2" />
                 Get PDF Receipt
@@ -294,7 +294,7 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
                     </div>
                   ))}
                   {(!student?.enrollments || student.enrollments.filter((e: any) => e.feePlan).length === 0) && (
-                    <div className="col-span-full bg-surface/30 border-2 border-hairline border-dashed rounded-[2rem] p-10 text-center">
+                    <div className="col-span-full bg-surface/30 border-2 border-hairline border-dashed rounded-[2rem] p-5 sm:p-10 text-center">
                        <AlertCircle className="w-6 h-6 text-stone mx-auto mb-3 opacity-30" />
                        <p className="text-[10px] font-black text-steel uppercase tracking-widest opacity-60">No fee plan assigned</p>
                     </div>
@@ -332,24 +332,24 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
                   <table className="w-full text-left text-sm">
                     <thead className="bg-surface border-b border-hairline">
                       <tr>
-                        <th className="px-8 py-5 text-[10px] font-black text-slate uppercase tracking-widest">Plan / Period</th>
-                        <th className="px-8 py-5 text-[10px] font-black text-slate uppercase tracking-widest">Due Date</th>
-                        <th className="px-8 py-5 text-[10px] font-black text-slate uppercase tracking-widest">Amount</th>
-                        <th className="px-8 py-5 text-[10px] font-black text-slate uppercase tracking-widest text-right">Status</th>
+                        <th className="px-4 sm:px-8 py-5 text-[10px] font-black text-slate uppercase tracking-widest">Plan / Period</th>
+                        <th className="px-4 sm:px-8 py-5 text-[10px] font-black text-slate uppercase tracking-widest">Due Date</th>
+                        <th className="px-4 sm:px-8 py-5 text-[10px] font-black text-slate uppercase tracking-widest">Amount</th>
+                        <th className="px-4 sm:px-8 py-5 text-[10px] font-black text-slate uppercase tracking-widest text-right">Status</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-hairline">
                       {records.map((record: any) => (
                         <tr key={record.id} className="hover:bg-surface/50 transition-colors">
-                          <td className="px-8 py-6">
+                          <td className="px-4 sm:px-8 py-6">
                             <p className="font-bold text-ink tracking-tight">{record.planName}</p>
                             <p className="text-[10px] text-steel font-black uppercase tracking-wider opacity-60">{record.periodLabel}</p>
                           </td>
-                          <td className="px-8 py-6 text-steel font-bold text-xs">
+                          <td className="px-4 sm:px-8 py-6 text-steel font-bold text-xs">
                             {new Date(record.dueDate).toLocaleDateString()}
                           </td>
-                          <td className="px-8 py-6 font-black text-ink">₹{record.amount}</td>
-                          <td className="px-8 py-6 text-right">
+                          <td className="px-4 sm:px-8 py-6 font-black text-ink">₹{record.amount}</td>
+                          <td className="px-4 sm:px-8 py-6 text-right">
                             <span className={`inline-flex px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
                               record.status === 'paid' ? 'bg-brand-green/10 text-brand-green-deep border-brand-green/20' :
                               record.status === 'partial' ? 'bg-brand-warn/10 text-brand-warn border-brand-warn/20' :
@@ -372,7 +372,7 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
           <div className="space-y-10 animate-fade-in max-w-6xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
               {/* WhatsApp */}
-              <div className="p-10 bg-surface border border-hairline rounded-[2.5rem] space-y-8 shadow-sm">
+              <div className="p-5 sm:p-10 bg-surface border border-hairline rounded-[2.5rem] space-y-8 shadow-sm">
                 <div className="flex items-center justify-between">
                   <h3 className="text-[11px] font-black text-ink uppercase tracking-[0.2em] flex items-center">
                     <MessageSquare className="w-5 h-5 mr-3 text-brand-green" /> WhatsApp Dispatch
@@ -410,7 +410,7 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
               </div>
 
               {/* Email */}
-              <div className="p-10 bg-surface border border-hairline rounded-[2.5rem] space-y-8 shadow-sm">
+              <div className="p-5 sm:p-10 bg-surface border border-hairline rounded-[2.5rem] space-y-8 shadow-sm">
                 <div className="flex items-center justify-between">
                   <h3 className="text-[11px] font-black text-ink uppercase tracking-[0.2em] flex items-center">
                     <Mail className="w-5 h-5 mr-3 text-brand-blue" /> Email Channel
@@ -500,7 +500,7 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
                   </div>
                 </div>
 
-                <div className="p-8 bg-brand-green/5 border border-brand-green/20 rounded-[2rem] space-y-5">
+                <div className="p-4 sm:p-8 bg-brand-green/5 border border-brand-green/20 rounded-[2rem] space-y-5">
                    <div className="flex items-center gap-3">
                       <Sparkles className="w-6 h-6 text-brand-green fill-brand-green animate-pulse" />
                       <h4 className="text-[11px] font-black text-ink uppercase tracking-widest">Academic Status</h4>
@@ -550,7 +550,7 @@ function TabButton({ active, onClick, label }: { active: boolean; onClick: () =>
 
 function StatsCard({ label, value, color }: { label: string; value: string; color: string }) {
   return (
-    <div className={`p-8 rounded-[2rem] border transition-all hover:shadow-premium-subtle ${color}`}>
+    <div className={`p-4 sm:p-8 rounded-[2rem] border transition-all hover:shadow-premium-subtle ${color}`}>
       <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-2 opacity-60">{label}</p>
       <p className="text-3xl font-black tracking-tighter">{value}</p>
     </div>

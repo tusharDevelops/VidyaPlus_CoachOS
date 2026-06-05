@@ -42,10 +42,10 @@ export default function MyProfilePage() {
         <p className="text-sm text-steel">Manage your personal information and account settings.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
         {/* Profile Card */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="mint-card p-8 text-center relative overflow-hidden group">
+          <div className="mint-card p-4 sm:p-8 text-center relative overflow-hidden group">
             <div className="relative inline-block mb-6">
               <div className="w-32 h-32 rounded-3xl bg-surface border-4 border-canvas flex items-center justify-center text-4xl font-black text-ink shadow-premium overflow-hidden mx-auto">
                 {profile?.photoUrl ? (
@@ -110,12 +110,12 @@ export default function MyProfilePage() {
 
         {/* Detailed Info */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="mint-card p-8">
+          <div className="mint-card p-4 sm:p-8">
             <h3 className="text-lg font-bold text-ink mb-8 flex items-center gap-3">
               <User className="w-5 h-5 text-brand-green" /> Personal Information
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-steel uppercase tracking-widest flex items-center gap-2 opacity-60">
                   <Smartphone className="w-3 h-3" /> Contact Number
@@ -145,12 +145,12 @@ export default function MyProfilePage() {
             </div>
           </div>
 
-          <div className="mint-card p-8">
+          <div className="mint-card p-4 sm:p-8">
             <h3 className="text-lg font-bold text-ink mb-8 flex items-center gap-3">
               <Shield className="w-5 h-5 text-brand-blue" /> Employment Details
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-steel uppercase tracking-widest flex items-center gap-2 opacity-60">
                   <Hash className="w-3 h-3" /> Employee ID

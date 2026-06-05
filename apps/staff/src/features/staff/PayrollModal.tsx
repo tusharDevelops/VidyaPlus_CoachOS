@@ -85,7 +85,7 @@ export default function PayrollModal({ isOpen, onClose, staff, onSuccess }: Payr
       <div className="bg-canvas rounded-[2rem] shadow-premium w-full max-w-lg overflow-hidden animate-slide-up border border-hairline flex flex-col max-h-[90vh]">
         
         {/* Header */}
-        <div className="px-8 py-6 border-b border-hairline flex items-center justify-between bg-surface/30">
+        <div className="px-4 sm:px-8 py-6 border-b border-hairline flex items-center justify-between bg-surface/30">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-brand-green/10 rounded-2xl">
               <IndianRupee className="w-6 h-6 text-brand-green" />
@@ -100,7 +100,7 @@ export default function PayrollModal({ isOpen, onClose, staff, onSuccess }: Payr
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 space-y-6 scrollbar-hide">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 scrollbar-hide">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-stone uppercase tracking-widest px-1">Period</label>
@@ -192,7 +192,7 @@ export default function PayrollModal({ isOpen, onClose, staff, onSuccess }: Payr
           </div>
         </form>
 
-        <div className="p-8 border-t border-hairline bg-surface/30">
+        <div className="p-4 sm:p-8 border-t border-hairline bg-surface/30">
           <button onClick={handleSubmit} disabled={loading || !amount}
             className="mint-btn-primary w-full py-4 rounded-2xl flex items-center justify-center gap-3 text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-brand-green/20">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}

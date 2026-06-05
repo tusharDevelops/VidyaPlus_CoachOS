@@ -88,7 +88,7 @@ export default function PlatformSettingsPage() {
       </div>
 
       {/* Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
         
         {/* Left Columns - Form Control */}
         <form onSubmit={handleSave} className="lg:col-span-2 space-y-6">

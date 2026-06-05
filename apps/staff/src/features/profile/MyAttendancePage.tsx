@@ -156,7 +156,7 @@ export default function MyAttendancePage() {
       )}
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center justify-center gap-8 pt-8 border-t border-hairline">
+      <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 pt-8 border-t border-hairline">
         {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
           <div key={key} className="flex items-center gap-3">
             <div className={`w-3 h-3 rounded-full ${cfg.color.split(' ')[0]}`} />

@@ -67,7 +67,7 @@ export default function ReceiptView() {
       {/* Printable Receipt Area */}
       <div className="mint-card p-0 overflow-hidden bg-canvas shadow-premium print:shadow-none print:border-hairline">
         {/* Atmospheric Header for Context */}
-        <div className="hero-backdrop-revenue p-10 text-center border-b border-hairline">
+        <div className="hero-backdrop-revenue p-5 sm:p-10 text-center border-b border-hairline">
           <h1 className="text-2xl font-black text-ink uppercase tracking-[0.2em]">{inst.name}</h1>
           <p className="text-[10px] font-black text-slate uppercase tracking-widest mt-2">{inst.address}</p>
           <p className="text-[10px] font-black text-brand-green-deep uppercase tracking-widest mt-1 font-mono">{inst.phone} • {inst.email}</p>
@@ -88,7 +88,7 @@ export default function ReceiptView() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 mb-12 p-8 bg-surface/30 rounded-lg border border-hairline">
+          <div className="grid grid-cols-2 gap-4 sm:gap-8 mb-12 p-4 sm:p-8 bg-surface/30 rounded-lg border border-hairline">
             <div className="space-y-4">
               <div>
                 <p className="text-[9px] font-black text-slate uppercase tracking-widest mb-1">Beneficiary</p>

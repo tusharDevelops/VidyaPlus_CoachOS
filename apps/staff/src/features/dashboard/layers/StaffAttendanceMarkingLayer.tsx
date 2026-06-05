@@ -145,7 +145,7 @@ export default function StaffAttendanceMarkingLayer({ batchId, onNavigate }: Sta
               <div 
                 key={batch.id} 
                 onClick={() => setSelectedBatch(batch)}
-                className="mint-card p-8 cursor-pointer group hover:border-brand-green/30 transition-all active:scale-[0.98]"
+                className="mint-card p-4 sm:p-8 cursor-pointer group hover:border-brand-green/30 transition-all active:scale-[0.98]"
               >
                 <div className="flex items-center justify-between mb-6">
                   <div className="w-14 h-14 rounded-2xl bg-surface flex items-center justify-center border border-hairline group-hover:bg-brand-green/10 transition-colors">
@@ -170,8 +170,8 @@ export default function StaffAttendanceMarkingLayer({ batchId, onNavigate }: Sta
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Header */}
-      <div className="bg-canvas border border-hairline rounded-[2rem] p-8 shadow-premium-subtle">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+      <div className="bg-canvas border border-hairline rounded-[2rem] p-4 sm:p-8 shadow-premium-subtle">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-8">
           <div className="flex items-center gap-6">
             <button 
               onClick={() => setSelectedBatch(null)}
@@ -201,7 +201,7 @@ export default function StaffAttendanceMarkingLayer({ batchId, onNavigate }: Sta
              />
              <button 
                onClick={markAllPresent}
-               className="h-12 px-8 bg-canvas border border-hairline text-ink hover:bg-surface rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center transition-all shadow-sm group"
+               className="h-12 px-4 sm:px-8 bg-canvas border border-hairline text-ink hover:bg-surface rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center transition-all shadow-sm group"
              >
                <CheckCircle2 className="w-4 h-4 mr-3 text-brand-green group-hover:scale-110 transition-transform" />
                Mark All Present
@@ -247,7 +247,7 @@ export default function StaffAttendanceMarkingLayer({ batchId, onNavigate }: Sta
             filteredStudents.map((student) => {
               const currentStatus = attendance[student.userId];
               return (
-                <div key={student.userId} className={`flex flex-col lg:flex-row lg:items-center justify-between p-8 gap-8 transition-all ${currentStatus ? 'bg-surface/40' : 'hover:bg-surface/20'}`}>
+                <div key={student.userId} className={`flex flex-col lg:flex-row lg:items-center justify-between p-4 sm:p-8 gap-4 sm:gap-8 transition-all ${currentStatus ? 'bg-surface/40' : 'hover:bg-surface/20'}`}>
                   <div className="flex items-center gap-6">
                     <div className="w-14 h-14 rounded-2xl bg-canvas border-2 border-hairline flex items-center justify-center text-xl font-black text-ink shadow-sm shrink-0">
                       {student.name.charAt(0)}

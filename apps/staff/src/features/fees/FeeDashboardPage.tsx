@@ -208,7 +208,7 @@ export default function FeeDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-         <div className="lg:col-span-1 bg-brand-green/5 rounded-2xl p-8 border border-brand-green/10 flex flex-col justify-between">
+         <div className="lg:col-span-1 bg-brand-green/5 rounded-2xl p-4 sm:p-8 border border-brand-green/10 flex flex-col justify-between">
             <div>
                <div className="w-10 h-10 rounded-xl bg-brand-green text-primary flex items-center justify-center mb-6">
                   <TrendingUp className="w-5 h-5" />
@@ -219,7 +219,7 @@ export default function FeeDashboardPage() {
             </div>
          </div>
 
-         <div className="mint-card p-8 flex flex-col justify-between">
+         <div className="mint-card p-4 sm:p-8 flex flex-col justify-between">
             <div>
                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-6 ${activeTab === 'students' ? 'bg-rose-50 text-brand-error' : 'bg-brand-tag/10 text-brand-tag'}`}>
                   {activeTab === 'students' ? <AlertCircle className="w-5 h-5" /> : <Users className="w-5 h-5" />}
@@ -236,7 +236,7 @@ export default function FeeDashboardPage() {
             </div>
          </div>
 
-         <div className="mint-card p-8 flex flex-col justify-between border-brand-green/20">
+         <div className="mint-card p-4 sm:p-8 flex flex-col justify-between border-brand-green/20">
             <div>
                <div className="w-10 h-10 rounded-xl bg-surface text-ink border border-hairline flex items-center justify-center mb-6">
                   <CreditCard className="w-5 h-5" />

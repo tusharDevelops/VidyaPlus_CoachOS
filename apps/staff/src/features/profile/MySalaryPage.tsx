@@ -43,7 +43,7 @@ export default function MySalaryPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Summary Card */}
         <div className="lg:col-span-1">
-          <div className="mint-card p-8 bg-ink text-canvas relative overflow-hidden h-full">
+          <div className="mint-card p-4 sm:p-8 bg-ink text-canvas relative overflow-hidden h-full">
             <div className="relative z-10">
               <div className="w-12 h-12 rounded-xl bg-canvas/10 backdrop-blur-md flex items-center justify-center mb-6">
                 <IndianRupee className="w-6 h-6 text-brand-green" />
