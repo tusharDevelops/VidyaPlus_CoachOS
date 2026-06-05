@@ -79,12 +79,10 @@ export default function StaffLayout() {
             <div className="w-8 h-8 rounded-lg bg-ink flex items-center justify-center flex-shrink-0">
               <GraduationCap className="w-5 h-5 text-brand-green" />
             </div>
-            {(sidebarOpen || window.innerWidth < 1024) && (
-              <div className="ml-3 overflow-hidden whitespace-nowrap">
-                <h1 className="font-bold text-ink tracking-tight">VidyaPlus</h1>
-                <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest leading-none">Staff Portal</p>
-              </div>
-            )}
+            <div className={`ml-3 overflow-hidden whitespace-nowrap ${!sidebarOpen ? 'lg:hidden' : ''}`}>
+              <h1 className="font-bold text-ink tracking-tight">VidyaPlus</h1>
+              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest leading-none">Staff Portal</p>
+            </div>
             <button onClick={() => setSidebarOpen(false)} className="ml-auto lg:hidden p-1 rounded-lg hover:bg-surface-hover text-ink-muted">
               <X className="w-5 h-5" />
             </button>
@@ -111,9 +109,9 @@ export default function StaffLayout() {
                   <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${
                     isActive ? 'text-brand-green' : 'text-ink-muted group-hover:text-ink'
                   }`} />
-                  {(sidebarOpen || window.innerWidth < 1024) && <span className="ml-3 truncate">{label}</span>}
-                  {isActive && (sidebarOpen || window.innerWidth < 1024) && (
-                    <div className="ml-auto w-1 h-1 bg-brand-green rounded-full shadow-[0_0_8px_rgba(0,212,164,0.6)]" />
+                  <span className={`ml-3 truncate ${!sidebarOpen ? 'lg:hidden' : ''}`}>{label}</span>
+                  {isActive && (
+                    <div className={`ml-auto w-1 h-1 bg-brand-green rounded-full shadow-[0_0_8px_rgba(0,212,164,0.6)] ${!sidebarOpen ? 'lg:hidden' : ''}`} />
                   )}
                 </button>
               );
@@ -134,7 +132,7 @@ export default function StaffLayout() {
               className="w-full flex items-center h-10 px-3 rounded-md text-sm font-medium text-steel hover:bg-surface hover:text-brand-error transition-colors group"
             >
               <LogOut className="w-4 h-4 flex-shrink-0 text-steel group-hover:text-brand-error" />
-              {(sidebarOpen || window.innerWidth < 1024) && <span className="ml-3">Sign Out</span>}
+              <span className={`ml-3 ${!sidebarOpen ? 'lg:hidden' : ''}`}>Sign Out</span>
             </button>
           </div>
         </div>
