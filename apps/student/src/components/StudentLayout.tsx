@@ -4,7 +4,7 @@ import { useAuthStore } from '../stores/auth.store';
 import { PWAInstallBanner } from '@coachos/ui';
 import {
   GraduationCap, CalendarCheck, CreditCard, Bell,
-  LayoutDashboard, User, LogOut, MoreHorizontal, Sun, Moon
+  LayoutDashboard, User, LogOut, MoreHorizontal, Sun, Moon, Menu
 } from 'lucide-react';
 
 const BOTTOM_NAV = [
@@ -43,6 +43,9 @@ export default function StudentLayout() {
       {/* Top Header — Compact */}
       <header className="h-14 sticky top-0 z-40 bg-canvas/80 backdrop-blur-md border-b border-hairline px-4 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
+          <button onClick={() => setShowMore(true)} className="p-2 -ml-2 rounded-lg hover:bg-surface text-ink-muted">
+             <Menu className="w-5 h-5" />
+          </button>
           <div className="w-8 h-8 rounded-lg bg-ink flex items-center justify-center">
             <GraduationCap className="w-5 h-5 text-brand-green" />
           </div>

@@ -152,6 +152,9 @@ export default function OwnerLayout() {
         <header className="h-16 sticky top-0 z-40 bg-canvas/80 backdrop-blur-md border-b border-hairline px-4 sm:px-8 flex items-center justify-between gap-4 flex-shrink-0">
           <div className="flex items-center gap-3">
              {/* Mobile Logo Only */}
+             <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 -ml-2 rounded-lg hover:bg-surface text-ink-muted">
+                <Menu className="w-5 h-5" />
+             </button>
              <div className="lg:hidden w-8 h-8 rounded-lg bg-ink flex items-center justify-center flex-shrink-0">
                 <GraduationCap className="w-5 h-5 text-brand-green" />
              </div>
