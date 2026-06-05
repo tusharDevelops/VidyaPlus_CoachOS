@@ -140,7 +140,21 @@ export default function WalletPage() {
     }
   };
 
-  useEffect(() => { fetchWallet(); }, []);
+  useEffect(() => {
+    fetchWallet();
+
+    // Handle return from Dodo Payments
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('status') === 'success') {
+      setModal({ 
+        kind: 'success', 
+        amount: 0, // Since we don't pass amount back, just show a general success message
+        newBalance: balance 
+      });
+      // Clear the URL without refreshing
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   /* ── Derived ── */
   const balance = wallet?.balance ?? 0;
@@ -176,15 +190,14 @@ export default function WalletPage() {
   const executeTopUp = async () => {
     setModal({ kind: 'processing' });
     try {
-      await api.post('/wallet/top-up', { amount, paymentMethod });
-      // Re-fetch to get updated balance
-      const { data } = await api.get('/wallet');
-      const updated = data.data as WalletResponse;
-      setWallet(updated);
-      setModal({ kind: 'success', amount, newBalance: updated.balance });
-      // Reset form
-      setSelectedPreset(null);
-      setCustomAmount('');
+      const response = await api.post('/wallet/top-up', { amount, paymentMethod });
+      
+      if (response.data?.data?.checkout_url) {
+        // Redirect to Dodo Payments secure checkout
+        window.location.href = response.data.data.checkout_url;
+      } else {
+        throw new Error('Checkout URL not found');
+      }
     } catch (e: any) {
       setModal({ kind: 'error', message: e?.response?.data?.error || 'Payment failed. Please try again.' });
     }
@@ -410,7 +423,7 @@ export default function WalletPage() {
                 <div className="flex items-start gap-2 mt-4 p-3 rounded-md bg-surface">
                   <Info className="w-3.5 h-3.5 text-steel mt-0.5 flex-shrink-0" />
                   <p className="text-[11px] text-steel leading-relaxed">
-                    This is a demo payment. In production, you'll be redirected to a secure payment gateway.
+                    You will be redirected to Dodo Payments for a secure checkout.
                   </p>
                 </div>
               </div>
@@ -559,14 +572,18 @@ export default function WalletPage() {
                 </div>
                 <h3 className="text-lg font-semibold text-ink">Money Added! 🎉</h3>
                 <p className="text-sm text-steel mt-2">
-                  <span className="font-semibold text-brand-green-deep">₹{modal.amount.toLocaleString('en-IN')}</span> has been added to your wallet.
+                  {modal.amount > 0 
+                    ? <><span className="font-semibold text-brand-green-deep">₹{modal.amount.toLocaleString('en-IN')}</span> has been added to your wallet.</>
+                    : "Your payment was successful and your wallet balance has been updated."}
                 </p>
-                <div className="mt-4 p-3 rounded-md bg-surface">
-                  <p className="text-[11px] text-steel uppercase tracking-wider font-semibold">New Balance</p>
-                  <p className="text-2xl font-semibold text-ink mt-1 tabular-nums">
-                    ₹{modal.newBalance.toLocaleString('en-IN')}
-                  </p>
-                </div>
+                {modal.newBalance > 0 && (
+                  <div className="mt-4 p-3 rounded-md bg-surface">
+                    <p className="text-[11px] text-steel uppercase tracking-wider font-semibold">New Balance</p>
+                    <p className="text-2xl font-semibold text-ink mt-1 tabular-nums">
+                      ₹{modal.newBalance.toLocaleString('en-IN')}
+                    </p>
+                  </div>
+                )}
                 <button onClick={closeModal} className="mint-btn-primary w-full mt-5 h-10 text-sm">
                   Done
                 </button>

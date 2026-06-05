@@ -4,7 +4,11 @@ import { authenticate, requireRole } from '../../middleware/auth.middleware';
 
 const router = Router();
 
-// All wallet routes require authentication
+// Webhook must be public and handle its own signature verification
+import { walletWebhookHandler } from './wallet.webhook';
+router.post('/webhook', walletWebhookHandler);
+
+// All other wallet routes require authentication
 router.use(authenticate);
 
 // Only owners and accountants can view/manage wallet

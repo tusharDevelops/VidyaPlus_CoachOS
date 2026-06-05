@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import DodoPayments from 'dodopayments';
 import prisma from '../../lib/prisma';
 import logger from '../../lib/logger';
 import { z } from 'zod';
@@ -38,51 +39,48 @@ export const walletController = {
     }
   },
 
-  // ---------- Mock Top-up (Payment Gateway Mock) ----------
+  // ---------- Dodo Payments Top-up ----------
   async topUp(req: Request, res: Response) {
     try {
       const instituteId = req.user!.instituteId!;
-      const { amount, paymentMethod } = topUpSchema.parse(req.body);
+      const { amount } = topUpSchema.parse(req.body);
 
-      // Simulate payment gateway delay/success
-      logger.info(`Processing mock payment of ₹${amount} via ${paymentMethod} for institute ${instituteId}`);
+      logger.info(`Creating Dodo Payments checkout session of ₹${amount} for institute ${instituteId}`);
 
-      // In a real scenario, this would be a webhook from Razorpay/Stripe
-      const transaction = await prisma.$transaction(async (tx) => {
-        // 1. Create wallet transaction
-        const walletTx = await tx.walletTransaction.create({
-          data: {
-            instituteId,
-            amount,
-            type: 'credit',
-            description: `Top-up via ${paymentMethod} (Mock)`,
-            referenceNo: `MOCK-TXN-${Date.now()}`,
-          },
-        });
+      const dodoClient = new DodoPayments({
+        bearerToken: process.env.DODO_PAYMENTS_API_KEY,
+        environment: 'test_mode', 
+      });
 
-        // 2. Update institute balance
-        await tx.institute.update({
-          where: { id: instituteId },
-          data: {
-            walletBalance: { increment: amount },
-          },
-        });
-
-        return walletTx;
+      const session = await dodoClient.checkoutSessions.create({
+        product_cart: [
+          {
+            product_id: process.env.DODO_WALLET_PRODUCT_ID!,
+            quantity: 1,
+            amount: amount * 100, // Dodo expects smallest currency unit (paise)
+          }
+        ],
+        metadata: {
+          instituteId,
+          type: 'wallet_topup'
+        },
+        return_url: `${process.env.CORS_ORIGIN?.split(',')[0] || 'http://localhost:5173'}/wallet?status=success`,
       });
 
       res.json({
         success: true,
-        message: 'Top-up successful',
-        data: transaction,
+        message: 'Checkout session created',
+        data: {
+          checkout_url: session.checkout_url
+        },
       });
     } catch (error: any) {
       if (error.name === 'ZodError') {
         res.status(400).json({ success: false, error: 'Validation failed', details: error.errors });
         return;
       }
-      logger.error('Failed to process top-up', { error: error.message });
-      res.status(500).json({ success: false, error: 'Failed to process top-up' });
+      logger.error('Failed to create Dodo checkout session', { error: error.message });
+      res.status(500).json({ success: false, error: 'Failed to create checkout session' });
     }
   },
 };
