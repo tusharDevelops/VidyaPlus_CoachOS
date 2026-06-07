@@ -295,26 +295,29 @@ export const feeController = {
       const instituteId = req.user!.instituteId!;
       const today = new Date();
 
-      const [allFees, allPayments] = await Promise.all([
-        prisma.feeRecord.findMany({ where: { instituteId } }),
-        prisma.payment.aggregate({ where: { instituteId, status: 'completed' }, _sum: { amount: true } })
+      // Use Prisma aggregations instead of loading all records into memory
+      const [totalDuesAgg, allPayments, overdueAgg, overdueCountAgg] = await Promise.all([
+        // Sum of ALL fee record amounts
+        prisma.feeRecord.aggregate({ where: { instituteId }, _sum: { amount: true } }),
+        // Sum of ALL completed payments
+        prisma.payment.aggregate({ where: { instituteId, status: 'completed' }, _sum: { amount: true } }),
+        // Sum of overdue (unpaid + past due date) fee amounts
+        prisma.feeRecord.aggregate({
+          where: { instituteId, status: { not: 'paid' }, dueDate: { lt: today } },
+          _sum: { amount: true },
+        }),
+        // Count of overdue records
+        prisma.feeRecord.count({
+          where: { instituteId, status: { not: 'paid' }, dueDate: { lt: today } },
+        }),
       ]);
 
-      let totalDues = 0;
-      let totalOverdueAmount = 0;
-      let overdueRecordsCount = 0;
-
-      allFees.forEach(f => {
-        totalDues += Number(f.amount);
-        if (f.status !== 'paid' && f.dueDate < today) {
-          totalOverdueAmount += Number(f.amount); // Simplification: assuming full amount is overdue for simplicity, ideally it should be amount - paid
-          overdueRecordsCount++;
-        }
-      });
-
+      const totalDues = Number(totalDuesAgg._sum.amount || 0);
       const totalCollected = Number(allPayments._sum.amount || 0);
+      const totalOverdueAmount = Number(overdueAgg._sum.amount || 0);
+      const overdueRecordsCount = overdueCountAgg;
 
-      // Overdue List
+      // Overdue List (only top 10 for display)
       const overdueListRaw = await prisma.feeRecord.findMany({
         where: { instituteId, status: { not: 'paid' }, dueDate: { lt: today } },
         include: {

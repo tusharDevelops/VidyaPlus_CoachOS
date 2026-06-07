@@ -20,6 +20,7 @@ import {
   Landmark,
   Info,
 } from 'lucide-react';
+import Pagination from '../../components/Pagination';
 
 /* ────────────────────────── Types ────────────────────────── */
 
@@ -109,6 +110,7 @@ export default function WalletPage() {
   const [wallet, setWallet] = useState<WalletResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [txnMeta, setTxnMeta] = useState({ page: 1, limit: 20, total: 0, totalPages: 0 });
 
   // Add-money form
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
@@ -122,12 +124,13 @@ export default function WalletPage() {
   const [filter, setFilter] = useState<FilterType>('all');
 
   /* ── Fetch ── */
-  const fetchWallet = async () => {
+  const fetchWallet = async (page = 1) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.get('/wallet');
+      const { data } = await api.get('/wallet', { params: { page, limit: 20 } });
       setWallet(data.data as WalletResponse);
+      if (data.meta) setTxnMeta(data.meta);
     } catch (e: any) {
       setError(e?.response?.data?.error || 'Could not load wallet. Please try again.');
     } finally {
@@ -216,7 +219,7 @@ export default function WalletPage() {
           </div>
         </div>
         <button
-          onClick={fetchWallet}
+          onClick={() => fetchWallet(txnMeta?.page || 1)}
           disabled={loading}
           className="btn-secondary text-xs gap-1.5 h-9"
         >
@@ -475,6 +478,9 @@ export default function WalletPage() {
                     ))}
                   </div>
                 )}
+                <div className="px-5 sm:px-6 pb-4">
+                  <Pagination page={txnMeta.page} totalPages={txnMeta.totalPages} total={txnMeta.total} limit={txnMeta.limit} onPageChange={(p) => fetchWallet(p)} />
+                </div>
               </div>
             </div>
           </div>

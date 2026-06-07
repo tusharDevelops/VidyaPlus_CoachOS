@@ -9,28 +9,47 @@ const topUpSchema = z.object({
   paymentMethod: z.string().default('upi'),
 });
 
+const walletQuerySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(20),
+});
+
 export const walletController = {
   // ---------- Get Wallet Balance & Transactions ----------
   async getWallet(req: Request, res: Response) {
     try {
       const instituteId = req.user!.instituteId!;
+      const query = walletQuerySchema.parse(req.query);
+      const skip = (query.page - 1) * query.limit;
 
       const institute = await prisma.institute.findUnique({
         where: { id: instituteId },
         select: { walletBalance: true },
       });
 
-      const transactions = await prisma.walletTransaction.findMany({
-        where: { instituteId },
-        orderBy: { createdAt: 'desc' },
-        take: 50,
-      });
+      const where = { instituteId };
+
+      const [transactions, total] = await Promise.all([
+        prisma.walletTransaction.findMany({
+          where,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: query.limit,
+        }),
+        prisma.walletTransaction.count({ where }),
+      ]);
 
       res.json({
         success: true,
         data: {
           balance: institute?.walletBalance || 0,
           transactions,
+        },
+        meta: {
+          page: query.page,
+          limit: query.limit,
+          total,
+          totalPages: Math.ceil(total / query.limit),
         },
       });
     } catch (error: any) {

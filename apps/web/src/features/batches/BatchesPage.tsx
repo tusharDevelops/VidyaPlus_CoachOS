@@ -5,6 +5,7 @@ import {
   Loader2, MoreVertical, Ticket, RefreshCcw, Edit2, Trash2
 } from 'lucide-react';
 import BatchModal from '../dashboard/components/modals/BatchModal.tsx';
+import Pagination from '../../components/Pagination';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -22,12 +23,14 @@ export default function BatchesPage() {
   const [showModal, setShowModal] = useState(false);
   const [editBatch, setEditBatch] = useState<Batch | null>(null);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [meta, setMeta] = useState({ page: 1, limit: 20, total: 0, totalPages: 0 });
 
-  const fetchBatches = useCallback(async () => {
+  const fetchBatches = useCallback(async (page = 1) => {
     setLoading(true);
     try {
-      const { data } = await api.get('/batches');
+      const { data } = await api.get('/batches', { params: { page, limit: 20 } });
       setBatches(data.data);
+      if (data.meta) setMeta(data.meta);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   }, []);
@@ -76,7 +79,8 @@ export default function BatchesPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
           {batches.map(batch => {
              const occupancy = (batch.enrolledStudents / batch.capacity) * 100;
              const isFull = occupancy >= 95;
@@ -189,7 +193,9 @@ export default function BatchesPage() {
               </div>
              );
           })}
-        </div>
+          </div>
+          <Pagination page={meta.page} totalPages={meta.totalPages} total={meta.total} limit={meta.limit} onPageChange={(p) => fetchBatches(p)} />
+        </>
       )}
 
       {showModal && (

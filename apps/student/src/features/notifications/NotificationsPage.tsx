@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Pagination from '../../components/Pagination';
 import api from '../../lib/api';
 import {
   Bell, BellOff, CheckCheck, Loader2, ArrowLeft,
@@ -11,11 +12,13 @@ export default function NotificationsPage() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>({ notifications: [], unreadCount: 0 });
   const [refreshing, setRefreshing] = useState(false);
+  const [meta, setMeta] = useState({ page: 1, limit: 20, total: 0, totalPages: 0 });
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = async (page = 1) => {
     try {
-      const res = await api.get('/notifications');
+      const res = await api.get('/notifications', { params: { page, limit: 20 } });
       setData(res.data.data);
+      if (res.data.meta) setMeta(res.data.meta);
     } catch (err) {
       console.error('Failed to fetch notifications', err);
     } finally {
@@ -205,6 +208,14 @@ export default function NotificationsPage() {
           </div>
         )}
       </div>
+
+      <Pagination
+        page={meta.page}
+        totalPages={meta.totalPages}
+        total={meta.total}
+        limit={meta.limit}
+        onPageChange={(p) => fetchNotifications(p)}
+      />
     </div>
   );
 }

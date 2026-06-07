@@ -3,6 +3,7 @@ import { User, Search, Loader2, Plus, MoreVertical, Edit2, Trash2, UserMinus } f
 import { DrillDepth } from '../DashboardDrillDown.tsx';
 import api from '../../../../lib/api';
 import StudentModal from '../modals/StudentModal.tsx';
+import LoadMore from '../../../../components/LoadMore';
 
 interface Student {
   id: string;
@@ -29,14 +30,22 @@ export default function StudentsGridLayer({ batchId, onNavigate }: StudentsGridL
   const [showModal, setShowModal] = useState(false);
   const [editStudent, setEditStudent] = useState<Student | null>(null);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [total, setTotal] = useState(0);
 
-  const fetchStudents = async () => {
+  const fetchStudents = async (p = 1, append = false) => {
     setLoading(true);
     try {
       const { data } = await api.get('/students', { 
-        params: { batchId, search, limit: 100 } 
+        params: { batchId, search, page: p, limit: 20 } 
       });
-      setStudents(data.data);
+      setStudents(prev => append ? [...prev, ...data.data] : data.data);
+      if (data.meta) {
+        setHasMore(data.meta.page < data.meta.totalPages);
+        setTotal(data.meta.total);
+        setPage(data.meta.page);
+      }
     } catch (err) {
       console.error('Failed to fetch students:', err);
     } finally {
@@ -45,8 +54,11 @@ export default function StudentsGridLayer({ batchId, onNavigate }: StudentsGridL
   };
 
   useEffect(() => {
-    fetchStudents();
+    setPage(1);
+    fetchStudents(1, false);
   }, [batchId, search]);
+
+  const loadMore = () => fetchStudents(page + 1, true);
 
   const deleteStudent = async (id: string) => {
     if (!window.confirm('Remove this student from the system? This will also remove them from all batches.')) return;
@@ -107,7 +119,8 @@ export default function StudentsGridLayer({ batchId, onNavigate }: StudentsGridL
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {students.map((student) => (
             <div
               key={student.id}
@@ -166,7 +179,9 @@ export default function StudentsGridLayer({ batchId, onNavigate }: StudentsGridL
               </div>
             </div>
           ))}
-        </div>
+          </div>
+          <LoadMore hasMore={hasMore} loading={loading} onLoadMore={loadMore} total={total} loaded={students.length} />
+        </>
       )}
 
       {showModal && (

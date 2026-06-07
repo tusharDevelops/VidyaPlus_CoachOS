@@ -3,6 +3,7 @@ import { BookOpen, Users, Loader2, Plus, MoreVertical, Edit2, Trash2 } from 'luc
 import { DrillDepth } from '../DashboardDrillDown.tsx';
 import api from '../../../../lib/api';
 import BatchModal from '../modals/BatchModal.tsx';
+import LoadMore from '../../../../components/LoadMore';
 
 interface Batch {
   id: string;
@@ -27,12 +28,20 @@ export default function BatchesGridLayer({ onNavigate }: BatchesGridLayerProps) 
   const [showModal, setShowModal] = useState(false);
   const [editBatch, setEditBatch] = useState<Batch | null>(null);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [total, setTotal] = useState(0);
 
-  const fetchBatches = async () => {
+  const fetchBatches = async (p = 1, append = false) => {
     setLoading(true);
     try {
-      const { data } = await api.get('/batches');
-      setBatches(data.data);
+      const { data } = await api.get('/batches', { params: { page: p, limit: 20 } });
+      setBatches(prev => append ? [...prev, ...data.data] : data.data);
+      if (data.meta) {
+        setHasMore(data.meta.page < data.meta.totalPages);
+        setTotal(data.meta.total);
+        setPage(data.meta.page);
+      }
     } catch (err) {
       console.error('Failed to fetch batches:', err);
     } finally {
@@ -43,6 +52,8 @@ export default function BatchesGridLayer({ onNavigate }: BatchesGridLayerProps) 
   useEffect(() => {
     fetchBatches();
   }, []);
+
+  const loadMore = () => fetchBatches(page + 1, true);
 
   const deleteBatch = async (id: string) => {
     if (!window.confirm('Archive this batch? Enrolled students will be deactivated.')) return;
@@ -83,7 +94,8 @@ export default function BatchesGridLayer({ onNavigate }: BatchesGridLayerProps) 
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {batches.map((batch) => (
             <div 
               key={batch.id}
@@ -147,7 +159,9 @@ export default function BatchesGridLayer({ onNavigate }: BatchesGridLayerProps) 
               </div>
             </div>
           ))}
-        </div>
+          </div>
+          <LoadMore hasMore={hasMore} loading={loading} onLoadMore={loadMore} total={total} loaded={batches.length} />
+        </>
       )}
 
       {showModal && (

@@ -15,6 +15,12 @@ const recordPayrollSchema = z.object({
   year: z.number().min(2020).max(2100),
 });
 
+const payrollHistoryQuerySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(20),
+  staffId: z.string().uuid().optional(),
+});
+
 // ============================================
 // Controllers
 // ============================================
@@ -91,22 +97,32 @@ export const payrollController = {
   async getPayrollHistory(req: Request, res: Response) {
     try {
       const instituteId = req.user!.instituteId!;
-      const { staffId } = req.query;
+      const query = payrollHistoryQuerySchema.parse(req.query);
+      const skip = (query.page - 1) * query.limit;
 
       const where: any = { instituteId };
-      if (staffId && typeof staffId === 'string') {
-        where.staffId = staffId;
+      if (query.staffId) {
+        where.staffId = query.staffId;
       }
 
-      const history = await prisma.payrollRecord.findMany({
-        where,
-        include: {
-          staff: { select: { name: true, phone: true, role: true } },
-        },
-        orderBy: { createdAt: 'desc' },
-      });
+      const [total, history, aggregation] = await Promise.all([
+        prisma.payrollRecord.count({ where }),
+        prisma.payrollRecord.findMany({
+          where,
+          include: {
+            staff: { select: { name: true, phone: true, role: true } },
+          },
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: query.limit,
+        }),
+        prisma.payrollRecord.aggregate({
+          where,
+          _sum: { amount: true },
+        }),
+      ]);
 
-      const totalPaid = history.reduce((sum, p) => sum + Number(p.amount), 0);
+      const totalPaid = Number(aggregation._sum.amount ?? 0);
 
       res.json({
         success: true,
@@ -123,7 +139,13 @@ export const payrollController = {
             period: `${p.month}/${p.year}`,
             paymentDate: p.paymentDate.toISOString().split('T')[0],
           })),
-        }
+        },
+        meta: {
+          page: query.page,
+          limit: query.limit,
+          total,
+          totalPages: Math.ceil(total / query.limit),
+        },
       });
     } catch (error: any) {
       logger.error('Failed to get payroll history', { error: error.message });

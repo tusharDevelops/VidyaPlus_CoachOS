@@ -28,6 +28,12 @@ const updateStaffSchema = z.object({
   status: z.enum(['active', 'inactive']).optional(),
 });
 
+const listStaffQuerySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(20),
+  search: z.string().optional(),
+});
+
 import { DEFAULT_ROLE_PERMISSIONS, Permission } from '@coachos/shared';
 
 // ============================================
@@ -38,24 +44,30 @@ export const staffController = {
   async listStaff(req: Request, res: Response) {
     try {
       const instituteId = req.user!.instituteId!;
-      const { search } = req.query;
+      const query = listStaffQuerySchema.parse(req.query);
+      const skip = (query.page - 1) * query.limit;
       
       const where: any = {
         instituteId,
         role: { notIn: ['owner', 'student'] },
       };
 
-      if (search && typeof search === 'string') {
+      if (query.search) {
         where.OR = [
-          { name: { contains: search, mode: 'insensitive' } },
-          { phone: { contains: search, mode: 'insensitive' } },
+          { name: { contains: query.search, mode: 'insensitive' } },
+          { phone: { contains: query.search, mode: 'insensitive' } },
         ];
       }
       
-      const staff = await prisma.user.findMany({
-        where,
-        orderBy: { createdAt: 'desc' },
-      });
+      const [total, staff] = await Promise.all([
+        prisma.user.count({ where }),
+        prisma.user.findMany({
+          where,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: query.limit,
+        }),
+      ]);
 
       res.json({
         success: true,
@@ -70,6 +82,12 @@ export const staffController = {
           status: s.status,
           createdAt: s.createdAt,
         })),
+        meta: {
+          page: query.page,
+          limit: query.limit,
+          total,
+          totalPages: Math.ceil(total / query.limit),
+        },
       });
     } catch (error: any) {
       logger.error('Failed to list staff', { error: error.message });

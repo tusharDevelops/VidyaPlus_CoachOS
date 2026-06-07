@@ -6,6 +6,7 @@ import {
   Check, AlertCircle, Clock, ArrowRight, UserCheck, ShieldAlert
 } from 'lucide-react';
 import StaffModal from './StaffModal';
+import Pagination from '../../components/Pagination';
 import PayrollModal from './PayrollModal';
 
 export interface Staff {
@@ -22,6 +23,7 @@ export interface Staff {
 export default function StaffPage() {
   const [staffList, setStaffList] = useState<Staff[]>([]);
   const [loading, setLoading] = useState(true);
+  const [meta, setMeta] = useState({ page: 1, limit: 20, total: 0, totalPages: 0 });
   const [activeTab, setActiveTab] = useState<'members' | 'attendance' | 'roles'>('members');
 
   // Attendance specific state
@@ -36,11 +38,12 @@ export default function StaffPage() {
   const [isPayrollModalOpen, setIsPayrollModalOpen] = useState(false);
   const [payrollStaff, setPayrollStaff] = useState<Staff | null>(null);
 
-  const fetchStaff = async () => {
+  const fetchStaff = async (page = 1) => {
     setLoading(true);
     try {
-      const { data } = await api.get('/staff');
+      const { data } = await api.get('/staff', { params: { page, limit: 20 } });
       setStaffList(data.data);
+      if (data.meta) setMeta(data.meta);
     } catch (err) {
       console.error(err);
     } finally {
@@ -137,7 +140,8 @@ export default function StaffPage() {
       ) : (
         <div className="space-y-6">
           {activeTab === 'members' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {staffList.map(staff => (
                 <div key={staff.id} className="mint-card group hover:border-brand-green transition-all bg-canvas p-6 relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
@@ -182,7 +186,9 @@ export default function StaffPage() {
                   </button>
                 </div>
               ))}
-            </div>
+              </div>
+              <Pagination page={meta.page} totalPages={meta.totalPages} total={meta.total} limit={meta.limit} onPageChange={(p) => fetchStaff(p)} />
+            </>
           )}
 
           {activeTab === 'attendance' && (

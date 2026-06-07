@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
+import Pagination from '../../components/Pagination';
 import {
-  Building2, Search, Plus, MoreVertical, ChevronLeft, ChevronRight,
+  Building2, Search, Plus, MoreVertical,
   Users, X, AlertTriangle, CheckCircle2,
 } from 'lucide-react';
 
@@ -171,19 +172,14 @@ export default function InstitutesListPage() {
         </div>
 
         {meta.totalPages > 1 && (
-          <div className="flex items-center justify-between px-5 py-3 border-t border-hairline-soft">
-            <p className="text-xs text-steel">
-              Showing {(meta.page - 1) * meta.limit + 1}-{Math.min(meta.page * meta.limit, meta.total)} of {meta.total}
-            </p>
-            <div className="flex items-center gap-1">
-              <button disabled={meta.page <= 1} onClick={() => fetchInstitutes(meta.page - 1)} className="w-8 h-8 rounded-full text-steel hover:text-ink hover:bg-surface disabled:opacity-30 flex items-center justify-center">
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <span className="text-xs text-steel px-2">Page {meta.page} of {meta.totalPages}</span>
-              <button disabled={meta.page >= meta.totalPages} onClick={() => fetchInstitutes(meta.page + 1)} className="w-8 h-8 rounded-full text-steel hover:text-ink hover:bg-surface disabled:opacity-30 flex items-center justify-center">
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+          <div className="px-5 pb-5">
+            <Pagination
+              page={meta.page}
+              totalPages={meta.totalPages}
+              total={meta.total}
+              limit={meta.limit}
+              onPageChange={(p) => fetchInstitutes(p)}
+            />
           </div>
         )}
       </div>

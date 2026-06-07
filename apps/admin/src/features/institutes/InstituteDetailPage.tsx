@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Pagination from '../../components/Pagination';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
 import {
@@ -33,6 +34,11 @@ export default function InstituteDetailPage() {
   const [logs, setLogs] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
   const [logsLoading, setLogsLoading] = useState(false);
+  const [paymentsLoading, setPaymentsLoading] = useState(false);
+  const [logsMeta, setLogsMeta] = useState({ page: 1, limit: 20, total: 0, totalPages: 0 });
+  const [paymentsMeta, setPaymentsMeta] = useState({ page: 1, limit: 20, total: 0, totalPages: 0 });
+  const [logsLoaded, setLogsLoaded] = useState(false);
+  const [paymentsLoaded, setPaymentsLoaded] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -43,18 +49,42 @@ export default function InstituteDetailPage() {
       .finally(() => setLoading(false));
   }, [id, navigate]);
 
+  const fetchAuditLogs = async (page = 1) => {
+    setLogsLoading(true);
+    try {
+      const { data } = await api.get(`/super-admin/institutes/${id}/audit-logs`, { params: { page, limit: 20 } });
+      setLogs(data.data);
+      if (data.meta) setLogsMeta(data.meta);
+    } catch (err) {
+      console.error('Failed to fetch audit logs:', err);
+    } finally {
+      setLogsLoading(false);
+      setLogsLoaded(true);
+    }
+  };
+
+  const fetchPayments = async (page = 1) => {
+    setPaymentsLoading(true);
+    try {
+      const { data } = await api.get(`/super-admin/institutes/${id}/payments`, { params: { page, limit: 20 } });
+      setPayments(data.data);
+      if (data.meta) setPaymentsMeta(data.meta);
+    } catch (err) {
+      console.error('Failed to fetch payments:', err);
+    } finally {
+      setPaymentsLoading(false);
+      setPaymentsLoaded(true);
+    }
+  };
+
   useEffect(() => {
-    if (activeTab === 'audit' && logs.length === 0) {
-      setLogsLoading(true);
-      api.get(`/super-admin/institutes/${id}/audit-logs`)
-        .then(({ data }) => setLogs(data.data))
-        .finally(() => setLogsLoading(false));
+    if (activeTab === 'audit' && !logsLoaded) {
+      fetchAuditLogs();
     }
-    if (activeTab === 'payments' && payments.length === 0) {
-      api.get(`/super-admin/institutes/${id}/payments`)
-        .then(({ data }) => setPayments(data.data));
+    if (activeTab === 'payments' && !paymentsLoaded) {
+      fetchPayments();
     }
-  }, [activeTab, id, logs.length, payments.length]);
+  }, [activeTab, id, logsLoaded, paymentsLoaded]);
 
   const handleStatusChange = async (newStatus: string) => {
     if (!institute) return;
@@ -281,21 +311,42 @@ export default function InstituteDetailPage() {
               ])}
               empty="No activity recorded for this tenant"
             />
+            <Pagination
+              page={logsMeta.page}
+              totalPages={logsMeta.totalPages}
+              total={logsMeta.total}
+              limit={logsMeta.limit}
+              onPageChange={(p) => fetchAuditLogs(p)}
+            />
           </div>
         )}
 
         {activeTab === 'payments' && (
-          <DataTable
-            headers={['Period', 'Plan', 'Amount', 'Mode', 'Status']}
-            rows={payments.map(p => [
-              <span className="text-sm font-medium text-ink">{p.feeRecord?.periodLabel || 'System'}</span>,
-              <span className="text-xs text-steel">{p.feeRecord?.feePlan?.name || 'Subscription'}</span>,
-              <span className="text-sm font-semibold text-ink font-mono">₹{Number(p.amount).toLocaleString()}</span>,
-              <span className="text-[11px] font-semibold text-steel uppercase tracking-[0.5px]">{p.paymentMode}</span>,
-              <StatusBadge status={p.status} />,
-            ])}
-            empty="No platform payments found"
-          />
+          <div>
+            {paymentsLoading && (
+              <div className="flex justify-center py-4">
+                <Loader2 className="w-5 h-5 text-brand-green animate-spin" />
+              </div>
+            )}
+            <DataTable
+              headers={['Period', 'Plan', 'Amount', 'Mode', 'Status']}
+              rows={payments.map(p => [
+                <span className="text-sm font-medium text-ink">{p.feeRecord?.periodLabel || 'System'}</span>,
+                <span className="text-xs text-steel">{p.feeRecord?.feePlan?.name || 'Subscription'}</span>,
+                <span className="text-sm font-semibold text-ink font-mono">₹{Number(p.amount).toLocaleString()}</span>,
+                <span className="text-[11px] font-semibold text-steel uppercase tracking-[0.5px]">{p.paymentMode}</span>,
+                <StatusBadge status={p.status} />,
+              ])}
+              empty="No platform payments found"
+            />
+            <Pagination
+              page={paymentsMeta.page}
+              totalPages={paymentsMeta.totalPages}
+              total={paymentsMeta.total}
+              limit={paymentsMeta.limit}
+              onPageChange={(p) => fetchPayments(p)}
+            />
+          </div>
         )}
       </div>
     </div>

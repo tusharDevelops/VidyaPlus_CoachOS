@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import FeeCollectionDrawer from '../fees/components/FeeCollectionDrawer';
 import StudentModal from '../dashboard/components/modals/StudentModal.tsx';
+import Pagination from '../../components/Pagination';
 
 interface Student {
   id: string; name: string; phone: string; email: string | null; status: string;
@@ -354,6 +355,15 @@ export default function StudentsPage() {
       >
         <Plus className="w-6 h-6" />
       </button>
+
+      {/* Pagination */}
+      <Pagination
+        page={meta.page}
+        totalPages={meta.totalPages}
+        total={meta.total}
+        limit={meta.limit}
+        onPageChange={(p) => fetchStudents(p)}
+      />
     </div>
   );
 }

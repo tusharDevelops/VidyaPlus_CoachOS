@@ -3,6 +3,7 @@ import { Users, Search, Plus, Filter, MoreVertical, Shield, Mail, Phone, Loader2
 import { DrillDepth } from '../DashboardDrillDown';
 import api from '../../../../lib/api';
 import StaffModal from '../../../staff/StaffModal';
+import LoadMore from '../../../../components/LoadMore';
 
 interface StaffGridLayerProps {
   onNavigate: (depth: DrillDepth, data?: { studentId?: string }) => void;
@@ -14,12 +15,23 @@ export default function StaffGridLayer({ onNavigate }: StaffGridLayerProps) {
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [showModal, setShowModal] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [total, setTotal] = useState(0);
 
-  const fetchStaff = async () => {
+  const fetchStaff = async (p = 1, append = false) => {
     setLoading(true);
     try {
-      const { data } = await api.get('/staff');
-      setStaff(data.data);
+      const params: any = { page: p, limit: 20 };
+      if (search) params.search = search;
+      const { data } = await api.get('/staff', { params });
+      const items = data.data;
+      setStaff(prev => append ? [...prev, ...items] : items);
+      if (data.meta) {
+        setHasMore(data.meta.page < data.meta.totalPages);
+        setTotal(data.meta.total);
+        setPage(data.meta.page);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -28,8 +40,11 @@ export default function StaffGridLayer({ onNavigate }: StaffGridLayerProps) {
   };
 
   useEffect(() => {
-    fetchStaff();
-  }, []);
+    setPage(1);
+    fetchStaff(1, false);
+  }, [search]);
+
+  const loadMore = () => fetchStaff(page + 1, true);
 
   const filteredStaff = staff.filter(s => {
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -100,7 +115,8 @@ export default function StaffGridLayer({ onNavigate }: StaffGridLayerProps) {
           <p className="text-xs text-steel mt-2">Adjust your filters or add a new team member to get started.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {filteredStaff.map((member) => (
             <div 
               key={member.id}
@@ -148,7 +164,9 @@ export default function StaffGridLayer({ onNavigate }: StaffGridLayerProps) {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+          <LoadMore hasMore={hasMore} loading={loading} onLoadMore={loadMore} total={total} loaded={staff.length} />
+        </>
       )}
 
       {showModal && (

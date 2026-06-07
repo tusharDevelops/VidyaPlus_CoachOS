@@ -45,6 +45,13 @@ const enrollSchema = z.object({
   feePlanId: z.string().uuid().optional(),
 });
 
+const listQuerySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(20),
+  search: z.string().optional(),
+  status: z.string().optional(),
+});
+
 // ============================================
 // Conflict Detection Helper
 // ============================================
@@ -84,28 +91,33 @@ export const batchController = {
   async list(req: Request, res: Response) {
     try {
       const instituteId = req.user!.instituteId!;
-      const search = req.query.search as string | undefined;
-      const status = req.query.status as string | undefined;
+      const query = listQuerySchema.parse(req.query);
+      const skip = (query.page - 1) * query.limit;
 
       const where: any = { instituteId };
-      if (status) where.status = status;
+      if (query.status) where.status = query.status;
       if (req.user!.role === 'teacher') where.teacherId = req.user!.userId;
-      if (search) {
+      if (query.search) {
         where.OR = [
-          { name: { contains: search, mode: 'insensitive' } },
-          { subject: { contains: search, mode: 'insensitive' } },
+          { name: { contains: query.search, mode: 'insensitive' } },
+          { subject: { contains: query.search, mode: 'insensitive' } },
         ];
       }
 
-      const batches = await prisma.batch.findMany({
-        where,
-        include: {
-          teacher: { select: { id: true, name: true } },
-          feePlan: { select: { id: true, name: true, amount: true, frequency: true } },
-          _count: { select: { enrollments: { where: { status: 'active' } } } },
-        },
-        orderBy: { createdAt: 'desc' },
-      });
+      const [total, batches] = await Promise.all([
+        prisma.batch.count({ where }),
+        prisma.batch.findMany({
+          where,
+          include: {
+            teacher: { select: { id: true, name: true } },
+            feePlan: { select: { id: true, name: true, amount: true, frequency: true } },
+            _count: { select: { enrollments: { where: { status: 'active' } } } },
+          },
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: query.limit,
+        }),
+      ]);
 
       const data = batches.map(b => ({
         ...b,
@@ -113,7 +125,16 @@ export const batchController = {
         _count: undefined,
       }));
 
-      res.json({ success: true, data });
+      res.json({
+        success: true,
+        data,
+        meta: {
+          page: query.page,
+          limit: query.limit,
+          total,
+          totalPages: Math.ceil(total / query.limit),
+        },
+      });
     } catch (error: any) {
       logger.error('Failed to list batches', { error: error.message });
       res.status(500).json({ success: false, error: 'Failed to list batches' });

@@ -3,6 +3,7 @@ import api from '../../lib/api';
 import {
   Bell, BellOff, Check, CheckCircle2, AlertTriangle, RefreshCw, Loader2, X
 } from 'lucide-react';
+import Pagination from '../../components/Pagination';
 
 interface NotificationItem {
   id: string;
@@ -17,12 +18,14 @@ export default function NotificationPage() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
+  const [meta, setMeta] = useState({ page: 1, limit: 20, total: 0, totalPages: 0 });
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = async (page = 1) => {
     setLoading(true);
     try {
-      const { data } = await api.get('/notifications');
+      const { data } = await api.get('/notifications', { params: { page, limit: 20 } });
       setNotifications(data.data.notifications);
+      if (data.meta) setMeta(data.meta);
     } catch (err) {
       console.error(err);
     } finally {
@@ -129,7 +132,8 @@ export default function NotificationPage() {
       )}
 
       {!loading && filtered.length > 0 && (
-        <div className="space-y-3">
+        <>
+          <div className="space-y-3">
           {filtered.map((n) => {
             const isUnread = n.status === 'unread' || n.status === 'queued';
             const isFee = n.content.toLowerCase().includes('fee');
@@ -159,7 +163,11 @@ export default function NotificationPage() {
               </div>
             );
           })}
-        </div>
+          </div>
+          <div className="mt-6">
+            <Pagination page={meta.page} totalPages={meta.totalPages} total={meta.total} limit={meta.limit} onPageChange={(p) => fetchNotifications(p)} />
+          </div>
+        </>
       )}
     </div>
   );

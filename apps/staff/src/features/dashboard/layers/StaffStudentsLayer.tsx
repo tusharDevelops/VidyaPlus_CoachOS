@@ -3,6 +3,7 @@ import { User, Search, Loader2, Plus, MoreVertical, Edit2, Trash2, UserMinus } f
 import { DrillDepth } from '../types';
 import api from '../../../lib/api';
 import { useAuthStore } from '../../../stores/auth.store';
+import LoadMore from '../../../components/LoadMore';
 
 interface Student {
   id: string;
@@ -28,14 +29,22 @@ export default function StaffStudentsLayer({ batchId, onNavigate }: StaffStudent
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [total, setTotal] = useState(0);
 
-  const fetchStudents = async () => {
+  const fetchStudents = async (p: number = 1) => {
     setLoading(true);
     try {
       const { data } = await api.get('/students', { 
-        params: { batchId, search, limit: 100 } 
+        params: { batchId, search, page: p, limit: 20 } 
       });
-      setStudents(data.data);
+      setStudents(prev => p === 1 ? data.data : [...prev, ...data.data]);
+      if (data.meta) {
+        setHasMore(data.meta.page < data.meta.totalPages);
+        setTotal(data.meta.total);
+      }
+      setPage(p);
     } catch (err) {
       console.error('Failed to fetch students:', err);
     } finally {
@@ -44,8 +53,15 @@ export default function StaffStudentsLayer({ batchId, onNavigate }: StaffStudent
   };
 
   useEffect(() => {
-    fetchStudents();
+    setPage(1);
+    fetchStudents(1);
   }, [batchId, search]);
+
+  const loadMore = () => {
+    if (!loading && hasMore) {
+      fetchStudents(page + 1);
+    }
+  };
 
   const deleteStudent = async (id: string) => {
     if (!hasPermission('students.delete')) return;
@@ -105,71 +121,74 @@ export default function StaffStudentsLayer({ batchId, onNavigate }: StaffStudent
           <p className="text-steel mb-4">No students enrolled in this batch.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {students.map((student) => (
-            <div
-              key={student.id}
-              className="flex items-center p-4 bg-canvas border border-hairline rounded-lg hover:border-brand-green/30 transition-all text-left group relative"
-            >
-              <div 
-                className="flex flex-1 items-center cursor-pointer min-w-0"
-                onClick={() => onNavigate('STUDENT_DETAIL', { studentId: student.id })}
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {students.map((student) => (
+              <div
+                key={student.id}
+                className="flex items-center p-4 bg-canvas border border-hairline rounded-lg hover:border-brand-green/30 transition-all text-left group relative"
               >
-                <div className="w-12 h-12 rounded-lg bg-surface border border-hairline flex items-center justify-center mr-4 group-hover:bg-brand-green/10 transition-colors shrink-0 overflow-hidden">
-                  {student.photoUrl ? (
-                    <img src={student.photoUrl} className="w-full h-full object-cover" />
-                  ) : (
-                    <User className="w-6 h-6 text-charcoal group-hover:text-brand-green-deep" />
-                  )}
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-ink truncate group-hover:text-brand-green-deep transition-colors">{student.name}</h3>
-                  <p className="text-[10px] font-bold text-steel uppercase tracking-wider">ID: {student.profile?.studentCode || 'N/A'}</p>
-                </div>
-              </div>
-
-              {(hasPermission('students.edit') || hasPermission('students.delete')) && (
-                <div className="relative ml-2">
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === student.id ? null : student.id); }}
-                    className={`p-1.5 rounded-md transition-all ${activeMenu === student.id ? 'bg-ink text-canvas' : 'text-steel hover:bg-surface'}`}
-                  >
-                    <MoreVertical className="w-4 h-4" />
-                  </button>
+                <div 
+                  className="flex flex-1 items-center cursor-pointer min-w-0"
+                  onClick={() => onNavigate('STUDENT_DETAIL', { studentId: student.id })}
+                >
+                  <div className="w-12 h-12 rounded-lg bg-surface border border-hairline flex items-center justify-center mr-4 group-hover:bg-brand-green/10 transition-colors shrink-0 overflow-hidden">
+                    {student.photoUrl ? (
+                      <img src={student.photoUrl} className="w-full h-full object-cover" />
+                    ) : (
+                      <User className="w-6 h-6 text-charcoal group-hover:text-brand-green-deep" />
+                    )}
+                  </div>
                   
-                  {activeMenu === student.id && (
-                    <div className="absolute right-0 mt-2 w-44 bg-canvas rounded-md shadow-premium border border-hairline z-20 py-1 animate-slide-up origin-top-right">
-                      {hasPermission('students.edit') && (
-                        <button 
-                          className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-ink hover:bg-surface transition-colors"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" /> Edit Profile
-                        </button>
-                      )}
-                      {batchId && hasPermission('batches.edit') && (
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); removeFromBatch(student.id); setActiveMenu(null); }}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-brand-warn hover:bg-brand-warn/5 transition-colors"
-                        >
-                          <UserMinus className="w-3.5 h-3.5" /> Unenroll from Batch
-                        </button>
-                      )}
-                      {hasPermission('students.delete') && (
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); deleteStudent(student.id); setActiveMenu(null); }}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-brand-error hover:bg-brand-error/5 transition-colors"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" /> Delete Student
-                        </button>
-                      )}
-                    </div>
-                  )}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-ink truncate group-hover:text-brand-green-deep transition-colors">{student.name}</h3>
+                    <p className="text-[10px] font-bold text-steel uppercase tracking-wider">ID: {student.profile?.studentCode || 'N/A'}</p>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
+
+                {(hasPermission('students.edit') || hasPermission('students.delete')) && (
+                  <div className="relative ml-2">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === student.id ? null : student.id); }}
+                      className={`p-1.5 rounded-md transition-all ${activeMenu === student.id ? 'bg-ink text-canvas' : 'text-steel hover:bg-surface'}`}
+                    >
+                      <MoreVertical className="w-4 h-4" />
+                    </button>
+                    
+                    {activeMenu === student.id && (
+                      <div className="absolute right-0 mt-2 w-44 bg-canvas rounded-md shadow-premium border border-hairline z-20 py-1 animate-slide-up origin-top-right">
+                        {hasPermission('students.edit') && (
+                          <button 
+                            className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-ink hover:bg-surface transition-colors"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" /> Edit Profile
+                          </button>
+                        )}
+                        {batchId && hasPermission('batches.edit') && (
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); removeFromBatch(student.id); setActiveMenu(null); }}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-brand-warn hover:bg-brand-warn/5 transition-colors"
+                          >
+                            <UserMinus className="w-3.5 h-3.5" /> Unenroll from Batch
+                          </button>
+                        )}
+                        {hasPermission('students.delete') && (
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); deleteStudent(student.id); setActiveMenu(null); }}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-brand-error hover:bg-brand-error/5 transition-colors"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" /> Delete Student
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <LoadMore hasMore={hasMore} loading={loading} onLoadMore={loadMore} total={total} loaded={students.length} />
+        </>
       )}
     </div>
   );

@@ -4,6 +4,14 @@ import logger from '../../lib/logger';
 import { z } from 'zod';
 
 // ============================================
+// Validation Schemas
+// ============================================
+const listQuerySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(20),
+});
+
+// ============================================
 // Controllers
 // ============================================
 export const notificationController = {
@@ -12,16 +20,23 @@ export const notificationController = {
     try {
       const recipientId = req.user!.userId;
       const instituteId = req.user!.instituteId!;
+      const query = listQuerySchema.parse(req.query);
+      const skip = (query.page - 1) * query.limit;
 
-      const notifications = await prisma.notification.findMany({
-        where: {
-          instituteId,
-          recipientId,
-        },
-        orderBy: { createdAt: 'desc' },
-      });
+      const where = { instituteId, recipientId };
 
-      const unreadCount = notifications.filter(n => n.status === 'unread' || n.status === 'queued').length;
+      const [total, unreadCount, notifications] = await Promise.all([
+        prisma.notification.count({ where }),
+        prisma.notification.count({
+          where: { ...where, status: { in: ['unread', 'queued'] } },
+        }),
+        prisma.notification.findMany({
+          where,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: query.limit,
+        }),
+      ]);
 
       res.json({
         success: true,
@@ -34,6 +49,12 @@ export const notificationController = {
             status: n.status,
             createdAt: n.createdAt.toISOString(),
           })),
+        },
+        meta: {
+          page: query.page,
+          limit: query.limit,
+          total,
+          totalPages: Math.ceil(total / query.limit),
         },
       });
     } catch (error: any) {

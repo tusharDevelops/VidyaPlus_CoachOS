@@ -5,23 +5,38 @@ import {
   FileText, CheckCircle2, AlertCircle
 } from 'lucide-react';
 import api from '../../lib/api';
+import Pagination from '../../components/Pagination';
 
 export default function MySalaryPage() {
   const [loading, setLoading] = useState(true);
   const [payroll, setPayroll] = useState<any[]>([]);
+  const [meta, setMeta] = useState({ page: 1, limit: 20, total: 0, totalPages: 0 });
+
+  const fetchPayroll = async (page: number = 1) => {
+    setLoading(true);
+    try {
+      const res = await api.get('/staff/payroll', {
+        params: { page, limit: 20 }
+      });
+      const responseData = res.data.data;
+      // Support both flat array and nested { history } shape
+      if (Array.isArray(responseData)) {
+        setPayroll(responseData);
+      } else {
+        setPayroll(responseData?.history || []);
+      }
+      if (res.data.meta) {
+        setMeta(res.data.meta);
+      }
+    } catch (err) {
+      console.error('Failed to fetch payroll history', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchPayroll = async () => {
-      try {
-        const res = await api.get('/staff/payroll');
-        setPayroll(res.data.data || []);
-      } catch (err) {
-        console.error('Failed to fetch payroll history', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPayroll();
+    fetchPayroll(1);
   }, []);
 
   if (loading) {
@@ -113,6 +128,17 @@ export default function MySalaryPage() {
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+              {payroll.length > 0 && (
+                <div className="px-6 pb-4">
+                  <Pagination
+                    page={meta.page}
+                    totalPages={meta.totalPages}
+                    total={meta.total}
+                    limit={meta.limit}
+                    onPageChange={(p) => fetchPayroll(p)}
+                  />
                 </div>
               )}
             </div>
