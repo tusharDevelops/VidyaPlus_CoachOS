@@ -31,7 +31,7 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
     dob: student?.dob ? new Date(student.dob).toISOString().split('T')[0] : '', 
     parentName: student?.profile?.parentName || '', 
     parentPhone: student?.profile?.parentPhone || '', 
-    batchIds: student?.batches.map(b => b.id) || (initialBatchId ? [initialBatchId] : []) as string[], 
+    batchIds: student?.batches?.map(b => b.id) || (initialBatchId ? [initialBatchId] : []) as string[], 
     feePlanId: ''
   });
   const [batches, setBatches] = useState<Batch[]>([]);

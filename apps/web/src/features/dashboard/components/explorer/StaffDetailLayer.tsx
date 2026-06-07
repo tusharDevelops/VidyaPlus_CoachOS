@@ -363,7 +363,7 @@ export default function StaffDetailLayer({ staffId, onNavigate }: StaffDetailLay
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {staff.assignedBatches.map((batch: any) => (
+                    {staff?.assignedBatches?.map((batch: any) => (
                       <div key={batch.id} className="p-4 bg-surface rounded-2xl border border-hairline group hover:border-brand-green transition-all">
                         <div className="flex items-start justify-between mb-3">
                           <h4 className="text-xs font-black text-ink uppercase tracking-tight">{batch.name}</h4>
