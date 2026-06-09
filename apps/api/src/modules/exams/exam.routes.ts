@@ -10,7 +10,6 @@ router.use(authenticate);
 // Student Routes
 router.get(
   '/my-results',
-  requirePermission('exams.view'),
   examController.getMyResults
 );
 
