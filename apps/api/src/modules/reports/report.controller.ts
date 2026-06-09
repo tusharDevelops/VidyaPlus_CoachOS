@@ -9,39 +9,55 @@ export const reportController = {
       const instituteId = req.user!.instituteId!;
 
       // 1. Total overview
-      const allFees = await prisma.feeRecord.findMany({
+      const allFeesAgg = await prisma.feeRecord.aggregate({
         where: { instituteId },
+        _sum: { amount: true }
       });
+      const totalDues = Number(allFeesAgg._sum.amount || 0);
 
-      const totalDues = allFees.reduce((acc, f) => acc + Number(f.amount), 0);
-      const paidRecords = allFees.filter(f => f.status === 'paid');
-      const totalCollected = paidRecords.reduce((acc, f) => acc + Number(f.amount), 0);
+      const paidFeesAgg = await prisma.feeRecord.aggregate({
+        where: { instituteId, status: 'paid' },
+        _sum: { amount: true }
+      });
+      const totalCollected = Number(paidFeesAgg._sum.amount || 0);
       const totalOutstanding = totalDues - totalCollected;
 
       // 2. Collection breakdown by batch
       const batches = await prisma.batch.findMany({
         where: { instituteId },
-        include: {
-          feeRecords: true,
-        },
       });
 
-      const batchSummary = batches.map(b => {
-        const batchFees = b.feeRecords || [];
-        const collected = batchFees.filter(f => f.status === 'paid').reduce((acc, f) => acc + Number(f.amount), 0);
-        const outstanding = batchFees.reduce((acc, f) => acc + Number(f.amount), 0) - collected;
+      const batchSummaryList = await Promise.all(batches.map(async (b) => {
+        const batchAgg = await prisma.feeRecord.aggregate({
+          where: { instituteId, batchId: b.id },
+          _sum: { amount: true }
+        });
+        const batchPaidAgg = await prisma.feeRecord.aggregate({
+          where: { instituteId, batchId: b.id, status: 'paid' },
+          _sum: { amount: true }
+        });
+        
+        const total = Number(batchAgg._sum.amount || 0);
+        const collected = Number(batchPaidAgg._sum.amount || 0);
+        const outstanding = total - collected;
+        
         return {
           batchId: b.id,
           batchName: b.name,
           collected,
           outstanding,
-          total: collected + outstanding,
+          total,
         };
+      }));
+
+      // 3. Collection breakdown by month (We can't easily group by ISO string month in prisma cleanly without raw query, so we'll fetch only amount, status, dueDate to minimize memory)
+      const feeDates = await prisma.feeRecord.findMany({
+        where: { instituteId },
+        select: { amount: true, status: true, dueDate: true }
       });
 
-      // 3. Collection breakdown by month
       const monthSummary: Record<string, { collected: number; outstanding: number }> = {};
-      allFees.forEach(f => {
+      feeDates.forEach(f => {
         const monthYear = f.dueDate.toISOString().slice(0, 7); // YYYY-MM
         if (!monthSummary[monthYear]) {
           monthSummary[monthYear] = { collected: 0, outstanding: 0 };
@@ -64,7 +80,7 @@ export const reportController = {
           totalDues,
           totalCollected,
           totalOutstanding,
-          batchSummary,
+          batchSummary: batchSummaryList,
           monthSummary: parsedMonthSummary,
         }
       });
@@ -79,26 +95,21 @@ export const reportController = {
     try {
       const instituteId = req.user!.instituteId!;
 
-      const records = await prisma.attendanceRecord.findMany({
-        where: { instituteId },
-      });
-
-      const total = records.length;
-      const present = records.filter(r => r.status === 'present').length;
-      const absent = records.filter(r => r.status === 'absent').length;
-      const late = records.filter(r => r.status === 'late').length;
+      const total = await prisma.attendanceRecord.count({ where: { instituteId } });
+      const present = await prisma.attendanceRecord.count({ where: { instituteId, status: 'present' } });
+      const absent = await prisma.attendanceRecord.count({ where: { instituteId, status: 'absent' } });
+      const late = await prisma.attendanceRecord.count({ where: { instituteId, status: 'late' } });
 
       // Group by batch
       const batches = await prisma.batch.findMany({
         where: { instituteId },
       });
 
-      const batchSummary = batches.map(b => {
-        const batchRecords = records.filter(r => r.batchId === b.id);
-        const bTotal = batchRecords.length;
-        const bPresent = batchRecords.filter(r => r.status === 'present').length;
-        const bAbsent = batchRecords.filter(r => r.status === 'absent').length;
-        const bLate = batchRecords.filter(r => r.status === 'late').length;
+      const batchSummary = await Promise.all(batches.map(async (b) => {
+        const bTotal = await prisma.attendanceRecord.count({ where: { instituteId, batchId: b.id } });
+        const bPresent = await prisma.attendanceRecord.count({ where: { instituteId, batchId: b.id, status: 'present' } });
+        const bAbsent = await prisma.attendanceRecord.count({ where: { instituteId, batchId: b.id, status: 'absent' } });
+        const bLate = await prisma.attendanceRecord.count({ where: { instituteId, batchId: b.id, status: 'late' } });
 
         return {
           batchId: b.id,
@@ -109,7 +120,7 @@ export const reportController = {
           absent: bAbsent,
           late: bLate,
         };
-      });
+      }));
 
       res.json({
         success: true,

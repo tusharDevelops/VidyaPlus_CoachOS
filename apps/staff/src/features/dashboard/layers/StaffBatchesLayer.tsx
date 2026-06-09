@@ -139,19 +139,25 @@ export default function StaffBatchesLayer({ onNavigate }: StaffBatchesLayerProps
                     {batch.subject || 'General'} • {batch.startTime} - {batch.endTime}
                   </p>
                   
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-hairline-soft">
+                  <div className="flex flex-wrap items-center justify-between mt-4 pt-4 border-t border-hairline-soft gap-3">
                     <div className="flex items-center text-xs font-bold text-steel uppercase tracking-widest">
                       <Users className="w-3.5 h-3.5 mr-1.5" />
-                      <span>{batch.enrolledStudents} / {batch.capacity} Students</span>
+                      <span>{batch.enrolledStudents} Students</span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); onNavigate('EXAMS', { batchId: batch.id }); }}
+                        className="px-3 py-1.5 bg-brand-blue/10 text-brand-blue rounded-md text-[10px] font-black uppercase tracking-widest hover:bg-brand-blue/20 transition-all"
+                      >
+                        Exams
+                      </button>
                       <button 
                         onClick={(e) => { e.stopPropagation(); onNavigate('ATTENDANCE', { batchId: batch.id }); }}
                         className="px-3 py-1.5 bg-brand-green/10 text-brand-green-deep rounded-md text-[10px] font-black uppercase tracking-widest hover:bg-brand-green/20 transition-all"
                       >
-                        Mark Attendance
+                        Attendance
                       </button>
-                      <span className="text-xs font-bold text-brand-green-deep">
+                      <span className="text-xs font-bold text-brand-green-deep ml-1 hidden sm:inline">
                         View →
                       </span>
                     </div>

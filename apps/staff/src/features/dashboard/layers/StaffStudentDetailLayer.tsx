@@ -6,11 +6,12 @@ import {
   BookOpen, ShieldCheck, TrendingUp, IndianRupee,
   MessageSquare, Receipt, Edit2, Trash2,
   AlertCircle, Plus, History as HistoryIcon,
-  ChevronRight, Sparkles
+  ChevronRight, Sparkles, BarChart2
 } from 'lucide-react';
 import { DrillDepth } from '../types';
 import api from '../../../lib/api';
 import { useAuthStore } from '../../../stores/auth.store';
+import { downloadCSV } from '../../../lib/export';
 import FeeCollectionDrawer from '../../fees/components/FeeCollectionDrawer';
 import StudentModal from '../components/modals/StudentModal';
 
@@ -64,6 +65,25 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
       setActiveTab('profile');
     }
   }, [studentId]);
+
+  const exportCSV = () => {
+    if (!student || !ledger) return;
+    const dataToExport = [
+      { Category: 'Student Name', Value: student.name },
+      { Category: 'Phone', Value: student.phone },
+      { Category: 'Student ID', Value: student.studentProfile?.studentCode },
+      { Category: 'Enrolled On', Value: new Date(student.studentProfile?.enrolledAt || student.createdAt).toLocaleDateString() },
+      { Category: '', Value: '' },
+      { Category: 'Total Dues', Value: ledger.summary.totalDues },
+      { Category: 'Total Paid', Value: ledger.summary.totalPaid },
+      { Category: 'Total Balance', Value: ledger.summary.balance },
+    ];
+    downloadCSV(dataToExport, `${student.name}_Report.csv`);
+  };
+
+  const exportPDF = () => {
+    window.print();
+  };
 
   const handleSendEmail = async () => {
     if (!studentId || !emailDraft.subject || !emailDraft.content) {
@@ -126,7 +146,7 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
   return (
     <div className="bg-canvas border border-hairline rounded-[2.5rem] overflow-hidden animate-fade-in shadow-premium-subtle">
       {/* Profile Header */}
-      <div className="p-4 sm:p-8 sm:p-10 bg-surface border-b border-hairline">
+      <div className="p-4 sm:p-8 sm:p-10 bg-surface border-b border-hairline print:hidden">
         <div className="flex flex-col md:flex-row gap-4 sm:gap-8 md:items-center">
           <div className="w-24 h-24 rounded-3xl bg-canvas border-2 border-hairline flex items-center justify-center shrink-0 overflow-hidden shadow-md group">
             {student.photoUrl ? (
@@ -157,36 +177,29 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {hasPermission('notifications.send') && (
-              <div className="relative group">
-                <button 
-                  className="px-6 h-12 bg-ink text-canvas hover:bg-ink/90 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center transition-all shadow-lg"
-                >
-                  <MessageSquare className="w-4 h-4 mr-2" /> Connect
-                </button>
-                <div className="absolute right-0 mt-2 w-56 bg-canvas rounded-[1.5rem] shadow-premium border border-hairline z-20 py-3 hidden group-hover:block animate-slide-up origin-top-right">
-                  <button onClick={() => setActiveTab('messages')} className="w-full flex items-center gap-3 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-ink hover:bg-surface">
-                    <MessageSquare className="w-4 h-4 text-brand-green" /> WhatsApp Dispatch
-                  </button>
-                  <button onClick={() => setActiveTab('messages')} className="w-full flex items-center gap-3 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-ink hover:bg-surface">
-                    <Mail className="w-4 h-4 text-brand-blue" /> Email Channel
-                  </button>
-                  <a href={`tel:${student.phone}`} className="w-full flex items-center gap-3 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-ink hover:bg-surface border-t border-hairline mt-2 pt-2">
-                    <Phone className="w-4 h-4 text-steel" /> Direct Call
-                  </a>
-                </div>
-              </div>
-            )}
-
-            {hasPermission('fees.view') && (
+            {hasPermission('fees.collect') && (
               <button 
-                onClick={generateDue}
-                className="h-12 px-5 bg-brand-green/10 text-brand-green-deep hover:bg-brand-green/20 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center transition-all"
+                onClick={() => setShowFeeDrawer(true)}
+                className="flex items-center justify-center px-4 py-2 bg-brand-green-deep text-canvas rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-brand-green transition-all shadow-premium print:hidden"
               >
-                <HistoryIcon className="w-4 h-4 mr-2" /> Sync Ledger
+                <Plus className="w-3.5 h-3.5 mr-2" /> Collect Fee
               </button>
             )}
-            
+
+            <div className="relative group w-full sm:w-auto print:hidden">
+              <button className="w-full sm:w-auto justify-center px-4 py-2 bg-canvas border border-hairline text-ink hover:bg-surface rounded-lg text-xs font-bold uppercase tracking-widest flex items-center transition-all shadow-sm">
+                Export Data
+              </button>
+              <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-full sm:w-48 bg-canvas rounded-xl shadow-premium border border-hairline z-50 py-2 hidden group-hover:block animate-slide-up origin-top">
+                <button onClick={exportPDF} className="w-full flex items-center gap-3 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-ink hover:bg-surface">
+                  Save as PDF
+                </button>
+                <button onClick={exportCSV} className="w-full flex items-center gap-3 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-ink hover:bg-surface border-t border-hairline mt-1 pt-2">
+                  Download CSV
+                </button>
+              </div>
+            </div>
+
             {hasPermission('students.edit') && (
               <button 
                 onClick={() => setShowEditModal(true)}
@@ -216,7 +229,7 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-hairline px-4 sm:px-8 bg-canvas sticky top-0 z-10">
+      <div className="flex overflow-x-auto whitespace-nowrap border-b border-hairline px-4 bg-canvas sticky top-0 z-10 hide-scrollbar print:hidden">
         {hasPermission('fees.view') && (
           <TabButton 
             active={activeTab === 'fees'} 
@@ -237,7 +250,7 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
       </div>
 
       {/* Content Layer */}
-      <div className="p-5 sm:p-10 min-h-[500px]">
+      <div className="p-6 sm:p-3 sm:p-8 min-h-[400px] print:block">
         {activeTab === 'fees' && hasPermission('fees.view') && (
           <div className="space-y-10 animate-fade-in">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -247,15 +260,6 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
             </div>
 
             <div className="flex flex-wrap gap-4">
-              {hasPermission('fees.collect') && (
-                <button 
-                  className="mint-btn-brand h-14 px-4 sm:px-8 text-[11px]"
-                  onClick={() => setShowFeeDrawer(true)}
-                >
-                  <IndianRupee className="w-4 h-4 mr-2" />
-                  Collect Payment
-                </button>
-              )}
               <button 
                 onClick={() => {
                   const latestRecordWithPayment = records.find((r: any) => r.payments && r.payments.length > 0);
@@ -458,59 +462,85 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
           </div>
         )}
 
-        {activeTab === 'profile' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 animate-fade-in">
-            <div className="space-y-10">
-              <SectionHeader icon={User} title="KYC & Personal Data" />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-8">
+        <div className={`grid grid-cols-1 md:grid-cols-2 gap-10 animate-fade-in print:block ${activeTab === 'profile' ? 'block' : 'hidden'}`}>
+          <div className="space-y-8 print:mb-8">
+            <h3 className="text-sm font-black text-ink uppercase tracking-[0.2em] flex items-center border-b border-hairline pb-3">
+              <User className="w-4 h-4 mr-3 text-brand-green" />
+              KYC & PERSONAL DATA
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-8">
                 <DetailItem label="Full Legal Name" value={student.name} />
                 <DetailItem label="Student ID Code" value={student.studentProfile?.studentCode || 'VP-UNSET'} />
                 <DetailItem label="Primary Phone" value={student.phone} icon={Phone} />
                 <DetailItem label="Email Identity" value={student.email || 'NOT_SET'} icon={Mail} />
                 <DetailItem label="Guardian Name" value={student.studentProfile?.parentName || 'NOT_PROVIDED'} />
                 <DetailItem label="Guardian Contact" value={student.studentProfile?.parentPhone || 'NOT_PROVIDED'} />
-              </div>
+            </div>
 
-              <div className="pt-8 space-y-4">
+            <div className="pt-8 space-y-4">
                  <p className="text-[9px] font-black text-slate uppercase tracking-widest opacity-50 ml-1">Current Address</p>
                  <div className="p-6 bg-surface rounded-2xl border border-hairline flex items-start gap-4">
                     <MapPin className="w-5 h-5 text-stone shrink-0 mt-1" />
                     <p className="text-sm font-bold text-ink leading-relaxed">{student.address || 'No residential address on file. Please update the profile to maintain accurate records.'}</p>
                  </div>
-              </div>
             </div>
 
-            <div className="space-y-10">
-              <SectionHeader icon={Calendar} title="Academic Footprint" />
-              <div className="space-y-8">
-                <DetailItem label="Admission Date" value={new Date(student.studentProfile?.enrolledAt || student.createdAt).toLocaleDateString()} icon={Calendar} />
-                
-                <div className="space-y-4">
-                  <p className="text-[9px] font-black text-slate uppercase tracking-widest opacity-50 ml-1">Active Class Enrollments</p>
-                  <div className="flex flex-wrap gap-3">
-                    {student.enrollments?.map((e: any) => (
-                      <div key={e.id} className="px-5 py-3 bg-ink text-canvas rounded-xl flex items-center gap-3 shadow-md hover:scale-105 transition-transform cursor-default">
-                        <GraduationCap className="w-4 h-4 text-brand-green" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">{e.batch?.name}</span>
-                      </div>
-                    ))}
-                    {(!student.enrollments || student.enrollments.length === 0) && (
-                      <p className="text-xs text-steel italic">No active enrollments found.</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="p-4 sm:p-8 bg-brand-green/5 border border-brand-green/20 rounded-[2rem] space-y-5">
-                   <div className="flex items-center gap-3">
-                      <Sparkles className="w-6 h-6 text-brand-green fill-brand-green animate-pulse" />
-                      <h4 className="text-[11px] font-black text-ink uppercase tracking-widest">Academic Status</h4>
-                   </div>
-                   <p className="text-xs text-steel font-medium leading-relaxed">This student is currently in good standing. All academic records and attendance markers are up to date for the current session.</p>
-                </div>
-              </div>
+            <div className="p-4 sm:p-8 bg-brand-green/5 border border-brand-green/20 rounded-[2rem] space-y-5">
+               <div className="flex items-center gap-3">
+                  <Sparkles className="w-6 h-6 text-brand-green fill-brand-green animate-pulse" />
+                  <h4 className="text-[11px] font-black text-ink uppercase tracking-widest">Academic Status</h4>
+               </div>
+               <p className="text-xs text-steel font-medium leading-relaxed">This student is currently in good standing. All academic records and attendance markers are up to date for the current session.</p>
             </div>
           </div>
-        )}
+
+          <div className="space-y-8 md:col-span-2 mt-4 print:mt-8">
+            <h3 className="text-sm font-black text-ink uppercase tracking-[0.2em] flex items-center border-b border-hairline pb-3">
+              <BarChart2 className="w-4 h-4 mr-3 text-brand-blue" />
+              PERFORMANCE ANALYTICS
+            </h3>
+            {student.examResults && student.examResults.length > 0 ? (
+              <div className="bg-canvas border border-hairline rounded-lg overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-surface border-b border-hairline">
+                    <tr>
+                      <th className="px-6 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Exam / Test</th>
+                      <th className="px-6 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Date</th>
+                      <th className="px-6 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Marks Obtained</th>
+                      <th className="px-6 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Percentage</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-hairline">
+                    {student.examResults.map((result: any) => {
+                      const percentage = Math.round((Number(result.marksObtained) / Number(result.exam.maxMarks)) * 100);
+                      return (
+                        <tr key={result.id} className="hover:bg-surface-soft transition-colors">
+                          <td className="px-6 py-4 font-bold text-ink">{result.exam.title}</td>
+                          <td className="px-6 py-4 text-steel font-bold text-xs">{new Date(result.exam.date).toLocaleDateString()}</td>
+                          <td className="px-6 py-4 font-bold text-ink">{result.marksObtained} / {result.exam.maxMarks}</td>
+                          <td className="px-6 py-4">
+                            <span className={`inline-flex px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                              percentage >= 75 ? 'bg-brand-green/10 text-brand-green-deep border-brand-green/20' :
+                              percentage >= 40 ? 'bg-brand-warn/10 text-brand-warn border-brand-warn/20' :
+                              'bg-brand-error/10 text-brand-error border-brand-error/20'
+                            }`}>
+                              {percentage}%
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="p-8 text-center border-2 border-hairline border-dashed rounded-xl bg-surface/30">
+                <p className="text-sm text-ink font-bold">No exam records found</p>
+                <p className="text-xs text-steel mt-1">This student has not been graded for any offline exams yet.</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {showFeeDrawer && hasPermission('fees.collect') && (

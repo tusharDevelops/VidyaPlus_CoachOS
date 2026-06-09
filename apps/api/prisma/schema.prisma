@@ -61,6 +61,8 @@ model Institute {
   receipts         Receipt[]
   attendanceRecords AttendanceRecord[]
   staffAttendance   StaffAttendance[]
+  exams            Exam[]
+  examResults      ExamResult[]
   notifications    Notification[]
   auditLogs        AuditLog[]
   holidays         Holiday[]
@@ -99,6 +101,8 @@ model User {
   refreshTokens    RefreshToken[]
   markedAttendance AttendanceRecord[] @relation("MarkedBy")
   studentAttendance AttendanceRecord[] @relation("StudentAttendance")
+  createdExams      Exam[]             @relation("CreatedExams")
+  examResults       ExamResult[]       @relation("StudentExams")
   staffAttendanceRecords StaffAttendance[] @relation("StaffAttendanceRecords")
   staffAttendanceMarkedBy StaffAttendance[] @relation("StaffAttendanceMarkedBy")
   recordedPayments Payment[]         @relation("RecordedBy")
@@ -165,6 +169,7 @@ model Batch {
   enrollments  BatchEnrollment[]
   attendance   AttendanceRecord[]
   feeRecords   FeeRecord[]
+  exams        Exam[]
 
   @@index([instituteId])
   @@map("batches")
@@ -496,5 +501,51 @@ model WalletTransaction {
 
   @@index([instituteId])
   @@map("wallet_transactions")
+}
+
+// ============================================
+// Exam
+// ============================================
+model Exam {
+  id           String    @id @default(uuid()) @db.Uuid
+  instituteId  String    @map("institute_id") @db.Uuid
+  batchId      String    @map("batch_id") @db.Uuid
+  title        String    @db.VarChar(255)
+  date         DateTime  @db.Date
+  maxMarks     Decimal   @map("max_marks") @db.Decimal(10, 2)
+  description  String?
+  createdBy    String    @map("created_by") @db.Uuid
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  institute Institute @relation(fields: [instituteId], references: [id])
+  batch     Batch     @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  creator   User      @relation("CreatedExams", fields: [createdBy], references: [id])
+  results   ExamResult[]
+
+  @@index([instituteId])
+  @@index([batchId])
+  @@map("exams")
+}
+
+// ============================================
+// Exam Result
+// ============================================
+model ExamResult {
+  id           String   @id @default(uuid()) @db.Uuid
+  instituteId  String   @map("institute_id") @db.Uuid
+  examId       String   @map("exam_id") @db.Uuid
+  studentId    String   @map("student_id") @db.Uuid
+  marksObtained Decimal @map("marks_obtained") @db.Decimal(10, 2)
+  remarks      String?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  institute Institute @relation(fields: [instituteId], references: [id])
+  exam      Exam      @relation(fields: [examId], references: [id], onDelete: Cascade)
+  student   User      @relation("StudentExams", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([examId, studentId])
+  @@index([studentId])
+  @@map("exam_results")
 }
 

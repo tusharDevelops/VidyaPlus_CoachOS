@@ -6,4 +6,5 @@ export type DrillDepth =
   | 'ATTENDANCE' 
   | 'STAFF' 
   | 'STAFF_DETAIL' 
-  | 'STAFF_ATTENDANCE';
+  | 'STAFF_ATTENDANCE' 
+  | 'EXAMS';

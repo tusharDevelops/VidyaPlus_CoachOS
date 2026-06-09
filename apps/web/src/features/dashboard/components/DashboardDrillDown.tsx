@@ -8,8 +8,9 @@ import AttendanceMarkingLayer from './explorer/AttendanceMarkingLayer.tsx';
 import StaffGridLayer from './explorer/StaffGridLayer.tsx';
 import StaffDetailLayer from './explorer/StaffDetailLayer.tsx';
 import StaffAttendanceLayer from './explorer/StaffAttendanceLayer';
+import ExamManagementLayer from './explorer/ExamManagementLayer.tsx';
 
-export type DrillDepth = 'HOME' | 'BATCHES' | 'STUDENTS' | 'STUDENT_DETAIL' | 'STAFF' | 'STAFF_DETAIL' | 'ATTENDANCE' | 'STAFF_ATTENDANCE';
+export type DrillDepth = 'HOME' | 'BATCHES' | 'STUDENTS' | 'STUDENT_DETAIL' | 'STAFF' | 'STAFF_DETAIL' | 'ATTENDANCE' | 'STAFF_ATTENDANCE' | 'EXAMS';
 
 export default function DashboardDrillDown() {
   const [depth, setDepth] = useState<DrillDepth>('HOME');
@@ -23,10 +24,10 @@ export default function DashboardDrillDown() {
   };
 
   return (
-    <div className="flex flex-col space-y-6">
+    <div className="flex flex-col min-w-0 space-y-6 w-full">
       {/* Breadcrumb Navigation */}
       {depth !== 'HOME' && (
-        <nav className="flex items-center space-x-2 text-sm">
+        <nav className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
           <button 
             onClick={() => navigateTo('HOME')}
             className="flex items-center text-steel hover:text-ink transition-colors"
@@ -47,7 +48,7 @@ export default function DashboardDrillDown() {
             </>
           )}
 
-          {(depth === 'STUDENTS' || depth === 'STUDENT_DETAIL') && selectedBatchId && (
+          {(depth === 'STUDENTS' || depth === 'STUDENT_DETAIL' || depth === 'EXAMS') && selectedBatchId && (
             <>
               <ChevronRight className="w-4 h-4 text-hairline-dark" />
               <button 
@@ -56,6 +57,13 @@ export default function DashboardDrillDown() {
               >
                 Students
               </button>
+            </>
+          )}
+
+          {depth === 'EXAMS' && selectedBatchId && (
+            <>
+              <ChevronRight className="w-4 h-4 text-hairline-dark" />
+              <span className="text-ink font-medium">Exams</span>
             </>
           )}
 
@@ -90,12 +98,13 @@ export default function DashboardDrillDown() {
       )}
 
       {/* Render Current Layer */}
-      <div className="animate-fade-in relative">
+      <div className="animate-fade-in relative w-full min-w-0">
         {depth === 'HOME' && <OverviewGridLayer onNavigate={navigateTo} />}
         {depth === 'BATCHES' && <BatchesGridLayer onNavigate={navigateTo} />}
         {depth === 'STUDENTS' && <StudentsGridLayer batchId={selectedBatchId} onNavigate={navigateTo} />}
         {depth === 'STUDENT_DETAIL' && <StudentDetailLayer studentId={selectedStudentId} onNavigate={navigateTo} />}
         {depth === 'ATTENDANCE' && <AttendanceMarkingLayer batchId={selectedBatchId} onNavigate={navigateTo} />}
+        {depth === 'EXAMS' && <ExamManagementLayer batchId={selectedBatchId} onNavigate={navigateTo} />}
         {depth === 'STAFF' && <StaffGridLayer onNavigate={navigateTo} />}
         {depth === 'STAFF_DETAIL' && <StaffDetailLayer staffId={selectedStudentId!} onNavigate={navigateTo} />}
         {depth === 'STAFF_ATTENDANCE' && <StaffAttendanceLayer onNavigate={navigateTo} />}

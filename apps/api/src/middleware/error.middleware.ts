@@ -13,7 +13,12 @@ export function errorHandler(err: any, req: Request, res: Response, _next: NextF
   });
 
   const statusCode = err.statusCode || 500;
-  const message = process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message;
+  
+  // Obscure 500-level database and system errors from real users
+  let message = err.message;
+  if (statusCode === 500 || statusCode >= 500) {
+    message = 'An unexpected technical error occurred. Our team has been notified.';
+  }
 
   res.status(statusCode).json({
     success: false,

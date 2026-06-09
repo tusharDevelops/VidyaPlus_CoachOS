@@ -207,6 +207,13 @@ export const studentController = {
           })
         : [];
 
+      // Get exam results
+      const examResults = await prisma.examResult.findMany({
+        where: { studentId: user.id, instituteId },
+        include: { exam: { select: { title: true, maxMarks: true, date: true } } },
+        orderBy: { exam: { date: 'desc' } }
+      });
+
       // Get attendance summary (last 30 days)
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -231,6 +238,7 @@ export const studentController = {
           profile: user.studentProfile,
           enrollments,
           recentFeeRecords: feeRecords,
+          examResults,
           attendanceSummary: Object.fromEntries(attendanceSummary.map(a => [a.status, a._count.status])),
         },
       });

@@ -116,6 +116,8 @@ export const PERMISSIONS = {
   SETTINGS_MANAGE: 'settings.manage',
   WALLET_VIEW: 'wallet.view',
   MARKETING_CAMPAIGNS: 'marketing.campaigns',
+  EXAMS_VIEW: 'exams.view',
+  EXAMS_MANAGE: 'exams.manage',
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -128,6 +130,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, Permission[]> = {
     PERMISSIONS.BATCHES_VIEW,
     PERMISSIONS.ATTENDANCE_VIEW,
     PERMISSIONS.ATTENDANCE_MARK,
+    PERMISSIONS.EXAMS_VIEW,
+    PERMISSIONS.EXAMS_MANAGE,
   ],
   accountant: [
     PERMISSIONS.STUDENTS_VIEW,

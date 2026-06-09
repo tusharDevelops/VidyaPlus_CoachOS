@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
-import {
-  TrendingUp, IndianRupee, Calendar, BarChart2, CheckCircle2,
-  AlertCircle, RefreshCw, Loader2, ArrowUpRight, ArrowDownRight
+import { 
+  BarChart3, Calendar, Download, Filter, 
+  IndianRupee, TrendingUp, Users, Loader2, RefreshCw, 
+  CheckCircle2, AlertCircle, ArrowUpRight, ArrowDownRight 
 } from 'lucide-react';
+import { downloadCSV } from '../../lib/export';
 
 interface FeeSummary {
   totalDues: number;
@@ -62,6 +64,34 @@ export default function ReportsPage() {
     }
   };
 
+  const exportReport = () => {
+    if (activeTab === 'financial' && feeData) {
+      const csvData = [
+        { Metric: 'Total Dues', Value: feeData.totalDues },
+        { Metric: 'Total Collected', Value: feeData.totalCollected },
+        { Metric: 'Total Outstanding', Value: feeData.totalOutstanding },
+        { Metric: '', Value: '' },
+        ...feeData.batchSummary.map(b => ({
+          Metric: `Batch: ${b.batchName}`,
+          Value: `Collected: ${b.collected}, Outstanding: ${b.outstanding}`
+        }))
+      ];
+      downloadCSV(csvData, 'Financial_Report.csv');
+    } else if (attendanceData) {
+      const csvData = [
+        { Metric: 'Attendance Rate', Value: `${attendanceData.attendanceRate}%` },
+        { Metric: 'Total Present', Value: attendanceData.present },
+        { Metric: 'Total Absent', Value: attendanceData.absent },
+        { Metric: '', Value: '' },
+        ...attendanceData.batchSummary.map(b => ({
+          Metric: `Batch: ${b.batchName}`,
+          Value: `${b.attendanceRate}% (Present: ${b.present})`
+        }))
+      ];
+      downloadCSV(csvData, 'Attendance_Report.csv');
+    }
+  };
+
   useEffect(() => {
     fetchReports();
   }, []);
@@ -76,10 +106,16 @@ export default function ReportsPage() {
           </h1>
           <p className="text-sm text-surface-500 mt-1">Cross-module operational and financial breakdown reports</p>
         </div>
-        <button onClick={fetchReports}
-          className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-surface-50 text-surface-700 rounded-2xl border border-surface-200 text-sm font-bold transition-all shadow-sm active:scale-[0.98]">
-          <RefreshCw className="w-5 h-5" /> Refresh Data
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={exportReport}
+            className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-surface-50 text-surface-700 rounded-2xl border border-surface-200 text-sm font-bold transition-all shadow-sm active:scale-[0.98]">
+            <Download className="w-4 h-4" /> Export
+          </button>
+          <button onClick={fetchReports}
+            className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-surface-50 text-surface-700 rounded-2xl border border-surface-200 text-sm font-bold transition-all shadow-sm active:scale-[0.98]">
+            <RefreshCw className="w-5 h-5" /> Refresh
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -185,7 +221,7 @@ export default function ReportsPage() {
                 <span className="text-[11px] text-primary-700 bg-primary-50 px-2.5 py-1 rounded-lg font-bold inline-block mt-3 uppercase tracking-widest">Cumulative</span>
               </div>
               <div className="w-14 h-14 rounded-2xl bg-primary-50 flex items-center justify-center text-primary-600">
-                <BarChart2 className="w-7 h-7" />
+                <BarChart3 className="w-7 h-7" />
               </div>
             </div>
 

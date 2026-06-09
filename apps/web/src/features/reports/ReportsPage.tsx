@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import api from '../../lib/api';
 import {
   TrendingUp, IndianRupee, Calendar, BarChart2, CheckCircle2,
-  AlertCircle, RefreshCw, Loader2, ArrowUpRight, ArrowDownRight
+  AlertCircle, RefreshCw, Loader2, ArrowUpRight, ArrowDownRight, Download
 } from 'lucide-react';
+import { downloadCSV } from '../../lib/export';
 
 interface FeeSummary {
   totalDues: number;
@@ -66,6 +67,27 @@ export default function ReportsPage() {
     fetchReports();
   }, []);
 
+  const handleExport = () => {
+    if (activeTab === 'financial' && feeData) {
+      const exportData = feeData.batchSummary.map(b => ({
+        'Batch Name': b.batchName,
+        'Total Billings': b.total,
+        'Collected Amount': b.collected,
+        'Outstanding Dues': b.outstanding,
+      }));
+      downloadCSV(exportData, 'Financial_Report.csv');
+    } else if (activeTab === 'attendance' && attendanceData) {
+      const exportData = attendanceData.batchSummary.map(b => ({
+        'Batch Name': b.batchName,
+        'Attendance Rate %': b.attendanceRate,
+        'Present Records': b.present,
+        'Absent Records': b.absent,
+        'Total Records': b.total,
+      }));
+      downloadCSV(exportData, 'Attendance_Report.csv');
+    }
+  };
+
   return (
     <div className="animate-fade-in">
       {/* Header */}
@@ -76,10 +98,16 @@ export default function ReportsPage() {
           </h1>
           <p className="text-sm text-surface-500 mt-1">Cross-module operational and financial breakdown reports</p>
         </div>
-        <button onClick={fetchReports}
-          className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-surface-50 text-surface-700 rounded-2xl border border-surface-200 text-sm font-bold transition-all shadow-sm active:scale-[0.98]">
-          <RefreshCw className="w-5 h-5" /> Refresh Data
-        </button>
+        <div className="flex items-center gap-3">
+          <button onClick={handleExport}
+            className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-surface-50 text-surface-700 rounded-2xl border border-surface-200 text-sm font-bold transition-all shadow-sm active:scale-[0.98]">
+            <Download className="w-5 h-5" /> Export CSV
+          </button>
+          <button onClick={fetchReports}
+            className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-surface-50 text-surface-700 rounded-2xl border border-surface-200 text-sm font-bold transition-all shadow-sm active:scale-[0.98]">
+            <RefreshCw className="w-5 h-5" /> Refresh Data
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}

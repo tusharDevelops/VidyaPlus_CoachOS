@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { User, IndianRupee, MessageSquare, Receipt, Phone, Mail, Calendar, MapPin, BookOpen, Loader2, Edit2, Trash2, AlertCircle, Plus, History as HistoryIcon } from 'lucide-react';
+import { User, IndianRupee, MessageSquare, Receipt, Phone, Mail, Calendar, MapPin, BookOpen, Loader2, Edit2, Trash2, AlertCircle, Plus, History as HistoryIcon, BarChart2 } from 'lucide-react';
 import { DrillDepth } from '../DashboardDrillDown.tsx';
 import api from '../../../../lib/api';
 import FeeCollectionDrawer from '../../../fees/components/FeeCollectionDrawer';
 import StudentModal from '../modals/StudentModal.tsx';
+import { downloadCSV } from '../../../../lib/export';
 
 interface StudentDetailLayerProps {
   studentId: string | null;
@@ -80,6 +81,25 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
     }
   };
 
+  const exportCSV = () => {
+    if (!student || !ledger) return;
+    const dataToExport = [
+      { Category: 'Student Name', Value: student.name },
+      { Category: 'Phone', Value: student.phone },
+      { Category: 'Student ID', Value: student.profile?.studentCode },
+      { Category: 'Enrolled On', Value: new Date(student.profile?.enrolledAt).toLocaleDateString() },
+      { Category: '', Value: '' },
+      { Category: 'Total Dues', Value: ledger.summary.totalDues },
+      { Category: 'Total Paid', Value: ledger.summary.totalPaid },
+      { Category: 'Total Balance', Value: ledger.summary.balance },
+    ];
+    downloadCSV(dataToExport, `${student.name}_Report.csv`);
+  };
+
+  const exportPDF = () => {
+    window.print();
+  };
+
   if (loading || !student) {
     return (
       <div className="flex items-center justify-center h-64 bg-canvas border border-hairline rounded-lg">
@@ -91,7 +111,7 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
   const { summary, records } = ledger || { summary: { totalDues: 0, totalPaid: 0, balance: 0 }, records: [] };
 
   return (
-    <div className="bg-canvas border border-hairline rounded-lg overflow-hidden">
+    <div className="bg-canvas border border-hairline rounded-lg overflow-hidden w-full min-w-0">
       {/* Profile Header */}
       <div className="p-6 sm:p-3 sm:p-8 bg-surface border-b border-hairline">
         <div className="flex flex-col md:flex-row gap-6 md:items-center">
@@ -153,9 +173,23 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
             >
               <Edit2 className="w-3.5 h-3.5 sm:mr-2" /> <span className="hidden sm:inline">Edit</span>
             </button>
+            <div className="relative group w-full sm:w-auto print:hidden">
+              <button className="w-full sm:w-auto justify-center px-4 py-2 bg-canvas border border-hairline text-ink hover:bg-surface rounded-lg text-xs font-bold uppercase tracking-widest flex items-center transition-all shadow-sm">
+                Export Data
+              </button>
+              <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-full sm:w-48 bg-canvas rounded-xl shadow-premium border border-hairline z-50 py-2 hidden group-hover:block animate-slide-up origin-top">
+                <button onClick={exportPDF} className="w-full flex items-center gap-3 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-ink hover:bg-surface">
+                  Save as PDF
+                </button>
+                <button onClick={exportCSV} className="w-full flex items-center gap-3 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-ink hover:bg-surface border-t border-hairline mt-1 pt-2">
+                  Download CSV
+                </button>
+              </div>
+            </div>
+
             <button 
               onClick={deleteStudent}
-              className="flex-none justify-center px-4 py-2 bg-brand-error/10 text-brand-error border border-brand-error/20 rounded-lg hover:bg-brand-error hover:text-canvas transition-all text-xs font-bold uppercase tracking-widest"
+              className="flex-none justify-center px-4 py-2 bg-brand-error/10 text-brand-error border border-brand-error/20 rounded-lg hover:bg-brand-error hover:text-canvas transition-all text-xs font-bold uppercase tracking-widest print:hidden"
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -164,7 +198,7 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
       </div>
 
       {/* Tabs */}
-      <div className="flex overflow-x-auto whitespace-nowrap border-b border-hairline px-4 bg-canvas sticky top-0 z-10 hide-scrollbar">
+      <div className="flex overflow-x-auto whitespace-nowrap border-b border-hairline px-4 bg-canvas sticky top-0 z-10 hide-scrollbar print:hidden">
         <button 
           onClick={() => setActiveTab('fees')}
           className={`px-4 py-4 text-xs font-bold uppercase tracking-widest border-b-2 transition-all ${
@@ -192,7 +226,7 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
       </div>
 
       {/* Content Layer */}
-      <div className="p-6 sm:p-3 sm:p-8 min-h-[400px]">
+      <div className="p-6 sm:p-3 sm:p-8 min-h-[400px] print:block">
         {activeTab === 'fees' && (
           <div className="space-y-8 animate-fade-in">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -431,9 +465,8 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
           </div>
         )}
 
-        {activeTab === 'profile' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 animate-fade-in">
-            <div className="space-y-8">
+        <div className={`grid grid-cols-1 md:grid-cols-2 gap-10 animate-fade-in print:block ${activeTab === 'profile' ? 'block' : 'hidden'}`}>
+          <div className="space-y-8 print:mb-8">
               <h3 className="text-sm font-black text-ink uppercase tracking-[0.2em] flex items-center border-b border-hairline pb-3">
                 <User className="w-4 h-4 mr-3 text-brand-green" />
                 KYC & PERSONAL DATA
@@ -446,7 +479,7 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
               </div>
             </div>
 
-            <div className="space-y-8">
+            <div className="space-y-8 print:mb-8">
               <h3 className="text-sm font-black text-ink uppercase tracking-[0.2em] flex items-center border-b border-hairline pb-3">
                 <Calendar className="w-4 h-4 mr-3 text-brand-green" />
                 ACADEMIC FOOTPRINT
@@ -465,8 +498,54 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
                 </div>
               </div>
             </div>
+
+            <div className="space-y-8 md:col-span-2 mt-4 print:mt-8">
+              <h3 className="text-sm font-black text-ink uppercase tracking-[0.2em] flex items-center border-b border-hairline pb-3">
+                <BarChart2 className="w-4 h-4 mr-3 text-brand-blue" />
+                PERFORMANCE ANALYTICS
+              </h3>
+              {student.examResults && student.examResults.length > 0 ? (
+                <div className="bg-canvas border border-hairline rounded-lg overflow-x-auto">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-surface border-b border-hairline">
+                      <tr>
+                        <th className="px-6 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Exam / Test</th>
+                        <th className="px-6 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Date</th>
+                        <th className="px-6 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Marks Obtained</th>
+                        <th className="px-6 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Percentage</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-hairline">
+                      {student.examResults.map((result: any) => {
+                        const percentage = Math.round((Number(result.marksObtained) / Number(result.exam.maxMarks)) * 100);
+                        return (
+                          <tr key={result.id} className="hover:bg-surface-soft transition-colors">
+                            <td className="px-6 py-4 font-bold text-ink">{result.exam.title}</td>
+                            <td className="px-6 py-4 text-steel font-bold text-xs">{new Date(result.exam.date).toLocaleDateString()}</td>
+                            <td className="px-6 py-4 font-bold text-ink">{result.marksObtained} / {result.exam.maxMarks}</td>
+                            <td className="px-6 py-4">
+                              <span className={`inline-flex px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                                percentage >= 75 ? 'bg-brand-green/10 text-brand-green-deep border-brand-green/20' :
+                                percentage >= 40 ? 'bg-brand-warn/10 text-brand-warn border-brand-warn/20' :
+                                'bg-brand-error/10 text-brand-error border-brand-error/20'
+                              }`}>
+                                {percentage}%
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="p-8 text-center border-2 border-hairline border-dashed rounded-xl bg-surface/30">
+                  <p className="text-sm text-ink font-bold">No exam records found</p>
+                  <p className="text-xs text-steel mt-1">This student has not been graded for any offline exams yet.</p>
+                </div>
+              )}
           </div>
-        )}
+        </div>
       </div>
 
       {showFeeDrawer && (

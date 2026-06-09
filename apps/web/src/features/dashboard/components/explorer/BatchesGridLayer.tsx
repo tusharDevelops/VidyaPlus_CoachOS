@@ -144,14 +144,20 @@ export default function BatchesGridLayer({ onNavigate }: BatchesGridLayerProps) 
                     <Users className="w-3.5 h-3.5 mr-1.5" />
                     <span>{batch.enrolledStudents} / {batch.capacity} Students</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onNavigate('EXAMS', { batchId: batch.id }); }}
+                      className="px-3 py-1.5 bg-brand-blue/10 text-brand-blue rounded-md text-[10px] font-black uppercase tracking-widest hover:bg-brand-blue/20 transition-all"
+                    >
+                      Exams
+                    </button>
                     <button 
                       onClick={(e) => { e.stopPropagation(); onNavigate('ATTENDANCE', { batchId: batch.id }); }}
                       className="px-3 py-1.5 bg-brand-green/10 text-brand-green-deep rounded-md text-[10px] font-black uppercase tracking-widest hover:bg-brand-green/20 transition-all"
                     >
-                      Mark Attendance
+                      Attendance
                     </button>
-                    <span className="text-xs font-bold text-brand-green-deep">
+                    <span className="text-xs font-bold text-brand-green-deep ml-1 hidden sm:inline">
                       View →
                     </span>
                   </div>

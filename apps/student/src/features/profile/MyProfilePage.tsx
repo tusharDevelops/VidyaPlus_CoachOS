@@ -3,13 +3,14 @@ import { useAuthStore } from '../../stores/auth.store';
 import api from '../../lib/api';
 import {
   User, Mail, Phone, Calendar, MapPin, Building,
-  BookOpen, Shield, Clock, Loader2, Moon, Sun
+  BookOpen, Shield, Clock, Loader2, Moon, Sun, Download, BarChart2
 } from 'lucide-react';
 
 export default function MyProfilePage() {
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [attendanceData, setAttendanceData] = useState<any>(null);
+  const [examResults, setExamResults] = useState<any[]>([]);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
   });
@@ -17,8 +18,12 @@ export default function MyProfilePage() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const res = await api.get('/attendance/my-summary');
-        setAttendanceData(res.data.data);
+        const [attRes, examRes] = await Promise.all([
+          api.get('/attendance/my-summary'),
+          api.get('/exams/my-results').catch(() => ({ data: { data: [] } }))
+        ]);
+        setAttendanceData(attRes.data.data);
+        setExamResults(examRes.data.data);
       } catch (err) {
         console.error('Failed to load profile data', err);
       } finally {
@@ -60,18 +65,26 @@ export default function MyProfilePage() {
   return (
     <div className="space-y-6 pb-6 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between px-1">
+      <div className="flex flex-wrap items-center justify-between px-1 gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold text-ink tracking-tight">My Profile</h1>
           <p className="text-sm text-steel">Manage your personal and academic details.</p>
         </div>
-        <button
-          onClick={toggleTheme}
-          className="w-10 h-10 rounded-full border border-hairline bg-surface flex items-center justify-center text-steel hover:bg-surface-hover hover:text-ink active:scale-95 transition-all"
-          title="Toggle Light/Dark Theme"
-        >
-          {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => window.print()}
+            className="px-4 py-2 bg-canvas border border-hairline hover:bg-surface text-ink rounded-lg text-xs font-bold uppercase tracking-widest flex items-center transition-all shadow-sm print:hidden"
+          >
+            <Download className="w-4 h-4 mr-2" /> Save as PDF
+          </button>
+          <button
+            onClick={toggleTheme}
+            className="w-10 h-10 rounded-full border border-hairline bg-surface flex items-center justify-center text-steel hover:bg-surface-hover hover:text-ink active:scale-95 transition-all print:hidden"
+            title="Toggle Light/Dark Theme"
+          >
+            {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+          </button>
+        </div>
       </div>
 
       {/* Main Student Identity Card */}
@@ -209,6 +222,55 @@ export default function MyProfilePage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Performance Analytics */}
+      <div className="space-y-4 print:mt-8">
+        <h3 className="text-sm font-bold text-ink-muted uppercase tracking-wider px-1 flex items-center">
+          <BarChart2 className="w-4 h-4 mr-2" />
+          Performance Analytics
+        </h3>
+        
+        {examResults && examResults.length > 0 ? (
+          <div className="bg-canvas border border-hairline rounded-lg overflow-x-auto shadow-sm">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-surface border-b border-hairline">
+                <tr>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Exam / Test</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Date</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Marks Obtained</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate uppercase tracking-widest">Percentage</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-hairline">
+                {examResults.map((result: any) => {
+                  const percentage = Math.round((Number(result.marksObtained) / Number(result.exam.maxMarks)) * 100);
+                  return (
+                    <tr key={result.id} className="hover:bg-surface-soft transition-colors">
+                      <td className="px-6 py-4 font-bold text-ink">{result.exam.title}</td>
+                      <td className="px-6 py-4 text-steel font-bold text-xs">{new Date(result.exam.date).toLocaleDateString()}</td>
+                      <td className="px-6 py-4 font-bold text-ink">{result.marksObtained} / {result.exam.maxMarks}</td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                          percentage >= 75 ? 'bg-brand-green/10 text-brand-green-deep border-brand-green/20' :
+                          percentage >= 40 ? 'bg-brand-warn/10 text-brand-warn border-brand-warn/20' :
+                          'bg-brand-error/10 text-brand-error border-brand-error/20'
+                        }`}>
+                          {percentage}%
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="mint-card p-8 text-center bg-surface/30">
+            <p className="text-sm text-ink font-bold">No exam records found</p>
+            <p className="text-xs text-steel mt-1">You have not been graded for any offline exams yet.</p>
+          </div>
+        )}
       </div>
 
       {/* Institute Info */}

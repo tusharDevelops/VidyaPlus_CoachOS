@@ -9,6 +9,7 @@ import StaffAttendanceMarkingLayer from './layers/StaffAttendanceMarkingLayer';
 import StaffStaffGridLayer from './layers/StaffStaffGridLayer.tsx';
 import StaffStaffDetailLayer from './layers/StaffStaffDetailLayer.tsx';
 import StaffStaffAttendanceLayer from './layers/StaffStaffAttendanceLayer.tsx';
+import StaffExamManagementLayer from './layers/StaffExamManagementLayer.tsx';
 import { DrillDepth } from './types';
 
 function AccessDeniedLayer({ onBack }: { onBack: () => void }) {
@@ -54,6 +55,7 @@ export default function DashboardDrillDown() {
       case 'STUDENTS': 
       case 'STUDENT_DETAIL': return hasPermission('students.view');
       case 'ATTENDANCE': return hasPermission('attendance.mark');
+      case 'EXAMS': return hasPermission('exams.view') || hasPermission('exams.manage');
       case 'STAFF':
       case 'STAFF_DETAIL': return hasPermission('staff.view');
       case 'STAFF_ATTENDANCE': return hasPermission('staff.view');
@@ -76,7 +78,7 @@ export default function DashboardDrillDown() {
             Home
           </button>
           
-          {(depth === 'BATCHES' || depth === 'STUDENTS' || depth === 'STUDENT_DETAIL') && (
+          {(depth === 'BATCHES' || depth === 'STUDENTS' || depth === 'STUDENT_DETAIL' || depth === 'EXAMS' || depth === 'ATTENDANCE') && (
             <>
               <ChevronRight className="w-4 h-4 text-hairline-dark" />
               <button 
@@ -88,7 +90,7 @@ export default function DashboardDrillDown() {
             </>
           )}
 
-          {(depth === 'STUDENTS' || depth === 'STUDENT_DETAIL') && selectedBatchId && (
+          {(depth === 'STUDENTS' || depth === 'STUDENT_DETAIL' || depth === 'EXAMS') && selectedBatchId && (
             <>
               <ChevronRight className="w-4 h-4 text-hairline-dark" />
               <button 
@@ -104,6 +106,13 @@ export default function DashboardDrillDown() {
             <>
               <ChevronRight className="w-4 h-4 text-hairline-dark" />
               <span className="text-ink font-medium">Details</span>
+            </>
+          )}
+
+          {depth === 'EXAMS' && selectedBatchId && (
+            <>
+              <ChevronRight className="w-4 h-4 text-hairline-dark" />
+              <span className="text-ink font-medium">Exams</span>
             </>
           )}
 
@@ -148,6 +157,7 @@ export default function DashboardDrillDown() {
             {depth === 'STUDENTS' && <StaffStudentsLayer batchId={selectedBatchId} onNavigate={navigateTo} />}
             {depth === 'STUDENT_DETAIL' && <StaffStudentDetailLayer studentId={selectedStudentId!} onNavigate={navigateTo} />}
             {depth === 'ATTENDANCE' && <StaffAttendanceMarkingLayer batchId={selectedBatchId} onNavigate={navigateTo} />}
+            {depth === 'EXAMS' && <StaffExamManagementLayer batchId={selectedBatchId} onNavigate={navigateTo} />}
             {depth === 'STAFF' && <StaffStaffGridLayer onNavigate={navigateTo} />}
             {depth === 'STAFF_DETAIL' && <StaffStaffDetailLayer staffId={selectedStaffId!} onNavigate={navigateTo} />}
             {depth === 'STAFF_ATTENDANCE' && <StaffStaffAttendanceLayer onNavigate={navigateTo} />}
