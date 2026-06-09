@@ -30,6 +30,8 @@ const PERMISSION_GROUPS = [
       { id: 'attendance.mark', label: 'Mark daily attendance', description: 'Record daily attendance for students' },
       { id: 'attendance.view', label: 'View attendance reports', description: 'Access past attendance logs' },
       { id: 'attendance.edit', label: 'Correct past attendance', description: 'Modify past attendance records' },
+      { id: 'exams.view', label: 'View offline exams', description: 'See exam schedules and test records' },
+      { id: 'exams.manage', label: 'Manage offline exams', description: 'Create exams and enter student marks' },
     ]
   },
   {
