@@ -8,7 +8,7 @@ import {
   TrendingUp, BookOpen, UserCog, Settings, LogOut, LayoutDashboard,
   Wallet, 
 
-  Menu, X, Search, ChevronLeft, MoreHorizontal, Sun, Moon, LayoutGrid, Shield, ExternalLink
+  Menu, X, Search, ChevronLeft, MoreHorizontal, Sun, Moon, LayoutGrid, ExternalLink
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -198,16 +198,6 @@ export default function OwnerLayout() {
                       <p className="text-xs font-semibold text-ink-muted uppercase tracking-wider">Your Portals</p>
                     </div>
                     <div className="p-2 space-y-1">
-                      <a href="https://vidya-plus-coach-os-admin.vercel.app/" target="_blank" rel="noopener noreferrer" onClick={() => setIsAppSwitcherOpen(false)} className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
-                        <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
-                          <Shield className="w-4 h-4 text-brand-blue" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-ink">Admin Console</p>
-                          <p className="text-[10px] text-steel leading-tight mt-0.5">System configuration</p>
-                        </div>
-                        <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </a>
                       <a href="https://vidya-plus-coach-os-staff.vercel.app/" target="_blank" rel="noopener noreferrer" onClick={() => setIsAppSwitcherOpen(false)} className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
                         <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
                           <UserCog className="w-4 h-4 text-brand-purple" />

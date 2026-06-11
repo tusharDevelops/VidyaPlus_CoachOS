@@ -5,7 +5,7 @@ import { useAuthStore } from '../../stores/auth.store';
 import AuthModal from '../auth/AuthModal';
 import {
   ArrowRight, BarChart3, Bell, BookOpen, CalendarCheck, CheckCircle2,
-  CreditCard, GraduationCap, IndianRupee, Layers3, ShieldCheck, Users, Shield, UserCog, ExternalLink, ChevronDown, Sun, Moon,
+  CreditCard, GraduationCap, IndianRupee, Layers3, ShieldCheck, Users, UserCog, ExternalLink, ChevronDown, Sun, Moon,
   Menu, X
 } from 'lucide-react';
 
@@ -165,16 +165,6 @@ export default function HomePage() {
                         </div>
                         <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
                       </a>
-                      <a href="https://vidya-plus-coach-os-admin.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
-                        <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
-                          <Shield className="w-4 h-4 text-brand-blue" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-ink">Admin Console</p>
-                          <p className="text-[10px] text-steel leading-tight mt-0.5">System administration</p>
-                        </div>
-                        <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </a>
                     </div>
                   </div>
                 </>
@@ -273,7 +263,7 @@ export default function HomePage() {
                       <UserCog className="w-4 h-4 text-brand-purple" />
                       <span>Staff Portal</span>
                     </a>
-                    <a 
+                     <a 
                       href="https://vidya-plus-coach-os-student.vercel.app/" 
                       target="_blank" 
                       rel="noopener noreferrer" 
@@ -282,16 +272,6 @@ export default function HomePage() {
                     >
                       <BookOpen className="w-4 h-4 text-brand-green" />
                       <span>Student App</span>
-                    </a>
-                    <a 
-                      href="https://vidya-plus-coach-os-admin.vercel.app/" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 py-1 text-sm text-steel hover:text-ink"
-                    >
-                      <Shield className="w-4 h-4 text-brand-blue" />
-                      <span>Admin Console</span>
                     </a>
                   </div>
                 )}
