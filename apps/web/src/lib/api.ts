@@ -14,7 +14,12 @@ api.interceptors.request.use((config) => {
 
 // Response interceptor — auto-refresh on token expiry
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response.headers?.['x-trial-ended'] === 'true') {
+      window.dispatchEvent(new CustomEvent('TRIAL_ENDED'));
+    }
+    return response;
+  },
   async (error) => {
     if (error.response?.status === 401 && error.response?.data?.code === 'TOKEN_EXPIRED') {
       const refreshToken = localStorage.getItem('refreshToken');

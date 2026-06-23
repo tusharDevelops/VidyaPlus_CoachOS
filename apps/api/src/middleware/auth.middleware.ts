@@ -171,12 +171,16 @@ export async function enforceTrialStatus(req: Request, res: Response, next: Next
 
     if (institute && institute.trialEndsAt) {
       if (new Date() > institute.trialEndsAt) {
-        res.status(402).json({
-          success: false,
-          error: 'Your trial or subscription has ended. Please make a payment to continue using CoachOS.',
-          code: 'TRIAL_ENDED',
-        });
-        return;
+        if (req.method !== 'GET') {
+          res.status(402).json({
+            success: false,
+            error: 'Your trial or subscription has ended. Please make a payment to continue using CoachOS.',
+            code: 'TRIAL_ENDED',
+          });
+          return;
+        } else {
+          res.setHeader('x-trial-ended', 'true');
+        }
       }
     }
     next();

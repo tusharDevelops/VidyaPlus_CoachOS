@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, X } from 'lucide-react';
 import api from '../../lib/api';
 
 export default function PaymentRequiredModal() {
@@ -48,7 +48,14 @@ export default function PaymentRequiredModal() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/50 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-canvas w-full max-w-5xl rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 my-8">
+      <div className="bg-canvas w-full max-w-5xl rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 my-8 relative">
+        <button 
+          onClick={() => setIsOpen(false)}
+          className="absolute top-4 right-4 p-2 text-steel hover:text-ink hover:bg-surface rounded-full transition-colors z-10"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </button>
         
         <div className="p-8 text-center border-b border-hairline-soft bg-surface/30">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-brand-warn-soft text-brand-warn mb-4">
