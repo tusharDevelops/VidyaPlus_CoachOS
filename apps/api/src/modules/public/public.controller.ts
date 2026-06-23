@@ -95,9 +95,18 @@ export const publicController = {
         data: { verified: true },
       });
 
-      // Create institute with trial (14 days)
+      // Create institute with trial (14 days for Aarambh, past date for others to require payment)
       const subdomain = await generateSubdomain(instituteName);
-      const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+      const AARAMBH_PLAN_ID = '00000000-0000-0000-0000-000000000001';
+      
+      let trialEndsAt: Date | null = null;
+      if (planId === AARAMBH_PLAN_ID) {
+        trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+      } else {
+        // Force immediate payment for higher tier plans
+        trialEndsAt = new Date(Date.now() - 1000);
+      }
+
       const institute = await prisma.institute.create({
         data: {
           name: instituteName,

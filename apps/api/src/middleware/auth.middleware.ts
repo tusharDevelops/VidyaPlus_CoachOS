@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { JwtPayload } from '@coachos/shared';
 import logger from '../lib/logger';
+import prisma from '../lib/prisma';
 
 // Extend Express Request to include user context
 declare global {
@@ -146,4 +147,41 @@ export function requireAnyPermission(...requiredPermissions: string[]) {
 
     next();
   };
+}
+
+/**
+ * Middleware to check if the institute's trial has ended.
+ */
+export async function enforceTrialStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
+  if (!req.user || !req.user.instituteId) {
+    next();
+    return;
+  }
+
+  if (req.user.role === 'super_admin') {
+    next();
+    return;
+  }
+
+  try {
+    const institute = await prisma.institute.findUnique({
+      where: { id: req.user.instituteId },
+      select: { trialEndsAt: true },
+    });
+
+    if (institute && institute.trialEndsAt) {
+      if (new Date() > institute.trialEndsAt) {
+        res.status(402).json({
+          success: false,
+          error: 'Your trial or subscription has ended. Please make a payment to continue using CoachOS.',
+          code: 'TRIAL_ENDED',
+        });
+        return;
+      }
+    }
+    next();
+  } catch (error: any) {
+    logger.error('Failed to check trial status', { error: error.message });
+    res.status(500).json({ success: false, error: 'Internal server error checking trial' });
+  }
 }

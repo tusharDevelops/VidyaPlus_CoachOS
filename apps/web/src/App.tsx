@@ -20,7 +20,7 @@ import NotificationPage from './features/notifications/NotificationPage';
 import ReportsPage from './features/reports/ReportsPage';
 import SettingsPage from './features/settings/SettingsPage';
 import WalletPage from './features/wallet/WalletPage';
-
+import PaymentRequiredModal from './features/subscription/PaymentRequiredModal';
 
 import * as Sentry from '@sentry/react';
 
@@ -43,6 +43,7 @@ export default function App() {
 
   return (
     <Sentry.ErrorBoundary fallback={<div className="p-3 sm:p-8 text-center"><p className="text-red-500 font-bold mb-2">Oops! Something went wrong.</p><p className="text-sm text-gray-500">Our team has been notified. Please refresh the page.</p></div>}>
+      <PaymentRequiredModal />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />

@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { authenticate, enforceTenantIsolation } from '../../middleware/auth.middleware';
+import { authenticate, enforceTenantIsolation, enforceTrialStatus } from '../../middleware/auth.middleware';
 import { notificationController } from './notification.controller';
 
 const router = Router();
 
 router.use(authenticate);
 router.use(enforceTenantIsolation);
+router.use(enforceTrialStatus);
 
 router.get('/', notificationController.listNotifications);
 router.patch('/read-all', notificationController.markAllRead);

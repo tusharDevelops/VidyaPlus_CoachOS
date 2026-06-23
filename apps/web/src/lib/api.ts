@@ -31,6 +31,11 @@ api.interceptors.response.use(
         }
       }
     }
+
+    if (error.response?.status === 402 && error.response?.data?.code === 'TRIAL_ENDED') {
+      window.dispatchEvent(new CustomEvent('TRIAL_ENDED'));
+    }
+
     return Promise.reject(error);
   },
 );

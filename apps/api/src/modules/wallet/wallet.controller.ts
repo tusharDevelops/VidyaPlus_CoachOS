@@ -102,4 +102,62 @@ export const walletController = {
       res.status(500).json({ success: false, error: 'Failed to create checkout session' });
     }
   },
+
+  // ---------- Dodo Payments Subscription ----------
+  async paySubscription(req: Request, res: Response) {
+    try {
+      const instituteId = req.user!.instituteId!;
+      const { planId } = req.body;
+
+      if (!planId) {
+        res.status(400).json({ success: false, error: 'planId is required' });
+        return;
+      }
+
+      const plan = await prisma.plan.findUnique({
+        where: { id: planId }
+      });
+
+      if (!plan) {
+        res.status(404).json({ success: false, error: 'Plan not found' });
+        return;
+      }
+
+      const amount = Number(plan.priceMonthly);
+
+      logger.info(`Creating Dodo Payments checkout session of ₹${amount} for subscription ${planId} for institute ${instituteId}`);
+
+      const dodoClient = new DodoPayments({
+        bearerToken: process.env.DODO_PAYMENTS_API_KEY,
+        environment: 'test_mode', 
+      });
+
+      const session = await dodoClient.checkoutSessions.create({
+        product_cart: [
+          {
+            product_id: process.env.DODO_SUBSCRIPTION_PRODUCT_ID || process.env.DODO_WALLET_PRODUCT_ID || 'dummy_product',
+            quantity: 1,
+            amount: amount * 100, // in paise
+          }
+        ],
+        metadata: {
+          instituteId,
+          type: 'subscription_payment',
+          planId,
+        },
+        return_url: `${req.headers.origin || process.env.CORS_ORIGIN?.split(',')[0] || 'http://localhost:5173'}/dashboard?subscription=success`,
+      });
+
+      res.json({
+        success: true,
+        message: 'Checkout session created',
+        data: {
+          checkout_url: session.checkout_url
+        },
+      });
+    } catch (error: any) {
+      logger.error('Failed to create Dodo checkout session for subscription', { error: error.message });
+      res.status(500).json({ success: false, error: 'Failed to create checkout session' });
+    }
+  },
 };

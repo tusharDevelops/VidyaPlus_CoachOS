@@ -55,6 +55,25 @@ export const walletWebhookHandler = Webhooks({
 
           logger.info(`Successfully credited ₹${amount} to institute ${instituteId}`);
         }
+
+        // Handle subscription payment
+        if (metadata?.type === 'subscription_payment' && metadata?.instituteId && metadata?.planId) {
+          const instituteId = metadata.instituteId;
+          const planId = metadata.planId;
+          const referenceNo = payment.payment_id;
+
+          logger.info(`Processing successful subscription payment ${referenceNo} for institute ${instituteId} to plan ${planId}`);
+
+          await prisma.institute.update({
+            where: { id: instituteId },
+            data: {
+              planId: planId,
+              trialEndsAt: null, // Clear trial constraint
+            },
+          });
+
+          logger.info(`Successfully updated institute ${instituteId} to plan ${planId}`);
+        }
       }
     } catch (error: any) {
       logger.error('Error processing Dodo Payments webhook', { error: error.message });

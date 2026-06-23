@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { authenticate, enforceTenantIsolation, requirePermission } from '../../middleware/auth.middleware';
+import { authenticate, enforceTenantIsolation, enforceTrialStatus, requirePermission } from '../../middleware/auth.middleware';
 import { studentController } from './student.controller';
 
 const router = Router();
 
 router.use(authenticate);
 router.use(enforceTenantIsolation);
+router.use(enforceTrialStatus);
 
 router.get('/', requirePermission('students.view'), studentController.list);
 router.get('/:id', requirePermission('students.view'), studentController.get);

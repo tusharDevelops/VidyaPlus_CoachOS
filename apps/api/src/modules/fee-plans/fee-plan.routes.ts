@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { authenticate, enforceTenantIsolation, requirePermission } from '../../middleware/auth.middleware';
+import { authenticate, enforceTenantIsolation, enforceTrialStatus, requirePermission } from '../../middleware/auth.middleware';
 import { feePlanController } from './fee-plan.controller';
 
 const router = Router();
 
 router.use(authenticate);
 router.use(enforceTenantIsolation);
+router.use(enforceTrialStatus);
 
 router.get('/', requirePermission('fees.view'), feePlanController.list);
 router.post('/', requirePermission('fees.edit'), feePlanController.create);
