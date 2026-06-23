@@ -28,7 +28,6 @@ async function verify() {
 
   if (demo) {
     console.log('✅ Demo Institute found on plan:', demo.plan?.name);
-    console.log('✅ Wallet balance:', demo.walletBalance.toString());
   } else {
     console.log('❌ Demo Institute not found!');
   }

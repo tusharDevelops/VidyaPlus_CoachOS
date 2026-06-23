@@ -20,6 +20,7 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
   const [showEditModal, setShowEditModal] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailDraft, setEmailDraft] = useState({ subject: '', content: '' });
+  const [whatsappMsg, setWhatsappMsg] = useState('');
 
   const fetchStudentData = async () => {
     if (!studentId) return;
@@ -61,6 +62,12 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
   useEffect(() => {
     fetchStudentData();
   }, [studentId]);
+
+  useEffect(() => {
+    if (student) {
+      setWhatsappMsg(`Hi ${student.name}, hope you are doing well. Just wanted to connect regarding...`);
+    }
+  }, [student]);
 
   const deleteStudent = async () => {
     if (!window.confirm('Archive this student record permanently?')) return;
@@ -367,13 +374,18 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
                   <textarea 
                     className="w-full h-32 p-4 bg-canvas border border-hairline rounded-xl text-sm focus:border-brand-green focus:ring-0 outline-none transition-colors font-medium shadow-inner"
                     placeholder="Type custom message to student/parent..."
-                    defaultValue={`Hi ${student.name}, hope you are doing well. Just wanted to connect regarding...`}
+                    value={whatsappMsg}
+                    onChange={(e) => setWhatsappMsg(e.target.value)}
                   ></textarea>
                   <button 
                     type="button"
                     onClick={() => {
-                      const msg = `https://wa.me/${student.phone}?text=${encodeURIComponent(`Hi ${student.name}, hope you are doing well. Just wanted to connect regarding...`)}`;
-                      window.open(msg, '_blank');
+                      navigator.clipboard.writeText(whatsappMsg).catch(() => {});
+                      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                      const url = isMobile 
+                        ? `https://wa.me/${student.phone}?text=${encodeURIComponent(whatsappMsg)}`
+                        : `https://web.whatsapp.com/send?phone=${student.phone}&text=${encodeURIComponent(whatsappMsg)}`;
+                      window.open(url, '_blank');
                     }}
                     className="bg-brand-green text-white hover:bg-brand-green-deep w-full h-12 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center transition-all shadow-lg shadow-brand-green/10"
                   >
@@ -388,10 +400,12 @@ export default function StudentDetailLayer({ studentId, onNavigate }: StudentDet
                     <TemplateButton 
                       title="Fee Reminder" 
                       desc={`Dear parent, fee of ₹${summary.balance} is pending for ${student.name}. Please pay by tomorrow.`} 
+                      onClick={() => setWhatsappMsg(`Dear parent, fee of ₹${summary.balance} is pending for ${student.name}. Please pay by tomorrow.`)}
                     />
                     <TemplateButton 
                       title="Absence Alert" 
                       desc={`${student.name} was absent in today's class. Please ensure regular attendance.`} 
+                      onClick={() => setWhatsappMsg(`${student.name} was absent in today's class. Please ensure regular attendance.`)}
                     />
                   </div>
                 </div>

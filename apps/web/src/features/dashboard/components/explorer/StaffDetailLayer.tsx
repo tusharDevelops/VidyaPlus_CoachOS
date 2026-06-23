@@ -25,6 +25,7 @@ export default function StaffDetailLayer({ staffId, onNavigate }: StaffDetailLay
   const [showEditModal, setShowEditModal] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailDraft, setEmailDraft] = useState({ subject: '', content: '' });
+  const [whatsappMsg, setWhatsappMsg] = useState('');
 
   const fetchData = async () => {
     if (!staffId) return;
@@ -52,6 +53,12 @@ export default function StaffDetailLayer({ staffId, onNavigate }: StaffDetailLay
   useEffect(() => {
     fetchData();
   }, [staffId]);
+
+  useEffect(() => {
+    if (staff) {
+      setWhatsappMsg(`Hi ${staff.name}, hope you are doing well. This is regarding...`);
+    }
+  }, [staff]);
 
   const handleSendEmail = async () => {
     if (!staff?.email || !emailDraft.subject || !emailDraft.content) {
@@ -280,12 +287,17 @@ export default function StaffDetailLayer({ staffId, onNavigate }: StaffDetailLay
                 <textarea 
                   className="w-full h-32 p-4 bg-canvas border border-hairline rounded-2xl text-sm focus:border-brand-green outline-none transition-all font-medium"
                   placeholder="Type message to team member..."
-                  defaultValue={`Hi ${staff.name}, hope you are doing well. This is regarding...`}
+                  value={whatsappMsg}
+                  onChange={(e) => setWhatsappMsg(e.target.value)}
                 ></textarea>
                 <button 
                   onClick={() => {
-                    const msg = `https://wa.me/${staff.phone}?text=${encodeURIComponent(`Hi ${staff.name}, hope you are doing well. This is regarding...`)}`;
-                    window.open(msg, '_blank');
+                    navigator.clipboard.writeText(whatsappMsg).catch(() => {});
+                    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                    const url = isMobile 
+                      ? `https://wa.me/${staff.phone}?text=${encodeURIComponent(whatsappMsg)}`
+                      : `https://web.whatsapp.com/send?phone=${staff.phone}&text=${encodeURIComponent(whatsappMsg)}`;
+                    window.open(url, '_blank');
                   }}
                   className="bg-brand-green text-white hover:bg-brand-green-deep w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center shadow-lg shadow-brand-green/20 transition-all"
                 >

@@ -12,32 +12,34 @@ async function main() {
     update: {
       name: 'Aarambh (Entry)',
       maxStudents: 40,
-      maxStaff: 2,
-      maxBatches: 3,
-      maxStorageMb: 250,
-      priceMonthly: 99,
+      maxStaff: 1,
+      maxBatches: 4,
+      maxStorageMb: 500,
+      priceMonthly: 0,
+      dodoProductId: null,
       featuresJson: { 
-        description: 'Impulse-buy price for small independent tutors.',
+        description: 'All features included, perfect for a solo tutor.',
         whatsappFree: 0, 
         analytics: 'basic',
         support: 'Help center / AI Bot',
-        idealFor: '1-teacher tutor with 10-40 students'
+        idealFor: '1-teacher tutor with up to 40 students'
       },
     },
     create: {
       id: '00000000-0000-0000-0000-000000000001',
       name: 'Aarambh (Entry)',
       maxStudents: 40,
-      maxStaff: 2,
-      maxBatches: 3,
-      maxStorageMb: 250,
-      priceMonthly: 99,
+      maxStaff: 1,
+      maxBatches: 4,
+      maxStorageMb: 500,
+      priceMonthly: 0,
+      dodoProductId: null,
       featuresJson: { 
-        description: 'Impulse-buy price for small independent tutors.',
+        description: 'All features included, perfect for a solo tutor.',
         whatsappFree: 0, 
         analytics: 'basic',
         support: 'Help center / AI Bot',
-        idealFor: '1-teacher tutor with 10-40 students'
+        idealFor: '1-teacher tutor with up to 40 students'
       },
     },
   });
@@ -46,33 +48,33 @@ async function main() {
     where: { id: '00000000-0000-0000-0000-000000000002' },
     update: {
       name: 'Pragati (Pro)',
-      maxStudents: 300,
-      maxStaff: 10,
-      maxBatches: 10,
+      maxStudents: 100,
+      maxStaff: 15,
+      maxBatches: 15,
       maxStorageMb: 5000,
-      priceMonthly: 499,
+      priceMonthly: 199,
+      dodoProductId: 'pdt_0NhfE2lTQW2SC6uynTK60',
       featuresJson: { 
-        description: 'Profit engine for mid-size tuition classes.',
+        description: 'All features included, extended scale for growing teams.',
         whatsappFree: 500, 
         analytics: 'advanced',
-        support: 'Priority WhatsApp',
-        includes: ['Staff Payroll']
+        support: 'Priority WhatsApp'
       },
     },
     create: {
       id: '00000000-0000-0000-0000-000000000002',
       name: 'Pragati (Pro)',
-      maxStudents: 300,
-      maxStaff: 10,
-      maxBatches: 10,
+      maxStudents: 100,
+      maxStaff: 15,
+      maxBatches: 15,
       maxStorageMb: 5000,
-      priceMonthly: 499,
+      priceMonthly: 199,
+      dodoProductId: 'pdt_0NhfE2lTQW2SC6uynTK60',
       featuresJson: { 
-        description: 'Profit engine for mid-size tuition classes.',
+        description: 'All features included, extended scale for growing teams.',
         whatsappFree: 500, 
         analytics: 'advanced',
-        support: 'Priority WhatsApp',
-        includes: ['Staff Payroll']
+        support: 'Priority WhatsApp'
       },
     },
   });
@@ -85,7 +87,8 @@ async function main() {
       maxStaff: 1000,
       maxBatches: 1000,
       maxStorageMb: 50000,
-      priceMonthly: 1999,
+      priceMonthly: 999,
+      dodoProductId: 'pdt_0NhfEVVechPapJdtovY62',
       featuresJson: { 
         description: 'For large hubs focusing on brand and multi-branch control.',
         whatsappFree: 2000, 
@@ -101,7 +104,8 @@ async function main() {
       maxStaff: 1000,
       maxBatches: 1000,
       maxStorageMb: 50000,
-      priceMonthly: 1999,
+      priceMonthly: 999,
+      dodoProductId: 'pdt_0NhfEVVechPapJdtovY62',
       featuresJson: { 
         description: 'For large hubs focusing on brand and multi-branch control.',
         whatsappFree: 2000, 

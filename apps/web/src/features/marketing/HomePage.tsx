@@ -444,16 +444,16 @@ export default function HomePage() {
                   const batchesLabel = plan.maxBatches >= 1000 ? 'Unlimited batches' : `${plan.maxBatches} batches`;
                   const whatsappCredits = plan.featuresJson?.whatsappFree ?? 0;
 
+                  const staffLabel = plan.maxStaff >= 1000 ? 'Unlimited staff' : `Up to ${plan.maxStaff} staff`;
+
                   const featuresList: string[] = [
                     studentsLabel,
                     batchesLabel,
+                    staffLabel,
                     storageLabel,
-                    'Fee collection & receipts',
-                    index >= 1 ? 'Staff payroll module' : 'Basic attendance tracking',
+                    'All features unlocked (LMS, Payroll, Exams)',
                     whatsappCredits > 0 ? `${whatsappCredits} free WhatsApp credits/mo` : 'Help center support',
-                    index >= 1 ? (plan.featuresJson?.support ?? 'Priority support') : null,
-                    index === 2 ? 'Multi-institute dashboard' : null,
-                    index === 2 ? 'Dedicated account manager' : null,
+                    plan.featuresJson?.support ?? 'Priority support',
                   ].filter(Boolean) as string[];
 
                   const taglines = [
@@ -538,7 +538,7 @@ export default function HomePage() {
             {/* Footer Note */}
             <p className="mt-8 text-center text-[13px] text-steel flex items-center justify-center gap-2">
               <ShieldCheck className="w-4 h-4 text-brand-green flex-shrink-0" />
-              All plans include a 14-day free trial. WhatsApp &amp; SMS are charged from wallet at cost.
+              Aarambh is free forever. Paid plans require a subscription.
             </p>
           </div>
         </section>

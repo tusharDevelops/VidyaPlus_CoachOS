@@ -19,7 +19,6 @@ import StaffPage from './features/staff/StaffPage';
 import NotificationPage from './features/notifications/NotificationPage';
 import ReportsPage from './features/reports/ReportsPage';
 import SettingsPage from './features/settings/SettingsPage';
-import WalletPage from './features/wallet/WalletPage';
 import PaymentRequiredModal from './features/subscription/PaymentRequiredModal';
 
 import * as Sentry from '@sentry/react';
@@ -72,7 +71,6 @@ export default function App() {
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/staff" element={<StaffPage />} />
               <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/wallet" element={<WalletPage />} />
 
             </Route>
           </Route>

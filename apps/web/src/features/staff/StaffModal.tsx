@@ -42,7 +42,6 @@ const PERMISSION_GROUPS = [
       { id: 'fees.collect', label: 'Process fee payments', description: 'Record and verify fee collections' },
       { id: 'fees.edit', label: 'Edit fee structures', description: 'Modify fee plans and discounts' },
       { id: 'fees.delete', label: 'Void/Delete receipts', description: 'Cancel or delete payment records' },
-      { id: 'wallet.view', label: 'Institute Wallet', description: 'Access wallet transactions and balance' },
     ]
   },
   {

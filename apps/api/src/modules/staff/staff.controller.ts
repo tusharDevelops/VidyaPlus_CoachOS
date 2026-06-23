@@ -166,6 +166,24 @@ export const staffController = {
       const instituteId = req.user!.instituteId!;
       const body = createStaffSchema.parse(req.body);
 
+      // Check plan limits
+      const institute = await prisma.institute.findUnique({
+        where: { id: instituteId },
+        include: { 
+          plan: true, 
+          _count: { select: { users: { where: { role: { notIn: ['owner', 'student'] } } } } } 
+        },
+      });
+
+      if (institute?.plan && institute._count.users >= institute.plan.maxStaff) {
+        res.status(403).json({
+          success: false,
+          error: `Staff limit reached (${institute.plan.maxStaff}). Upgrade your plan.`,
+          code: 'PLAN_LIMIT',
+        });
+        return;
+      }
+
       // Check if email already exists for this institute + role
       const existing = await prisma.user.findFirst({
         where: {

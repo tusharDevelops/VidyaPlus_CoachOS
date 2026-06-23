@@ -101,7 +101,8 @@ export const publicController = {
       
       let trialEndsAt: Date | null = null;
       if (planId === AARAMBH_PLAN_ID) {
-        trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+        // Forever free base plan
+        trialEndsAt = null;
       } else {
         // Force immediate payment for higher tier plans
         trialEndsAt = new Date(Date.now() - 1000);

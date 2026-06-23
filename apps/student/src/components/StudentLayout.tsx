@@ -4,12 +4,13 @@ import { useAuthStore } from '../stores/auth.store';
 import { PWAInstallBanner } from '@coachos/ui';
 import {
   GraduationCap, CalendarCheck, CreditCard, Bell,
-  LayoutDashboard, User, LogOut, MoreHorizontal, Sun, Moon, Menu
+  LayoutDashboard, User, LogOut, MoreHorizontal, Sun, Moon, Menu, FileText
 } from 'lucide-react';
 
 const BOTTOM_NAV = [
   { icon: LayoutDashboard, label: 'Home', path: '/dashboard' },
   { icon: CalendarCheck, label: 'Attendance', path: '/attendance' },
+  { icon: FileText, label: 'Exams', path: '/exams' },
   { icon: CreditCard, label: 'Fees', path: '/fees' },
   { icon: MoreHorizontal, label: 'More', path: '/more' },
 ];

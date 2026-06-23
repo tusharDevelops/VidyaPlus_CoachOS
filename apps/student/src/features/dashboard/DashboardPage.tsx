@@ -17,13 +17,15 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [attendanceRes, feeRes] = await Promise.all([
+        const [attendanceRes, feeRes, examRes] = await Promise.all([
           api.get('/attendance/my-summary'),
           api.get('/fees/my-ledger'),
+          api.get('/exams/my-results'),
         ]);
         setData({
           attendance: attendanceRes.data.data,
           fees: feeRes.data.data,
+          exams: examRes.data.data || [],
         });
       } catch (err) {
         console.error('Failed to load dashboard', err);
@@ -175,25 +177,84 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Recent Exams */}
+      {data?.exams?.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-1">
+            <h3 className="text-base font-bold text-ink">Recent Exams</h3>
+            <button
+              onClick={() => navigate('/exams')}
+              className="text-xs font-bold text-brand-green-deep flex items-center gap-1 hover:underline"
+            >
+              View All <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="mint-card overflow-hidden">
+            <div className="divide-y divide-hairline-soft">
+              {data.exams.slice(0, 3).map((result: any) => {
+                const percentage = Math.round((result.marksObtained / result.exam.maxMarks) * 100);
+                const isPass = percentage >= 40;
+                
+                return (
+                  <div key={result.id} className="p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                        isPass ? 'bg-brand-green-soft' : 'bg-rose-50'
+                      }`}>
+                        <span className={`text-[10px] font-bold ${isPass ? 'text-brand-green-deep' : 'text-brand-error'}`}>
+                          {percentage}%
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-ink truncate max-w-[150px]">{result.exam.title}</p>
+                        <p className="text-[11px] text-steel mt-0.5">
+                          {new Date(result.exam.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-baseline gap-1 text-right">
+                      <span className={`text-sm font-black font-mono ${isPass ? 'text-brand-green-deep' : 'text-brand-error'}`}>
+                        {result.marksObtained}
+                      </span>
+                      <span className="text-[10px] font-bold text-stone">/ {result.exam.maxMarks}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Quick Links */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
+        <button
+          onClick={() => navigate('/exams')}
+          className="mint-card p-3 flex flex-col items-center justify-center gap-2 group active:scale-[0.98] transition-all"
+        >
+          <div className="w-10 h-10 rounded-lg bg-surface flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-ink"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M8 18v-1"/><path d="M16 18v-3"/></svg>
+          </div>
+          <span className="text-[11px] font-bold text-ink">Exams</span>
+        </button>
         <button
           onClick={() => navigate('/fees')}
-          className="mint-card p-4 flex items-center gap-3 group active:scale-[0.98] transition-all"
+          className="mint-card p-3 flex flex-col items-center justify-center gap-2 group active:scale-[0.98] transition-all"
         >
           <div className="w-10 h-10 rounded-lg bg-brand-green-soft flex items-center justify-center">
             <CreditCard className="w-5 h-5 text-brand-green-deep" />
           </div>
-          <span className="text-sm font-bold text-ink">My Fees</span>
+          <span className="text-[11px] font-bold text-ink">My Fees</span>
         </button>
         <button
           onClick={() => navigate('/notifications')}
-          className="mint-card p-4 flex items-center gap-3 group active:scale-[0.98] transition-all"
+          className="mint-card p-3 flex flex-col items-center justify-center gap-2 group active:scale-[0.98] transition-all"
         >
           <div className="w-10 h-10 rounded-lg bg-surface flex items-center justify-center">
             <Bell className="w-5 h-5 text-ink" />
           </div>
-          <span className="text-sm font-bold text-ink">Alerts</span>
+          <span className="text-[11px] font-bold text-ink">Alerts</span>
         </button>
       </div>
     </div>

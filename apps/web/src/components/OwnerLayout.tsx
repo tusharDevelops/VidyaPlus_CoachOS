@@ -6,7 +6,6 @@ import api from '../lib/api';
 import {
   GraduationCap, Users, CalendarCheck, IndianRupee, Bell,
   TrendingUp, BookOpen, UserCog, Settings, LogOut, LayoutDashboard,
-  Wallet, 
 
   Menu, X, Search, ChevronLeft, MoreHorizontal, Sun, Moon, LayoutGrid, ExternalLink
 } from 'lucide-react';
@@ -15,14 +14,12 @@ const NAV_ITEMS = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: Bell, label: 'Notifications', path: '/notifications' },
   { icon: TrendingUp, label: 'Reports', path: '/reports', permission: 'fees.view' },
-  { icon: Wallet, label: 'Wallet', path: '/wallet', permission: 'wallet.view' },
   { icon: Settings, label: 'Settings', path: '/settings', permission: 'settings.manage' },
 ];
 
 const BOTTOM_NAV_ITEMS = [
   { icon: LayoutDashboard, label: 'Home', path: '/dashboard' },
   { icon: Bell, label: 'Alerts', path: '/notifications' },
-  { icon: Wallet, label: 'Wallet', path: '/wallet' },
   { icon: MoreHorizontal, label: 'More', path: 'more' }, // 'more' will trigger sidebar/menu
 ];
 
@@ -172,6 +169,13 @@ export default function OwnerLayout() {
           </div>
 
           <div className="flex items-center gap-1 sm:gap-4">
+            <button 
+              onClick={() => window.dispatchEvent(new CustomEvent('TRIAL_ENDED'))}
+              className="hidden sm:flex items-center h-8 px-4 bg-brand-green text-primary hover:bg-brand-green-deep rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-sm"
+            >
+              Upgrade Plan
+            </button>
+
             <button 
               onClick={toggleDarkMode}
               className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-steel hover:bg-surface transition-colors"

@@ -37,7 +37,8 @@ api.interceptors.response.use(
       }
     }
 
-    if (error.response?.status === 402 && error.response?.data?.code === 'TRIAL_ENDED') {
+    if ((error.response?.status === 402 && error.response?.data?.code === 'TRIAL_ENDED') ||
+        (error.response?.status === 403 && ['PLAN_LIMIT', 'LIMIT_REACHED'].includes(error.response?.data?.code))) {
       window.dispatchEvent(new CustomEvent('TRIAL_ENDED'));
     }
 

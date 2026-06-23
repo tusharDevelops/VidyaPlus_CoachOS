@@ -34,16 +34,9 @@ export default function PaymentRequiredModal() {
 
   const handlePay = async (planId: string) => {
     setCheckoutLoading(true);
-    try {
-      const { data } = await api.post('/wallet/subscription/pay', { planId });
-      if (data?.data?.checkout_url) {
-        window.location.href = data.data.checkout_url;
-      }
-    } catch (err) {
-      console.error('Payment checkout failed', err);
-      alert('Failed to initiate payment. Please try again later.');
-      setCheckoutLoading(false);
-    }
+    // Wallet module has been removed. Subscriptions will be processed manually for now.
+    alert('Online payments are currently disabled. Please contact the administrator to upgrade your plan.');
+    setCheckoutLoading(false);
   };
 
   return (
@@ -62,10 +55,10 @@ export default function PaymentRequiredModal() {
             <ShieldCheck className="w-6 h-6" />
           </div>
           <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-ink mb-2">
-            Payment Required
+            Select a Subscription Plan
           </h2>
           <p className="text-steel max-w-lg mx-auto">
-            Your 14-day trial has ended or you requested a premium plan. Please select a plan to continue using CoachOS. All your data is safe.
+            Choose the plan that best fits your institute. Unlock premium features to scale your coaching business effortlessly.
           </p>
         </div>
 
@@ -87,12 +80,15 @@ export default function PaymentRequiredModal() {
                   ? `${plan.maxStorageMb / 1024} GB storage`
                   : `${plan.maxStorageMb} MB storage`;
                 const studentsLabel = plan.maxStudents >= 10000 ? 'Unlimited students' : `Up to ${plan.maxStudents} students`;
+                const staffLabel = plan.maxStaff >= 1000 ? 'Unlimited staff' : `Up to ${plan.maxStaff} staff`;
+                const batchesLabel = plan.maxBatches >= 1000 ? 'Unlimited batches' : `Up to ${plan.maxBatches} batches`;
 
                 const featuresList: string[] = [
                   studentsLabel,
+                  staffLabel,
+                  batchesLabel,
                   storageLabel,
-                  'Fee collection & receipts',
-                  index >= 1 ? 'Staff payroll module' : 'Basic attendance tracking',
+                  'All features unlocked (LMS, Payroll, Exams)',
                 ];
 
                 return (

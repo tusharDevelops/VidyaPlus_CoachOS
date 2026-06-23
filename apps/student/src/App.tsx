@@ -10,6 +10,7 @@ import MyAttendancePage from './features/attendance/MyAttendancePage';
 import MyFeesPage from './features/fees/MyFeesPage';
 import NotificationsPage from './features/notifications/NotificationsPage';
 import MyProfilePage from './features/profile/MyProfilePage';
+import MyExamsPage from './features/exams/MyExamsPage';
 
 // Simple route guards (student-specific, no extra deps)
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -57,6 +58,7 @@ export default function App() {
           }>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/attendance" element={<MyAttendancePage />} />
+            <Route path="/exams" element={<MyExamsPage />} />
             <Route path="/fees" element={<MyFeesPage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/profile" element={<MyProfilePage />} />

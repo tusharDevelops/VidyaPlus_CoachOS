@@ -138,7 +138,7 @@ export default function RegisterPage() {
             <GraduationCap className="w-6 h-6 text-brand-green" />
           </div>
           <h1 className="text-2xl font-semibold text-ink tracking-[-0.5px]">Create your CoachOS account</h1>
-          <p className="text-steel text-sm mt-2 font-medium">Start your 14-day free trial</p>
+          <p className="text-steel text-sm mt-2 font-medium">Sign up for free or choose a premium plan</p>
         </div>
 
         <div className="bg-canvas rounded-lg p-3 sm:p-8 sm:p-4 sm:p-10 border border-hairline shadow-2xl relative">

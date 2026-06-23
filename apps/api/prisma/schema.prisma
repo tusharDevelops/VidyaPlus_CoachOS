@@ -21,6 +21,7 @@ model Plan {
   maxStorageMb  Int      @map("max_storage_mb")
   featuresJson  Json     @default("{}") @map("features_json")
   priceMonthly  Decimal  @map("price_monthly") @db.Decimal(10, 2)
+  dodoProductId String?  @map("dodo_product_id") @db.VarChar(100)
   status        String   @default("active") @db.VarChar(20)
   createdAt     DateTime @default(now()) @map("created_at")
 
@@ -43,8 +44,9 @@ model Institute {
   planId          String?  @map("plan_id") @db.Uuid
   academicYear    String?  @map("academic_year") @db.VarChar(20)
   status          String   @default("active") @db.VarChar(20)
-  walletBalance   Decimal  @default(0.00) @map("wallet_balance") @db.Decimal(10, 2)
   trialEndsAt     DateTime? @map("trial_ends_at")
+  dodoCustomerId  String?  @map("dodo_customer_id") @db.VarChar(100)
+  dodoSubscriptionId String? @map("dodo_subscription_id") @db.VarChar(100)
   settingsJson    Json     @default("{}") @map("settings_json")
   setupCompleted  Boolean  @default(false) @map("setup_completed")
   createdAt       DateTime @default(now()) @map("created_at")
@@ -67,7 +69,6 @@ model Institute {
   auditLogs        AuditLog[]
   holidays         Holiday[]
   payrollRecords   PayrollRecord[]
-  walletTransactions WalletTransaction[]
 
   @@map("institutes")
 }
@@ -483,24 +484,6 @@ model PayrollRecord {
   @@index([instituteId])
   @@index([staffId])
   @@map("payroll_records")
-}
-
-// ============================================
-// Wallet Transaction
-// ============================================
-model WalletTransaction {
-  id           String   @id @default(uuid()) @db.Uuid
-  instituteId  String   @map("institute_id") @db.Uuid
-  amount       Decimal  @db.Decimal(10, 2)
-  type         String   @db.VarChar(20) // credit (top-up), debit (usage)
-  description  String?
-  referenceNo  String?  @map("reference_no") @db.VarChar(100)
-  createdAt    DateTime @default(now()) @map("created_at")
-
-  institute Institute @relation(fields: [instituteId], references: [id], onDelete: Cascade)
-
-  @@index([instituteId])
-  @@map("wallet_transactions")
 }
 
 // ============================================

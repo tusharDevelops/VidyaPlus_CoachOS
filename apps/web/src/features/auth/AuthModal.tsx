@@ -198,7 +198,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
             </h2>
             <p className="text-steel text-sm mt-1.5 font-medium">
               {mode === 'login' && 'Sign in to your CoachOS command center'}
-              {mode === 'register' && 'Start your 14-day free trial'}
+              {mode === 'register' && 'Create your account'}
               {mode === 'otp' && `We've sent a code to ${formData.email}`}
               {mode === 'forgot' && 'Enter your email to receive a reset code'}
               {mode === 'verify-reset' && `Enter the code sent to ${formData.email}`}
