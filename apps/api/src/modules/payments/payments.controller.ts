@@ -70,7 +70,7 @@ export const dodopayWebhook = Webhooks({
   onPaymentSucceeded: async (event: any) => {
     try {
       const email = event.customer?.email;
-      const productId = event.productCart?.[0]?.productId;
+      const productId = event.product_cart?.[0]?.product_id;
 
       if (!email || !productId) return;
 
@@ -95,7 +95,7 @@ export const dodopayWebhook = Webhooks({
   onSubscriptionActive: async (event: any) => {
     try {
       const email = event.customer?.email;
-      const productId = event.productCart?.[0]?.productId;
+      const productId = event.product_id;
 
       if (!email || !productId) return;
 
