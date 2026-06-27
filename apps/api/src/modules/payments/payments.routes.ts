@@ -4,9 +4,6 @@ import { authenticate } from '../../middleware/auth.middleware';
 
 const router = Router();
 
-// Webhook endpoint (must receive raw body before express.json parsing in app.ts)
-router.post('/webhook', dodopayWebhook);
-
 // Protected routes
 router.post('/create-checkout-session', authenticate, createCheckoutSession);
 router.post('/cancel-subscription', authenticate, cancelSubscription);
