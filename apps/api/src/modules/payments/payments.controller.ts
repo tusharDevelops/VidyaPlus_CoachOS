@@ -68,61 +68,34 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
 
 export const dodopayWebhook = Webhooks({
   webhookKey: process.env.DODO_PAYMENTS_WEBHOOK_KEY || '',
-  onPayload: async (event: any) => {
-    // Log full event structure for debugging
-    const d = event.data || event;
-    console.log('[DODO WEBHOOK] Event keys:', Object.keys(event));
-    console.log('[DODO WEBHOOK] Event type:', event.type);
-    console.log('[DODO WEBHOOK] Data payload_type:', d.payload_type);
-    console.log('[DODO WEBHOOK] Data status:', d.status);
-    console.log('[DODO WEBHOOK] Customer email:', d.customer?.email);
-    console.log('[DODO WEBHOOK] Metadata:', JSON.stringify(d.metadata));
-    console.log('[DODO WEBHOOK] Product ID:', d.product_id);
-    console.log('[DODO WEBHOOK] Product Cart:', JSON.stringify(d.product_cart));
-    console.log('[DODO WEBHOOK] Subscription ID:', d.subscription_id);
-  },
   onPaymentSucceeded: async (event: any) => {
     try {
-      console.log('[DODO WEBHOOK] onPaymentSucceeded fired!');
       const d = event.data || event;
       const email = d.customer?.email;
       const instituteId = d.metadata?.instituteId;
       let productId = d.product_cart?.[0]?.product_id;
       const subscriptionId = d.subscription_id;
 
-      console.log('[DODO WEBHOOK] email:', email, 'instituteId:', instituteId, 'productId:', productId, 'subscriptionId:', subscriptionId);
-
       // For subscription payments, product_cart is null — fetch from Dodo API
       if (!productId && subscriptionId) {
-        console.log('[DODO WEBHOOK] product_cart is null, fetching subscription details from Dodo API...');
         try {
           const subscription = await dodoClient.subscriptions.retrieve(subscriptionId);
           productId = (subscription as any).product_id;
-          console.log('[DODO WEBHOOK] Got product_id from subscription:', productId);
         } catch (fetchErr) {
-          console.error('[DODO WEBHOOK] Failed to fetch subscription details:', fetchErr);
+          console.error('Failed to fetch subscription details:', fetchErr);
         }
       }
 
-      if (!productId) {
-        console.log('[DODO WEBHOOK] Still no productId found, skipping');
-        return;
-      }
+      if (!productId) return;
 
       const plan = await prisma.plan.findFirst({
         where: { dodoProductId: productId },
       });
 
-      console.log('[DODO WEBHOOK] Found plan:', plan?.name, plan?.id);
+      if (!plan) return;
 
-      if (!plan) {
-        console.log('[DODO WEBHOOK] No plan found for product:', productId);
-        return;
-      }
-
-      // Update by instituteId if available, fallback to email
       if (instituteId) {
-        const result = await prisma.institute.update({
+        await prisma.institute.update({
           where: { id: instituteId },
           data: {
             planId: plan.id,
@@ -130,9 +103,8 @@ export const dodopayWebhook = Webhooks({
             dodoSubscriptionId: subscriptionId || undefined,
           },
         });
-        console.log('[DODO WEBHOOK] Updated institute by ID:', result.id, result.name);
       } else if (email) {
-        const result = await prisma.institute.updateMany({
+        await prisma.institute.updateMany({
           where: { email },
           data: {
             planId: plan.id,
@@ -140,41 +112,28 @@ export const dodopayWebhook = Webhooks({
             dodoSubscriptionId: subscriptionId || undefined,
           },
         });
-        console.log('[DODO WEBHOOK] Updated institutes by email, count:', result.count);
       }
-      console.log(`[DODO WEBHOOK] Plan upgraded for institute ${instituteId || email} to ${plan.name}`);
     } catch (error) {
-      console.error('[DODO WEBHOOK] Error in onPaymentSucceeded:', error);
+      console.error('Error in onPaymentSucceeded webhook:', error);
     }
   },
   onSubscriptionActive: async (event: any) => {
     try {
-      console.log('[DODO WEBHOOK] onSubscriptionActive fired!');
       const d = event.data || event;
       const email = d.customer?.email;
       const instituteId = d.metadata?.instituteId;
       const productId = d.product_id;
 
-      console.log('[DODO WEBHOOK] Sub email:', email, 'instituteId:', instituteId, 'productId:', productId, 'subscriptionId:', d.subscription_id);
-
-      if (!productId) {
-        console.log('[DODO WEBHOOK] No productId in subscription event, skipping');
-        return;
-      }
+      if (!productId) return;
 
       const plan = await prisma.plan.findFirst({
         where: { dodoProductId: productId },
       });
 
-      console.log('[DODO WEBHOOK] Sub found plan:', plan?.name, plan?.id);
-
-      if (!plan) {
-        console.log('[DODO WEBHOOK] No plan for product:', productId);
-        return;
-      }
+      if (!plan) return;
 
       if (instituteId) {
-        const result = await prisma.institute.update({
+        await prisma.institute.update({
           where: { id: instituteId },
           data: {
             planId: plan.id,
@@ -182,9 +141,8 @@ export const dodopayWebhook = Webhooks({
             dodoSubscriptionId: d.subscription_id,
           },
         });
-        console.log('[DODO WEBHOOK] Sub updated institute by ID:', result.id);
       } else if (email) {
-        const result = await prisma.institute.updateMany({
+        await prisma.institute.updateMany({
           where: { email },
           data: {
             planId: plan.id,
@@ -192,11 +150,9 @@ export const dodopayWebhook = Webhooks({
             dodoSubscriptionId: d.subscription_id,
           },
         });
-        console.log('[DODO WEBHOOK] Sub updated institutes by email, count:', result.count);
       }
-      console.log(`[DODO WEBHOOK] Subscription activated for institute ${instituteId || email} to ${plan.name}`);
     } catch (error) {
-      console.error('[DODO WEBHOOK] Error in onSubscriptionActive:', error);
+      console.error('Error in onSubscriptionActive webhook:', error);
     }
   },
   onSubscriptionCancelled: async (event: any) => {
@@ -207,7 +163,6 @@ export const dodopayWebhook = Webhooks({
       
       if (!email && !instituteId) return;
 
-      // Find Aarambh plan
       const aarambhPlan = await prisma.plan.findFirst({
         where: { name: { contains: 'Aarambh', mode: 'insensitive' } },
       });
@@ -231,9 +186,8 @@ export const dodopayWebhook = Webhooks({
           },
         });
       }
-      console.log(`[DODO WEBHOOK] Subscription cancelled for institute ${instituteId || email}, downgraded to Aarambh`);
     } catch (error) {
-      console.error('[DODO WEBHOOK] Error in onSubscriptionCancelled:', error);
+      console.error('Error in onSubscriptionCancelled webhook:', error);
     }
   },
 });
