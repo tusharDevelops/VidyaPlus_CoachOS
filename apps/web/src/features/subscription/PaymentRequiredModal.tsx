@@ -76,8 +76,8 @@ export default function PaymentRequiredModal() {
               plans.map((plan, index) => {
                 const isFeatured = index === 1;
                 const planShortName = plan.name.split(' ')[0];
-                const storageLabel = plan.maxStorageMb >= 1024
-                  ? `${plan.maxStorageMb / 1024} GB storage`
+                const storageLabel = plan.maxStorageMb >= 1000
+                  ? `${Math.round(plan.maxStorageMb / 1000)} GB storage`
                   : `${plan.maxStorageMb} MB storage`;
                 const studentsLabel = plan.maxStudents >= 10000 ? 'Unlimited students' : `Up to ${plan.maxStudents} students`;
                 const staffLabel = plan.maxStaff >= 1000 ? 'Unlimited staff' : `Up to ${plan.maxStaff} staff`;
@@ -89,7 +89,8 @@ export default function PaymentRequiredModal() {
                   batchesLabel,
                   storageLabel,
                   'All features unlocked (LMS, Payroll, Exams)',
-                ];
+                  plan.featuresJson?.support ?? 'Help center support',
+                ].filter(Boolean) as string[];
 
                 return (
                   <div

@@ -437,12 +437,11 @@ export default function HomePage() {
                   const isFeatured = index === 1;
                   const planShortName = plan.name.split(' ')[0];
                   const planTier = plan.name.match(/\(([^)]+)\)/)?.[1] ?? '';
-                  const storageLabel = plan.maxStorageMb >= 1024
-                    ? `${plan.maxStorageMb / 1024} GB storage`
+                  const storageLabel = plan.maxStorageMb >= 1000
+                    ? `${Math.round(plan.maxStorageMb / 1000)} GB storage`
                     : `${plan.maxStorageMb} MB storage`;
                   const studentsLabel = plan.maxStudents >= 10000 ? 'Unlimited students' : `Up to ${plan.maxStudents} students`;
                   const batchesLabel = plan.maxBatches >= 1000 ? 'Unlimited batches' : `${plan.maxBatches} batches`;
-                  const whatsappCredits = plan.featuresJson?.whatsappFree ?? 0;
 
                   const staffLabel = plan.maxStaff >= 1000 ? 'Unlimited staff' : `Up to ${plan.maxStaff} staff`;
 
@@ -452,8 +451,7 @@ export default function HomePage() {
                     staffLabel,
                     storageLabel,
                     'All features unlocked (LMS, Payroll, Exams)',
-                    whatsappCredits > 0 ? `${whatsappCredits} free WhatsApp credits/mo` : 'Help center support',
-                    plan.featuresJson?.support ?? 'Priority support',
+                    plan.featuresJson?.support ?? 'Help center support',
                   ].filter(Boolean) as string[];
 
                   const taglines = [
