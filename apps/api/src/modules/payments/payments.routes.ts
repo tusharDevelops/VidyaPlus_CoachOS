@@ -4,6 +4,16 @@ import { authenticate } from '../../middleware/auth.middleware';
 
 const router = Router();
 
+// Webhook health check (GET) - verify the route is reachable
+router.get('/webhook', (_req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'Webhook endpoint is reachable',
+    webhookKeyConfigured: !!process.env.DODO_PAYMENTS_WEBHOOK_KEY,
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Webhook endpoint — receives JSON-parsed body which the SDK expects
 router.post('/webhook', dodopayWebhook);
 
