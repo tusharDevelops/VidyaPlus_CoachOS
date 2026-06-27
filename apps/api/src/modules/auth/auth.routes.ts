@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { authController } from './auth.controller';
 import { forgotPasswordController } from './forgot-password.controller';
-import { authenticate, enforceTrialStatus } from '../../middleware/auth.middleware';
+import { authenticate } from '../../middleware/auth.middleware';
 
 const router = Router();
 
@@ -22,6 +22,6 @@ router.post('/refresh', authController.refresh);
 
 // Protected routes
 router.post('/logout', authenticate, authController.logout);
-router.get('/me', authenticate, enforceTrialStatus, authController.me);
+router.get('/me', authenticate, authController.me);
 
 export default router;

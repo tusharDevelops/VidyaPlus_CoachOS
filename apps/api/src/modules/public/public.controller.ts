@@ -95,18 +95,9 @@ export const publicController = {
         data: { verified: true },
       });
 
-      // Create institute with trial (14 days for Aarambh, past date for others to require payment)
+      // Default all new registrations to the Aarambh (Free) plan
       const subdomain = await generateSubdomain(instituteName);
       const AARAMBH_PLAN_ID = '00000000-0000-0000-0000-000000000001';
-      
-      let trialEndsAt: Date | null = null;
-      if (planId === AARAMBH_PLAN_ID) {
-        // Forever free base plan
-        trialEndsAt = null;
-      } else {
-        // Force immediate payment for higher tier plans
-        trialEndsAt = new Date(Date.now() - 1000);
-      }
 
       const institute = await prisma.institute.create({
         data: {
@@ -114,8 +105,7 @@ export const publicController = {
           subdomain,
           email,
           status: 'active',
-          planId,
-          trialEndsAt,
+          planId: AARAMBH_PLAN_ID,
         },
       });
 

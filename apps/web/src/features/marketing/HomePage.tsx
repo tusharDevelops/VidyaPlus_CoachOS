@@ -460,7 +460,7 @@ export default function HomePage() {
                     'For large coaching hubs managing multiple branches.',
                   ];
 
-                  const ctaLabels = ['Start free trial', 'Get started', 'Talk to sales'];
+                  const ctaLabels = ['Get started for free', 'Get started', 'Talk to sales'];
 
                   return (
                     <div

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authenticate, enforceTenantIsolation, enforceTrialStatus, requirePermission, requireAnyPermission } from '../../middleware/auth.middleware';
+import { authenticate, enforceTenantIsolation, requirePermission, requireAnyPermission } from '../../middleware/auth.middleware';
 import { staffController } from './staff.controller';
 import { payrollController } from './payroll.controller';
 
@@ -7,7 +7,6 @@ const router = Router();
 
 router.use(authenticate);
 router.use(enforceTenantIsolation);
-router.use(enforceTrialStatus);
 
 // Staff listing
 router.get('/', requireAnyPermission('staff.view', 'settings.manage'), staffController.listStaff);

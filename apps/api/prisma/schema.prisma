@@ -44,7 +44,6 @@ model Institute {
   planId          String?  @map("plan_id") @db.Uuid
   academicYear    String?  @map("academic_year") @db.VarChar(20)
   status          String   @default("active") @db.VarChar(20)
-  trialEndsAt     DateTime? @map("trial_ends_at")
   dodoCustomerId  String?  @map("dodo_customer_id") @db.VarChar(100)
   dodoSubscriptionId String? @map("dodo_subscription_id") @db.VarChar(100)
   settingsJson    Json     @default("{}") @map("settings_json")

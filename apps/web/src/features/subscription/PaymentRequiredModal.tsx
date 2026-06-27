@@ -9,9 +9,9 @@ export default function PaymentRequiredModal() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   useEffect(() => {
-    const handleTrialEnded = () => setIsOpen(true);
-    window.addEventListener('TRIAL_ENDED', handleTrialEnded);
-    return () => window.removeEventListener('TRIAL_ENDED', handleTrialEnded);
+    const handleUpgradeRequired = () => setIsOpen(true);
+    window.addEventListener('UPGRADE_REQUIRED', handleUpgradeRequired);
+    return () => window.removeEventListener('UPGRADE_REQUIRED', handleUpgradeRequired);
   }, []);
 
   useEffect(() => {
@@ -55,10 +55,10 @@ export default function PaymentRequiredModal() {
             <ShieldCheck className="w-6 h-6" />
           </div>
           <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-ink mb-2">
-            Select a Subscription Plan
+            Upgrade Your Plan
           </h2>
           <p className="text-steel max-w-lg mx-auto">
-            Choose the plan that best fits your institute. Unlock premium features to scale your coaching business effortlessly.
+            You have reached the limits of your current plan. Upgrade to unlock more capacity and premium features.
           </p>
         </div>
 

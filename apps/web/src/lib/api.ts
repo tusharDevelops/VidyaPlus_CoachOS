@@ -14,12 +14,7 @@ api.interceptors.request.use((config) => {
 
 // Response interceptor — auto-refresh on token expiry
 api.interceptors.response.use(
-  (response) => {
-    if (response.headers?.['x-trial-ended'] === 'true') {
-      window.dispatchEvent(new CustomEvent('TRIAL_ENDED'));
-    }
-    return response;
-  },
+  (response) => response,
   async (error) => {
     if (error.response?.status === 401 && error.response?.data?.code === 'TOKEN_EXPIRED') {
       const refreshToken = localStorage.getItem('refreshToken');
@@ -37,9 +32,8 @@ api.interceptors.response.use(
       }
     }
 
-    if ((error.response?.status === 402 && error.response?.data?.code === 'TRIAL_ENDED') ||
-        (error.response?.status === 403 && ['PLAN_LIMIT', 'LIMIT_REACHED'].includes(error.response?.data?.code))) {
-      window.dispatchEvent(new CustomEvent('TRIAL_ENDED'));
+    if (error.response?.status === 403 && ['PLAN_LIMIT', 'LIMIT_REACHED', 'PLAN_LIMIT_REACHED'].includes(error.response?.data?.code)) {
+      window.dispatchEvent(new CustomEvent('UPGRADE_REQUIRED'));
     }
 
     return Promise.reject(error);
