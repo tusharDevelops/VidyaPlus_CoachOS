@@ -6,6 +6,7 @@ import { Webhooks } from '@dodopayments/express';
 
 const dodoClient = new DodoPayments({
   bearerToken: process.env.DODO_PAYMENTS_API_KEY || '',
+  environment: process.env.DODO_PAYMENTS_ENV === 'production' ? 'production' : 'test_mode',
 });
 
 export const createCheckoutSession = async (req: Request, res: Response) => {

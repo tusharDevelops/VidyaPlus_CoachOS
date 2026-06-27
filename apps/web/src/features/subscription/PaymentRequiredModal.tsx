@@ -6,7 +6,7 @@ export default function PaymentRequiredModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [plans, setPlans] = useState<any[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(true);
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutLoadingId, setCheckoutLoadingId] = useState<string | null>(null);
   const [modalContext, setModalContext] = useState<{isLimitReached?: boolean, message?: string} | null>(null);
 
   useEffect(() => {
@@ -37,19 +37,25 @@ export default function PaymentRequiredModal() {
   if (!isOpen) return null;
 
   const handlePay = async (planId: string) => {
-    setCheckoutLoading(true);
+    const plan = plans.find(p => p.id === planId);
+    if (!plan || !plan.priceMonthly || Number(plan.priceMonthly) === 0) {
+      alert('You are already on the free plan.');
+      return;
+    }
+
+    setCheckoutLoadingId(planId);
     try {
       const { data } = await api.post('/payments/create-checkout-session', { planId });
       if (data?.data?.checkoutUrl) {
         window.location.href = data.data.checkoutUrl;
       } else {
         alert('Failed to generate checkout link. Please try again.');
-        setCheckoutLoading(false);
+        setCheckoutLoadingId(null);
       }
     } catch (error: any) {
       console.error('Checkout error:', error);
       alert(error.response?.data?.error || 'Failed to initiate checkout. Please contact support.');
-      setCheckoutLoading(false);
+      setCheckoutLoadingId(null);
     }
   };
 
@@ -132,14 +138,16 @@ export default function PaymentRequiredModal() {
 
                     <button
                       onClick={() => handlePay(plan.id)}
-                      disabled={checkoutLoading}
+                      disabled={checkoutLoadingId !== null || Number(plan.priceMonthly) === 0}
                       className={`w-full h-11 rounded-full text-sm font-medium transition-colors flex items-center justify-center mb-6 ${
                         isFeatured
                           ? 'bg-brand-green text-primary hover:bg-brand-green-deep'
+                          : Number(plan.priceMonthly) === 0
+                          ? 'bg-surface text-steel cursor-not-allowed'
                           : 'bg-primary text-on-primary hover:bg-charcoal'
                       }`}
                     >
-                      {checkoutLoading ? 'Redirecting...' : 'Select Plan'}
+                      {checkoutLoadingId === plan.id ? 'Redirecting...' : (Number(plan.priceMonthly) === 0 ? 'Current Plan' : 'Select Plan')}
                     </button>
 
                     <ul className="space-y-3 flex-1 border-t border-hairline-soft pt-6">
