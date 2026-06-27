@@ -82,12 +82,25 @@ export const dodopayWebhook = Webhooks({
       console.log('[DODO WEBHOOK] onPaymentSucceeded fired!');
       const email = event.customer?.email;
       const instituteId = event.metadata?.instituteId;
-      const productId = event.product_cart?.[0]?.product_id;
+      let productId = event.product_cart?.[0]?.product_id;
+      const subscriptionId = event.subscription_id;
 
-      console.log('[DODO WEBHOOK] email:', email, 'instituteId:', instituteId, 'productId:', productId);
+      console.log('[DODO WEBHOOK] email:', email, 'instituteId:', instituteId, 'productId:', productId, 'subscriptionId:', subscriptionId);
+
+      // For subscription payments, product_cart is null — fetch from Dodo API
+      if (!productId && subscriptionId) {
+        console.log('[DODO WEBHOOK] product_cart is null, fetching subscription details from Dodo API...');
+        try {
+          const subscription = await dodoClient.subscriptions.retrieve(subscriptionId);
+          productId = (subscription as any).product_id;
+          console.log('[DODO WEBHOOK] Got product_id from subscription:', productId);
+        } catch (fetchErr) {
+          console.error('[DODO WEBHOOK] Failed to fetch subscription details:', fetchErr);
+        }
+      }
 
       if (!productId) {
-        console.log('[DODO WEBHOOK] No productId found, skipping');
+        console.log('[DODO WEBHOOK] Still no productId found, skipping');
         return;
       }
 
@@ -109,6 +122,7 @@ export const dodopayWebhook = Webhooks({
           data: {
             planId: plan.id,
             status: 'active',
+            dodoSubscriptionId: subscriptionId || undefined,
           },
         });
         console.log('[DODO WEBHOOK] Updated institute by ID:', result.id, result.name);
@@ -118,6 +132,7 @@ export const dodopayWebhook = Webhooks({
           data: {
             planId: plan.id,
             status: 'active',
+            dodoSubscriptionId: subscriptionId || undefined,
           },
         });
         console.log('[DODO WEBHOOK] Updated institutes by email, count:', result.count);
