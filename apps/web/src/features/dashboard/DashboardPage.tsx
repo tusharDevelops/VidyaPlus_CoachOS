@@ -3,18 +3,25 @@ import { useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
 
 export default function DashboardPage() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     const status = searchParams.get('status');
+    const hasSubscription = searchParams.has('subscription_id');
+
     if (status === 'failed') {
-      alert('Payment checkout was cancelled or failed.');
-      window.history.replaceState({}, '', '/dashboard');
-    } else if (status === 'succeeded' || (searchParams.has('subscription_id') && status !== 'failed')) {
-      alert('Payment successful! Your plan will be updated shortly.');
-      window.history.replaceState({}, '', '/dashboard');
+      // Use setTimeout to allow render to complete before alerting
+      setTimeout(() => {
+        alert('Payment checkout was cancelled or failed.');
+        setSearchParams({}, { replace: true });
+      }, 100);
+    } else if (status === 'succeeded' || (hasSubscription && status !== 'failed')) {
+      setTimeout(() => {
+        alert('Payment successful! Your plan will be updated shortly.');
+        setSearchParams({}, { replace: true });
+      }, 100);
     }
-  }, [searchParams]);
+  }, [searchParams, setSearchParams]);
 
   return (
     <div className="animate-fade-in space-y-8">
