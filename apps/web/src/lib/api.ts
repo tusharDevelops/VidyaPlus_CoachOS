@@ -33,7 +33,12 @@ api.interceptors.response.use(
     }
 
     if (error.response?.status === 403 && ['PLAN_LIMIT', 'LIMIT_REACHED', 'PLAN_LIMIT_REACHED'].includes(error.response?.data?.code)) {
-      window.dispatchEvent(new CustomEvent('UPGRADE_REQUIRED'));
+      window.dispatchEvent(new CustomEvent('UPGRADE_REQUIRED', {
+        detail: {
+          isLimitReached: true,
+          message: error.response?.data?.error || 'You have reached the limits of your current plan.'
+        }
+      }));
     }
 
     return Promise.reject(error);

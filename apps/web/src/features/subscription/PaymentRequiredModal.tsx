@@ -7,9 +7,13 @@ export default function PaymentRequiredModal() {
   const [plans, setPlans] = useState<any[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [modalContext, setModalContext] = useState<{isLimitReached?: boolean, message?: string} | null>(null);
 
   useEffect(() => {
-    const handleUpgradeRequired = () => setIsOpen(true);
+    const handleUpgradeRequired = (e: any) => {
+      setModalContext(e.detail || null);
+      setIsOpen(true);
+    };
     window.addEventListener('UPGRADE_REQUIRED', handleUpgradeRequired);
     return () => window.removeEventListener('UPGRADE_REQUIRED', handleUpgradeRequired);
   }, []);
@@ -55,10 +59,12 @@ export default function PaymentRequiredModal() {
             <ShieldCheck className="w-6 h-6" />
           </div>
           <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-ink mb-2">
-            Upgrade Your Plan
+            {modalContext?.isLimitReached ? 'Upgrade Your Plan' : 'Select a Subscription Plan'}
           </h2>
           <p className="text-steel max-w-lg mx-auto">
-            You have reached the limits of your current plan. Upgrade to unlock more capacity and premium features.
+            {modalContext?.isLimitReached 
+              ? (modalContext.message || 'You have reached the limits of your current plan. Upgrade to unlock more capacity and premium features.')
+              : 'Choose the plan that best fits your institute. Unlock premium features to scale your coaching business effortlessly.'}
           </p>
         </div>
 

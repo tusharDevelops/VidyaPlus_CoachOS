@@ -170,7 +170,7 @@ export default function OwnerLayout() {
 
           <div className="flex items-center gap-1 sm:gap-4">
             <button 
-              onClick={() => window.dispatchEvent(new CustomEvent('UPGRADE_REQUIRED'))}
+              onClick={() => window.dispatchEvent(new CustomEvent('UPGRADE_REQUIRED', { detail: { isLimitReached: false } }))}
               className="hidden sm:flex items-center h-8 px-4 bg-brand-green text-primary hover:bg-brand-green-deep rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-sm"
             >
               Upgrade Plan
