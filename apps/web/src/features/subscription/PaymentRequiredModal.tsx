@@ -38,9 +38,19 @@ export default function PaymentRequiredModal() {
 
   const handlePay = async (planId: string) => {
     setCheckoutLoading(true);
-    // Wallet module has been removed. Subscriptions will be processed manually for now.
-    alert('Online payments are currently disabled. Please contact the administrator to upgrade your plan.');
-    setCheckoutLoading(false);
+    try {
+      const { data } = await api.post('/payments/create-checkout-session', { planId });
+      if (data?.data?.checkoutUrl) {
+        window.location.href = data.data.checkoutUrl;
+      } else {
+        alert('Failed to generate checkout link. Please try again.');
+        setCheckoutLoading(false);
+      }
+    } catch (error: any) {
+      console.error('Checkout error:', error);
+      alert(error.response?.data?.error || 'Failed to initiate checkout. Please contact support.');
+      setCheckoutLoading(false);
+    }
   };
 
   return (
