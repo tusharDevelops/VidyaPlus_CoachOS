@@ -23,7 +23,6 @@ import settingsRoutes from './modules/institute-settings/settings.routes';
 import publicRoutes from './modules/public/public.routes';
 import paymentRoutes from './modules/payments/payments.routes';
 import examRoutes from './modules/exams/exam.routes';
-import { dodopayWebhook } from './modules/payments/payments.controller';
 
 const app = express();
 
@@ -71,9 +70,6 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
   message: { success: false, error: 'Too many authentication attempts', code: 'AUTH_RATE_LIMITED' },
 });
-
-// Webhook endpoint MUST receive raw body as text before express.json parsing
-app.post('/api/v1/payments/webhook', express.text({ type: 'application/json' }), dodopayWebhook);
 
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
