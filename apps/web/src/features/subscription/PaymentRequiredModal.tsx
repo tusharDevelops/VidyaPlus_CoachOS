@@ -45,7 +45,10 @@ export default function PaymentRequiredModal() {
 
     setCheckoutLoadingId(planId);
     try {
-      const { data } = await api.post('/payments/create-checkout-session', { planId });
+      const { data } = await api.post('/payments/create-checkout-session', { 
+        planId,
+        returnUrl: window.location.origin + '/dashboard' 
+      });
       if (data?.data?.checkoutUrl) {
         window.location.href = data.data.checkoutUrl;
       } else {
