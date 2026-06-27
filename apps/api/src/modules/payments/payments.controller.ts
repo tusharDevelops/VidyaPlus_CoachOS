@@ -34,8 +34,8 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
 
     const owner = institute.users[0];
 
-    // Create a payment using Dodopayments SDK
-    const payment = await dodoClient.payments.create({
+    // Create a subscription using Dodopayments SDK
+    const subscription = await dodoClient.subscriptions.create({
       billing: {
         city: 'Mumbai',
         country: 'IN',
@@ -47,19 +47,16 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
         email: institute.email || owner?.email || '',
         name: institute.name || 'Admin',
       },
-      product_cart: [
-        {
-          product_id: plan.dodoProductId as string,
-          quantity: 1,
-        },
-      ],
+      product_id: plan.dodoProductId as string,
+      quantity: 1,
+      payment_link: true,
       return_url: `${process.env.CORS_ORIGIN?.split(',')[0] || 'http://localhost:5173'}/dashboard`,
     });
 
     return res.json({
       success: true,
       data: {
-        checkoutUrl: (payment as any).paymentLink || (payment as any).url || (payment as any).link,
+        checkoutUrl: (subscription as any).payment_link,
       },
     });
   } catch (error: any) {
