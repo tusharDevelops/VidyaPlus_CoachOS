@@ -50,7 +50,7 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
       product_id: plan.dodoProductId as string,
       quantity: 1,
       payment_link: true,
-      return_url: `${process.env.CORS_ORIGIN?.split(',')[0] || 'http://localhost:5173'}/dashboard`,
+      return_url: `${process.env.FRONTEND_URL || process.env.CORS_ORIGIN?.split(',')[0] || 'https://vidya-plus-coach-os-web.vercel.app'}/dashboard`,
     });
 
     return res.json({

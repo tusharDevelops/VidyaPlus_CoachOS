@@ -1,6 +1,21 @@
 import DashboardDrillDown from './components/DashboardDrillDown.tsx';
+import { useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
 export default function DashboardPage() {
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const status = searchParams.get('status');
+    if (status === 'failed') {
+      alert('Payment checkout was cancelled or failed.');
+      window.history.replaceState({}, '', '/dashboard');
+    } else if (status === 'succeeded' || (searchParams.has('subscription_id') && status !== 'failed')) {
+      alert('Payment successful! Your plan will be updated shortly.');
+      window.history.replaceState({}, '', '/dashboard');
+    }
+  }, [searchParams]);
+
   return (
     <div className="animate-fade-in space-y-8">
       {/* Header */}
