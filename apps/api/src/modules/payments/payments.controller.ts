@@ -110,6 +110,7 @@ export const dodopayWebhook = Webhooks({
         data: {
           planId: plan.id,
           status: 'active',
+          dodoSubscriptionId: event.subscription_id,
         },
       });
       console.log(`Subscription activated for ${email} to ${plan.name}`);
@@ -117,4 +118,95 @@ export const dodopayWebhook = Webhooks({
       console.error('Error in onSubscriptionActive webhook:', error);
     }
   },
+  onSubscriptionCancelled: async (event: any) => {
+    try {
+      const email = event.customer?.email;
+      if (!email) return;
+
+      // Find Aarambh plan
+      const aarambhPlan = await prisma.plan.findFirst({
+        where: { name: { contains: 'Aarambh', mode: 'insensitive' } },
+      });
+
+      if (!aarambhPlan) return;
+
+      await prisma.institute.updateMany({
+        where: { email },
+        data: {
+          planId: aarambhPlan.id,
+          dodoSubscriptionId: null,
+        },
+      });
+      console.log(`Subscription cancelled for ${email}, downgraded to Aarambh`);
+    } catch (error) {
+      console.error('Error in onSubscriptionCancelled webhook:', error);
+    }
+  },
 });
+
+export const cancelSubscription = async (req: Request, res: Response) => {
+  try {
+    const instituteId = req.user?.instituteId;
+    if (!instituteId) return res.status(401).json({ success: false, error: 'Unauthorized' });
+
+    const institute = await prisma.institute.findUnique({ where: { id: instituteId } });
+    if (!institute || !institute.dodoSubscriptionId) {
+      return res.status(400).json({ success: false, error: 'No active subscription found' });
+    }
+
+    await dodoClient.subscriptions.update(institute.dodoSubscriptionId, {
+      cancel_at_next_billing_date: true,
+      cancel_reason: 'cancelled_by_customer',
+    });
+
+    return res.json({ success: true, message: 'Subscription scheduled for cancellation' });
+  } catch (error: any) {
+    console.error('Error cancelling subscription:', error);
+    return res.status(500).json({ success: false, error: 'Failed to cancel subscription' });
+  }
+};
+
+export const reactivateSubscription = async (req: Request, res: Response) => {
+  try {
+    const instituteId = req.user?.instituteId;
+    if (!instituteId) return res.status(401).json({ success: false, error: 'Unauthorized' });
+
+    const institute = await prisma.institute.findUnique({ where: { id: instituteId } });
+    if (!institute || !institute.dodoSubscriptionId) {
+      return res.status(400).json({ success: false, error: 'No active subscription found' });
+    }
+
+    await dodoClient.subscriptions.update(institute.dodoSubscriptionId, {
+      cancel_at_next_billing_date: false,
+    });
+
+    return res.json({ success: true, message: 'Subscription reactivated' });
+  } catch (error: any) {
+    console.error('Error reactivating subscription:', error);
+    return res.status(500).json({ success: false, error: 'Failed to reactivate subscription' });
+  }
+};
+
+export const getSubscriptionDetails = async (req: Request, res: Response) => {
+  try {
+    const instituteId = req.user?.instituteId;
+    if (!instituteId) return res.status(401).json({ success: false, error: 'Unauthorized' });
+
+    const institute = await prisma.institute.findUnique({ 
+      where: { id: instituteId },
+      include: { plan: true }
+    });
+    
+    if (!institute) return res.status(404).json({ success: false, error: 'Institute not found' });
+
+    if (!institute.dodoSubscriptionId) {
+      return res.json({ success: true, data: { plan: institute.plan, subscription: null } });
+    }
+
+    const subscription = await dodoClient.subscriptions.retrieve(institute.dodoSubscriptionId);
+    return res.json({ success: true, data: { plan: institute.plan, subscription } });
+  } catch (error: any) {
+    console.error('Error fetching subscription details:', error);
+    return res.status(500).json({ success: false, error: 'Failed to fetch subscription' });
+  }
+};
