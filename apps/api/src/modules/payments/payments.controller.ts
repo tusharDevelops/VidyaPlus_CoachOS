@@ -69,21 +69,26 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
 export const dodopayWebhook = Webhooks({
   webhookKey: process.env.DODO_PAYMENTS_WEBHOOK_KEY || '',
   onPayload: async (event: any) => {
-    console.log('[DODO WEBHOOK] Received event type:', event.payload_type);
-    console.log('[DODO WEBHOOK] Event status:', event.status);
-    console.log('[DODO WEBHOOK] Customer email:', event.customer?.email);
-    console.log('[DODO WEBHOOK] Metadata:', JSON.stringify(event.metadata));
-    console.log('[DODO WEBHOOK] Product ID:', event.product_id);
-    console.log('[DODO WEBHOOK] Product Cart:', JSON.stringify(event.product_cart));
-    console.log('[DODO WEBHOOK] Subscription ID:', event.subscription_id);
+    // Log full event structure for debugging
+    const d = event.data || event;
+    console.log('[DODO WEBHOOK] Event keys:', Object.keys(event));
+    console.log('[DODO WEBHOOK] Event type:', event.type);
+    console.log('[DODO WEBHOOK] Data payload_type:', d.payload_type);
+    console.log('[DODO WEBHOOK] Data status:', d.status);
+    console.log('[DODO WEBHOOK] Customer email:', d.customer?.email);
+    console.log('[DODO WEBHOOK] Metadata:', JSON.stringify(d.metadata));
+    console.log('[DODO WEBHOOK] Product ID:', d.product_id);
+    console.log('[DODO WEBHOOK] Product Cart:', JSON.stringify(d.product_cart));
+    console.log('[DODO WEBHOOK] Subscription ID:', d.subscription_id);
   },
   onPaymentSucceeded: async (event: any) => {
     try {
       console.log('[DODO WEBHOOK] onPaymentSucceeded fired!');
-      const email = event.customer?.email;
-      const instituteId = event.metadata?.instituteId;
-      let productId = event.product_cart?.[0]?.product_id;
-      const subscriptionId = event.subscription_id;
+      const d = event.data || event;
+      const email = d.customer?.email;
+      const instituteId = d.metadata?.instituteId;
+      let productId = d.product_cart?.[0]?.product_id;
+      const subscriptionId = d.subscription_id;
 
       console.log('[DODO WEBHOOK] email:', email, 'instituteId:', instituteId, 'productId:', productId, 'subscriptionId:', subscriptionId);
 
@@ -145,11 +150,12 @@ export const dodopayWebhook = Webhooks({
   onSubscriptionActive: async (event: any) => {
     try {
       console.log('[DODO WEBHOOK] onSubscriptionActive fired!');
-      const email = event.customer?.email;
-      const instituteId = event.metadata?.instituteId;
-      const productId = event.product_id;
+      const d = event.data || event;
+      const email = d.customer?.email;
+      const instituteId = d.metadata?.instituteId;
+      const productId = d.product_id;
 
-      console.log('[DODO WEBHOOK] Sub email:', email, 'instituteId:', instituteId, 'productId:', productId, 'subscriptionId:', event.subscription_id);
+      console.log('[DODO WEBHOOK] Sub email:', email, 'instituteId:', instituteId, 'productId:', productId, 'subscriptionId:', d.subscription_id);
 
       if (!productId) {
         console.log('[DODO WEBHOOK] No productId in subscription event, skipping');
@@ -173,7 +179,7 @@ export const dodopayWebhook = Webhooks({
           data: {
             planId: plan.id,
             status: 'active',
-            dodoSubscriptionId: event.subscription_id,
+            dodoSubscriptionId: d.subscription_id,
           },
         });
         console.log('[DODO WEBHOOK] Sub updated institute by ID:', result.id);
@@ -183,7 +189,7 @@ export const dodopayWebhook = Webhooks({
           data: {
             planId: plan.id,
             status: 'active',
-            dodoSubscriptionId: event.subscription_id,
+            dodoSubscriptionId: d.subscription_id,
           },
         });
         console.log('[DODO WEBHOOK] Sub updated institutes by email, count:', result.count);
@@ -195,8 +201,9 @@ export const dodopayWebhook = Webhooks({
   },
   onSubscriptionCancelled: async (event: any) => {
     try {
-      const email = event.customer?.email;
-      const instituteId = event.metadata?.instituteId;
+      const d = event.data || event;
+      const email = d.customer?.email;
+      const instituteId = d.metadata?.instituteId;
       
       if (!email && !instituteId) return;
 
@@ -224,9 +231,9 @@ export const dodopayWebhook = Webhooks({
           },
         });
       }
-      console.log(`Subscription cancelled for institute ${instituteId || email}, downgraded to Aarambh`);
+      console.log(`[DODO WEBHOOK] Subscription cancelled for institute ${instituteId || email}, downgraded to Aarambh`);
     } catch (error) {
-      console.error('Error in onSubscriptionCancelled webhook:', error);
+      console.error('[DODO WEBHOOK] Error in onSubscriptionCancelled:', error);
     }
   },
 });
