@@ -50,6 +50,7 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
       product_id: plan.dodoProductId as string,
       quantity: 1,
       payment_link: true,
+      metadata: { instituteId },
       return_url: returnUrl || `${process.env.FRONTEND_URL || process.env.CORS_ORIGIN?.split(',')[0] || 'https://vidya-plus-coach-os-web.vercel.app'}/dashboard`,
     });
 
@@ -70,9 +71,10 @@ export const dodopayWebhook = Webhooks({
   onPaymentSucceeded: async (event: any) => {
     try {
       const email = event.customer?.email;
+      const instituteId = event.metadata?.instituteId;
       const productId = event.product_cart?.[0]?.product_id;
 
-      if (!email || !productId) return;
+      if (!productId) return;
 
       const plan = await prisma.plan.findFirst({
         where: { dodoProductId: productId },
@@ -80,14 +82,25 @@ export const dodopayWebhook = Webhooks({
 
       if (!plan) return;
 
-      await prisma.institute.updateMany({
-        where: { email },
-        data: {
-          planId: plan.id,
-          status: 'active',
-        },
-      });
-      console.log(`Plan upgraded for ${email} to ${plan.name}`);
+      // Update by instituteId if available, fallback to email
+      if (instituteId) {
+        await prisma.institute.update({
+          where: { id: instituteId },
+          data: {
+            planId: plan.id,
+            status: 'active',
+          },
+        });
+      } else if (email) {
+        await prisma.institute.updateMany({
+          where: { email },
+          data: {
+            planId: plan.id,
+            status: 'active',
+          },
+        });
+      }
+      console.log(`Plan upgraded for institute ${instituteId || email} to ${plan.name}`);
     } catch (error) {
       console.error('Error in onPaymentSucceeded webhook:', error);
     }
@@ -95,9 +108,10 @@ export const dodopayWebhook = Webhooks({
   onSubscriptionActive: async (event: any) => {
     try {
       const email = event.customer?.email;
+      const instituteId = event.metadata?.instituteId;
       const productId = event.product_id;
 
-      if (!email || !productId) return;
+      if (!productId) return;
 
       const plan = await prisma.plan.findFirst({
         where: { dodoProductId: productId },
@@ -105,15 +119,26 @@ export const dodopayWebhook = Webhooks({
 
       if (!plan) return;
 
-      await prisma.institute.updateMany({
-        where: { email },
-        data: {
-          planId: plan.id,
-          status: 'active',
-          dodoSubscriptionId: event.subscription_id,
-        },
-      });
-      console.log(`Subscription activated for ${email} to ${plan.name}`);
+      if (instituteId) {
+        await prisma.institute.update({
+          where: { id: instituteId },
+          data: {
+            planId: plan.id,
+            status: 'active',
+            dodoSubscriptionId: event.subscription_id,
+          },
+        });
+      } else if (email) {
+        await prisma.institute.updateMany({
+          where: { email },
+          data: {
+            planId: plan.id,
+            status: 'active',
+            dodoSubscriptionId: event.subscription_id,
+          },
+        });
+      }
+      console.log(`Subscription activated for institute ${instituteId || email} to ${plan.name}`);
     } catch (error) {
       console.error('Error in onSubscriptionActive webhook:', error);
     }
@@ -121,7 +146,9 @@ export const dodopayWebhook = Webhooks({
   onSubscriptionCancelled: async (event: any) => {
     try {
       const email = event.customer?.email;
-      if (!email) return;
+      const instituteId = event.metadata?.instituteId;
+      
+      if (!email && !instituteId) return;
 
       // Find Aarambh plan
       const aarambhPlan = await prisma.plan.findFirst({
@@ -130,14 +157,24 @@ export const dodopayWebhook = Webhooks({
 
       if (!aarambhPlan) return;
 
-      await prisma.institute.updateMany({
-        where: { email },
-        data: {
-          planId: aarambhPlan.id,
-          dodoSubscriptionId: null,
-        },
-      });
-      console.log(`Subscription cancelled for ${email}, downgraded to Aarambh`);
+      if (instituteId) {
+        await prisma.institute.update({
+          where: { id: instituteId },
+          data: {
+            planId: aarambhPlan.id,
+            dodoSubscriptionId: null,
+          },
+        });
+      } else if (email) {
+        await prisma.institute.updateMany({
+          where: { email },
+          data: {
+            planId: aarambhPlan.id,
+            dodoSubscriptionId: null,
+          },
+        });
+      }
+      console.log(`Subscription cancelled for institute ${instituteId || email}, downgraded to Aarambh`);
     } catch (error) {
       console.error('Error in onSubscriptionCancelled webhook:', error);
     }

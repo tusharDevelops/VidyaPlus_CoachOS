@@ -72,8 +72,8 @@ const authLimiter = rateLimit({
   message: { success: false, error: 'Too many authentication attempts', code: 'AUTH_RATE_LIMITED' },
 });
 
-// Webhook endpoint MUST receive raw body before express.json parsing
-app.post('/api/v1/payments/webhook', express.raw({ type: 'application/json' }), dodopayWebhook);
+// Webhook endpoint MUST receive raw body as text before express.json parsing
+app.post('/api/v1/payments/webhook', express.text({ type: 'application/json' }), dodopayWebhook);
 
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
