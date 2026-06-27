@@ -92,6 +92,7 @@ export default function AdminLayout() {
 
           {/* Footer Actions */}
           <div className="p-3 border-t border-hairline-soft space-y-1 flex-shrink-0">
+            <PWAInstallBanner appName="VP Admin" collapsed={!sidebarOpen} />
              <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="w-full flex items-center h-10 px-3 rounded-md text-sm font-medium text-steel hover:bg-surface hover:text-ink transition-colors group hidden lg:flex"
@@ -168,7 +169,6 @@ export default function AdminLayout() {
           </div>
         </main>
       </div>
-      <PWAInstallBanner appName="VP Admin" />
     </div>
   );
 }

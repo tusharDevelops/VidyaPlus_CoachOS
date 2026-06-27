@@ -117,6 +117,7 @@ export default function OwnerLayout() {
 
           {/* Footer Actions */}
           <div className="p-3 border-t border-hairline-soft space-y-1 flex-shrink-0">
+            <PWAInstallBanner appName="VidyaPlus" collapsed={!sidebarOpen} />
              <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="w-full hidden lg:flex items-center h-10 px-3 rounded-md text-sm font-medium text-steel hover:bg-surface transition-colors group"
@@ -289,7 +290,6 @@ export default function OwnerLayout() {
           })}
         </div>
       </div>
-      <PWAInstallBanner appName="VidyaPlus" />
     </div>
   );
 }

@@ -103,6 +103,9 @@ export default function StudentLayout() {
             >
               <Bell className="w-4 h-4 text-steel" /> Notifications
             </button>
+            <div className="px-1 py-1">
+              <PWAInstallBanner appName="VP Student" collapsed={false} />
+            </div>
             <div className="h-px bg-hairline mx-2" />
             <button
               onClick={handleLogout}
@@ -148,7 +151,6 @@ export default function StudentLayout() {
           })}
         </div>
       </div>
-      <PWAInstallBanner appName="VP Student" />
     </div>
   );
 }
