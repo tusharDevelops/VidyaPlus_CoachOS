@@ -3,7 +3,7 @@ import {
   Users, GraduationCap, Loader2, IndianRupee, 
   BarChart3, CalendarCheck, ClipboardList, 
   UserPlus, ChevronRight, Zap, Search, Shield,
-  Wallet, Bell, TrendingUp
+  Bell
 } from 'lucide-react';
 import { DrillDepth } from '../types';
 import api from '../../../lib/api';
@@ -171,21 +171,7 @@ export default function StaffOverviewLayer({ onNavigate }: StaffOverviewLayerPro
             </button>
           )}
 
-          {hasPermission('wallet.view') && (
-            <button 
-              onClick={() => navigate('/wallet')}
-              className="flex items-center gap-6 p-6 bg-canvas rounded-3xl border border-hairline hover:shadow-premium transition-all group"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-violet-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                <Wallet className="w-7 h-7 text-violet-600" />
-              </div>
-              <div className="flex-1 text-left">
-                <h2 className="font-black text-ink uppercase tracking-tight">Institute Wallet</h2>
-                <p className="text-[10px] font-bold text-steel uppercase tracking-widest mt-1 opacity-60">Balance • Transactions</p>
-              </div>
-              <ChevronRight className="w-5 h-5 text-slate group-hover:translate-x-1 transition-all" />
-            </button>
-          )}
+
 
           {hasPermission('notifications.view') && (
             <button 
@@ -203,21 +189,7 @@ export default function StaffOverviewLayer({ onNavigate }: StaffOverviewLayerPro
             </button>
           )}
 
-          {hasPermission('marketing.campaigns') && (
-            <button 
-              onClick={() => navigate('/marketing')}
-              className="flex items-center gap-6 p-6 bg-canvas rounded-3xl border border-hairline hover:shadow-premium transition-all group"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-pink-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                <TrendingUp className="w-7 h-7 text-pink-600" />
-              </div>
-              <div className="flex-1 text-left">
-                <h2 className="font-black text-ink uppercase tracking-tight">Marketing</h2>
-                <p className="text-[10px] font-bold text-steel uppercase tracking-widest mt-1 opacity-60">Campaigns • Outreach</p>
-              </div>
-              <ChevronRight className="w-5 h-5 text-slate group-hover:translate-x-1 transition-all" />
-            </button>
-          )}
+
 
           {hasPermission('reports.view') && (
             <button 
@@ -235,7 +207,7 @@ export default function StaffOverviewLayer({ onNavigate }: StaffOverviewLayerPro
             </button>
           )}
 
-          {!hasPermission('batches.view') && !hasPermission('fees.view') && !hasPermission('staff.view') && !hasPermission('reports.view') && !hasPermission('wallet.view') && !hasPermission('notifications.view') && !hasPermission('marketing.campaigns') && (
+          {!hasPermission('batches.view') && !hasPermission('fees.view') && !hasPermission('staff.view') && !hasPermission('reports.view') && !hasPermission('notifications.view') && (
             <div className="col-span-full py-20 text-center bg-surface/30 border-2 border-hairline border-dashed rounded-[2.5rem]">
                <Shield className="w-12 h-12 text-steel mx-auto mb-4 opacity-20" />
                <h3 className="text-sm font-black text-ink uppercase tracking-widest opacity-40">No Authorized Modules</h3>

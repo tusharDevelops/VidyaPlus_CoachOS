@@ -4,7 +4,7 @@ import { useAuthStore } from '../stores/auth.store';
 import { PWAInstallBanner } from '@coachos/ui';
 import api from '../lib/api';
 import {
-  GraduationCap, Bell, TrendingUp, Wallet, Megaphone, 
+  GraduationCap, Bell, TrendingUp,
   IndianRupee, Banknote, UserCircle, LogOut, LayoutDashboard,
   Menu, X, Search, ChevronLeft, MoreHorizontal, Sun, Moon
 } from 'lucide-react';
@@ -13,8 +13,6 @@ const NAV_ITEMS = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: Bell, label: 'Notifications', path: '/notifications', permission: 'notifications.view' },
   { icon: TrendingUp, label: 'Reports', path: '/reports', permission: 'reports.view' },
-  { icon: Wallet, label: 'Wallet', path: '/wallet', permission: 'wallet.view' },
-  { icon: Megaphone, label: 'Marketing', path: '/marketing', permission: 'marketing.campaigns' },
   { icon: IndianRupee, label: 'Fees & Payments', path: '/fees', permission: 'fees.view' },
   { icon: Banknote, label: 'My Salary', path: '/my-salary' },
   { icon: UserCircle, label: 'My Profile', path: '/my-profile' },

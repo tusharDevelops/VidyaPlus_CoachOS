@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authenticate, enforceTenantIsolation } from '../../middleware/auth.middleware';
+import { authenticate, enforceTenantIsolation, requirePermission } from '../../middleware/auth.middleware';
 import { reportController } from './report.controller';
 
 const router = Router();
@@ -7,7 +7,7 @@ const router = Router();
 router.use(authenticate);
 router.use(enforceTenantIsolation);
 
-router.get('/fee-summary', reportController.getFeeReport);
-router.get('/attendance-summary', reportController.getAttendanceReport);
+router.get('/fee-summary', requirePermission('reports.view'), reportController.getFeeReport);
+router.get('/attendance-summary', requirePermission('reports.view'), reportController.getAttendanceReport);
 
 export default router;

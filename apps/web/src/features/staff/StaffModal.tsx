@@ -50,7 +50,6 @@ const PERMISSION_GROUPS = [
     items: [
       { id: 'notifications.view', label: 'View notification logs', description: 'View history of sent alerts' },
       { id: 'notifications.send', label: 'Send broadcast alerts', description: 'Send WhatsApp/Email notifications' },
-      { id: 'marketing.campaigns', label: 'Marketing Campaigns', description: 'Manage promotional campaigns and offers' },
     ]
   },
   {

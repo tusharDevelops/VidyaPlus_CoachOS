@@ -40,7 +40,6 @@ export const MODULAR_DELEGATION_ENGINE: PermissionModule[] = [
       { id: 'fees.collect', label: 'Process fee payments', description: 'Record and verify fee collections' },
       { id: 'fees.edit', label: 'Edit fee structures', description: 'Modify fee plans and discounts' },
       { id: 'fees.delete', label: 'Void/Delete receipts', description: 'Cancel or delete payment records' },
-      { id: 'wallet.view', label: 'Institute Wallet', description: 'Access wallet transactions and balance' },
     ]
   },
   {
@@ -49,7 +48,6 @@ export const MODULAR_DELEGATION_ENGINE: PermissionModule[] = [
     permissions: [
       { id: 'notifications.view', label: 'View notification logs', description: 'View history of sent alerts' },
       { id: 'notifications.send', label: 'Send broadcast alerts', description: 'Send WhatsApp/Email notifications' },
-      { id: 'marketing.campaigns', label: 'Marketing Campaigns', description: 'Manage promotional campaigns and offers' },
     ]
   },
   {
