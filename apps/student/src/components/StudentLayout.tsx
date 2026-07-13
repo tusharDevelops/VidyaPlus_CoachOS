@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/auth.store';
-import { PWAInstallBanner } from '@coachos/ui';
+import { PWAInstallBanner, BrandLogo } from '@coachos/ui';
 import {
   GraduationCap, CalendarCheck, CreditCard, Bell,
   LayoutDashboard, User, LogOut, MoreHorizontal, Sun, Moon, Menu, FileText
@@ -47,13 +47,7 @@ export default function StudentLayout() {
           <button onClick={() => setShowMore(true)} className="p-2 -ml-2 rounded-lg hover:bg-surface text-ink-muted">
              <Menu className="w-5 h-5" />
           </button>
-          <div className="w-8 h-8 rounded-lg bg-ink flex items-center justify-center">
-            <GraduationCap className="w-5 h-5 text-brand-green" />
-          </div>
-          <div>
-            <h1 className="text-sm font-bold text-ink tracking-tight leading-none">VidyaPlus</h1>
-            <p className="text-[9px] font-bold text-ink-muted uppercase tracking-widest">{user?.instituteName || 'Student'}</p>
-          </div>
+          <BrandLogo />
         </div>
 
         <div className="flex items-center gap-2">

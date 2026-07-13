@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAdminAuthStore } from '../stores/auth.store';
-import { PWAInstallBanner } from '@coachos/ui';
+import { PWAInstallBanner, BrandLogo } from '@coachos/ui';
 import {
   LayoutDashboard, Building2, CreditCard, Settings, LogOut,
   Menu, Shield, ChevronLeft, Sun, Moon
@@ -49,15 +49,7 @@ export default function AdminLayout() {
         <div className="flex flex-col h-full">
           {/* Brand */}
           <div className="h-16 flex items-center px-6 border-b border-hairline-soft flex-shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
-              <Shield className="w-5 h-5 text-brand-green" />
-            </div>
-            {sidebarOpen && (
-              <div className="ml-3 overflow-hidden whitespace-nowrap">
-                <h1 className="font-semibold text-ink tracking-tight">VidyaPlus</h1>
-                <p className="text-[11px] font-semibold text-steel uppercase tracking-[0.5px] leading-none">Admin Console</p>
-              </div>
-            )}
+            <BrandLogo collapsed={!sidebarOpen} />
           </div>
 
           {/* Navigation */}

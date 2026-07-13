@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../lib/api';
 import { useAuthStore } from '../../stores/auth.store';
+import { BrandLogo } from '@coachos/ui';
 import AuthModal from '../auth/AuthModal';
 import {
   ArrowRight, BarChart3, Bell, BookOpen, CalendarCheck, CheckCircle2,
@@ -107,11 +108,8 @@ export default function HomePage() {
     <div className="min-h-screen bg-canvas text-ink font-sans">
       <header className="sticky top-0 z-40 bg-canvas/90 backdrop-blur-md border-b border-hairline-soft">
         <div className="max-w-[1280px] mx-auto h-16 px-3 sm:px-3 sm:px-8 flex items-center justify-between gap-5">
-          <button onClick={() => navigate('/')} className="flex items-center gap-3">
-            <span className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <GraduationCap className="w-5 h-5 text-brand-green" />
-            </span>
-            <span className="font-semibold tracking-tight text-ink">VidyaPlus</span>
+          <button onClick={() => navigate('/')} className="flex items-center">
+            <BrandLogo />
           </button>
 
           <nav className="hidden lg:flex items-center gap-7 text-sm text-steel">

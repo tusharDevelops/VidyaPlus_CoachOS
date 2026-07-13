@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/auth.store';
-import { PWAInstallBanner } from '@coachos/ui';
+import { PWAInstallBanner, BrandLogo } from '@coachos/ui';
 import api from '../lib/api';
 import {
   GraduationCap, Bell, TrendingUp,
@@ -74,13 +74,7 @@ export default function StaffLayout() {
         <div className="flex flex-col h-full">
           {/* Brand */}
           <div className="h-16 flex items-center px-6 border-b border-hairline flex-shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-ink flex items-center justify-center flex-shrink-0">
-              <GraduationCap className="w-5 h-5 text-brand-green" />
-            </div>
-            <div className={`ml-3 overflow-hidden whitespace-nowrap ${!sidebarOpen ? 'lg:hidden' : ''}`}>
-              <h1 className="font-bold text-ink tracking-tight">VidyaPlus</h1>
-              <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest leading-none">Staff Portal</p>
-            </div>
+            <BrandLogo collapsed={!sidebarOpen} />
             <button onClick={() => setSidebarOpen(false)} className="ml-auto lg:hidden p-1 rounded-lg hover:bg-surface-hover text-ink-muted">
               <X className="w-5 h-5" />
             </button>
