@@ -1,9 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAuthStore } from './stores/auth.store';
 import { ProtectedRoute, PublicOnlyRoute } from './components/RouteGuards';
 import OwnerLayout from './components/OwnerLayout';
 import HomePage from './features/marketing/HomePage';
+import MobileWelcomePage from './features/marketing/MobileWelcomePage';
 import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import DashboardPage from './features/dashboard/DashboardPage';
@@ -21,7 +22,36 @@ import ReportsPage from './features/reports/ReportsPage';
 import SettingsPage from './features/settings/SettingsPage';
 import PaymentRequiredModal from './features/subscription/PaymentRequiredModal';
 
+import { Capacitor } from '@capacitor/core';
+import { App as CapacitorApp } from '@capacitor/app';
 import * as Sentry from '@sentry/react';
+
+// Custom hook/component to manage the Android hardware back button
+function HardwareBackButtonHandler() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    
+    const backButtonListener = CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+      // If we are at the root or dashboard, don't go "back" to a previous cached page, just exit the app.
+      if (location.pathname === '/' || location.pathname === '/dashboard' || location.pathname === '/login') {
+        CapacitorApp.exitApp();
+      } else if (canGoBack) {
+        navigate(-1);
+      } else {
+        CapacitorApp.exitApp();
+      }
+    });
+
+    return () => {
+      backButtonListener.then(listener => listener.remove());
+    };
+  }, [location.pathname, navigate]);
+
+  return null;
+}
 
 export default function App() {
   const { isAuthenticated, fetchUser } = useAuthStore();
@@ -44,13 +74,22 @@ export default function App() {
     <Sentry.ErrorBoundary fallback={<div className="p-3 sm:p-8 text-center"><p className="text-red-500 font-bold mb-2">Oops! Something went wrong.</p><p className="text-sm text-gray-500">Our team has been notified. Please refresh the page.</p></div>}>
       <PaymentRequiredModal />
       <BrowserRouter>
+        <HardwareBackButtonHandler />
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : Capacitor.isNativePlatform() ? (
+              <MobileWelcomePage />
+            ) : (
+              <HomePage />
+            )
+          } />
 
           {/* Public routes — Now redirecting to landing modal */}
           <Route element={<PublicOnlyRoute />}>
-            <Route path="/login" element={<Navigate to="/?auth=login" replace />} />
-            <Route path="/register" element={<Navigate to="/?auth=register" replace />} />
+            <Route path="/login" element={Capacitor.isNativePlatform() ? <LoginPage /> : <Navigate to="/?auth=login" replace />} />
+            <Route path="/register" element={Capacitor.isNativePlatform() ? <RegisterPage /> : <Navigate to="/?auth=register" replace />} />
           </Route>
 
           {/* Protected routes with Owner layout */}
