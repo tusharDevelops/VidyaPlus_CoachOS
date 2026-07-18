@@ -4,12 +4,12 @@
   "description": "Clarity, at scale. The calm staff portal for coaching institutes.",
   "icons": [
     {
-      "src": "/pwa-192.png",
+      "src": "/web-app-manifest-192x192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/pwa-512.png",
+      "src": "/web-app-manifest-512x512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
