@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">VidyaPlus Student</string>
-    <string name="title_activity_main">VidyaPlus Student</string>
-    <string name="package_name">com.vidyaplus.coachos.student</string>
-    <string name="custom_url_scheme">com.vidyaplus.coachos.student</string>
+    <string name="app_name">MANEZA Student</string>
+    <string name="title_activity_main">MANEZA Student</string>
+    <string name="package_name">com.maneza.student</string>
+    <string name="custom_url_scheme">com.maneza.student</string>
 </resources>

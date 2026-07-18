@@ -4,7 +4,7 @@ android {
     namespace = "com.vidyaplus.coachos.student"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.vidyaplus.coachos.student"
+        applicationId "com.maneza.student"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
