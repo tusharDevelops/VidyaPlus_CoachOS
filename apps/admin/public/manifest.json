@@ -1,7 +1,7 @@
 {
-  "short_name": "VP Admin",
+  "short_name": "MANEZA Admin",
   "name": "MANEZA - Admin Control Panel",
-  "description": "Global administration and subscription system configuration dashboard.",
+  "description": "MANEZA global administration.",
   "icons": [
     {
       "src": "/pwa-192.png",

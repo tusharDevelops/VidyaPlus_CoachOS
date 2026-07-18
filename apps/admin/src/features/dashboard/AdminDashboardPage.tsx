@@ -128,9 +128,9 @@ export default function AdminDashboardPage() {
                     <tr key={inst.id} className="hover:bg-surface/70 transition-colors group cursor-pointer" onClick={() => navigate(`/institutes/${inst.id}`)}>
                       <td className="px-6 py-4">
                         <p className="text-sm font-medium text-ink">{inst.name}</p>
-                        <p className="text-xs text-steel flex items-center gap-1 mt-0.5">
-                          <Globe className="w-3 h-3" /> {inst.subdomain}.vidyaplus.in
-                        </p>
+                        <div className="flex items-center gap-1 text-xs text-steel mt-0.5">
+                          <Globe className="w-3 h-3" /> {inst.subdomain}.maneza.in
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <span className="inline-flex px-2 py-0.5 rounded-sm text-[11px] font-semibold bg-surface text-steel border border-hairline">

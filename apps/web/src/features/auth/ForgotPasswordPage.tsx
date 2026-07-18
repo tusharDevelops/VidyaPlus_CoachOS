@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/auth.store';
-import { GraduationCap, Loader2, ArrowLeft, Key, Mail, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Key, Mail, Loader2, CheckCircle2 } from 'lucide-react';
+import { BrandLogo } from '@coachos/ui';
 
 type Step = 'email' | 'otp' | 'reset';
 
@@ -78,10 +79,9 @@ export default function ForgotPasswordPage() {
 
       <div className="relative w-full max-w-[440px] animate-fade-in">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-lg bg-primary border border-hairline mb-5">
-            <GraduationCap className="w-7 h-7 text-brand-green" />
+          <div className="flex justify-center mb-4">
+            <BrandLogo />
           </div>
-          <h1 className="text-3xl font-semibold text-ink tracking-[-0.5px]">VidyaPlus</h1>
           <p className="text-[11px] font-semibold text-steel uppercase tracking-[0.5px] mt-2">Security Center</p>
         </div>
 
@@ -195,7 +195,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         <p className="text-center text-steel text-[11px] font-semibold uppercase tracking-[0.5px] mt-10">
-          (c) 2026 VidyaPlus Technologies
+          (c) 2026 MANEZA Technologies
         </p>
       </div>
     </div>

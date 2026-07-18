@@ -210,7 +210,7 @@ export default function PlatformSettingsPage() {
                   rows={3}
                   value={settings.bannerText} 
                   onChange={e => setSettings({ ...settings, bannerText: e.target.value })}
-                  placeholder="e.g. VidyaPlus will undergo scheduled database maintenance on May 20th at 02:00 IST. Please save your work."
+                  placeholder="e.g. MANEZA will undergo scheduled database maintenance on May 20th at 02:00 IST. Please save your work."
                   className="mint-input w-full"
                   disabled={!settings.bannerEnabled}
                 />

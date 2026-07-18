@@ -197,7 +197,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
               {mode === 'reset' && 'Set New Password'}
             </h2>
             <p className="text-steel text-sm mt-1.5 font-medium">
-              {mode === 'login' && 'Sign in to your CoachOS command center'}
+              {mode === 'login' && 'Sign in to your MANEZA command center'}
               {mode === 'register' && 'Create your account'}
               {mode === 'otp' && `We've sent a code to ${formData.email}`}
               {mode === 'forgot' && 'Enter your email to receive a reset code'}

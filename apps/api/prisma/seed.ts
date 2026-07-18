@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding CoachOS database...');
+  console.log('🌱 Seeding MANEZA database...');
 
   // 1. Create default subscription plans
   const aarambhPlan = await prisma.plan.upsert({
@@ -119,7 +119,7 @@ async function main() {
   console.log('✅ Plans created:', [aarambhPlan.name, pragatiPlan.name, utsavPlan.name].join(', '));
 
   // 2. Create Super Admin user (instituteId is null — super admin is platform-level)
-  const superAdminEmail = process.env.SUPER_ADMIN_EMAIL || 'admin@vidyaplus.in';
+  const superAdminEmail = process.env.SUPER_ADMIN_EMAIL || 'admin@maneza.in';
   const superAdminPassword = await bcrypt.hash(process.env.SUPER_ADMIN_PASSWORD || 'Admin@2026', 12);
 
   const existingSuperAdmin = await prisma.user.findFirst({
@@ -133,7 +133,7 @@ async function main() {
   } else {
     superAdmin = await prisma.user.create({
       data: {
-        name: 'VidyaPlus Admin',
+        name: 'MANEZA Admin',
         phone: '9999999999',
         email: superAdminEmail,
         passwordHash: superAdminPassword,
@@ -154,7 +154,7 @@ async function main() {
   */
 
   console.log('\n🎉 Seed complete! You can now login with:');
-  console.log('  Super Admin: admin@vidyaplus.in / Admin@2026');
+  console.log('  Super Admin: admin@maneza.in / Admin@2026');
 }
 
 main()

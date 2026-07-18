@@ -1,7 +1,7 @@
 {
-  "short_name": "VP Student",
+  "short_name": "MANEZA Student",
   "name": "MANEZA - Student Portal",
-  "description": "Access your schedules, mark attendance, and track due fees on the go.",
+  "description": "Clarity, at scale. The calm student portal.",
   "icons": [
     {
       "src": "/pwa-192.png",

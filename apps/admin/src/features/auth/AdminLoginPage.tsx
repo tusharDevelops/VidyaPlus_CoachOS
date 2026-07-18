@@ -81,7 +81,7 @@ export default function AdminLoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); clearError(); }}
-                  placeholder="operator@vidyaplus.com"
+                  placeholder="operator@maneza.com"
                   className="w-full bg-transparent px-4 py-3 text-ink placeholder:text-stone focus:outline-none"
                   required
                 />
@@ -135,13 +135,13 @@ export default function AdminLoginPage() {
 
           <div className="mt-10 pt-6 border-t border-hairline text-center">
             <p className="text-steel text-[11px] font-semibold uppercase tracking-[0.5px]">
-              Access restricted to CoachOS platform operators only.
+              Access restricted to MANEZA platform operators only.
             </p>
           </div>
         </div>
 
         <p className="text-center text-steel text-[11px] font-semibold uppercase tracking-[0.5px] mt-10">
-          (c) 2026 VidyaPlus Technologies
+          (c) 2026 MANEZA Technologies
         </p>
       </div>
     </div>

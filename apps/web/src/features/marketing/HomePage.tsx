@@ -311,14 +311,14 @@ export default function HomePage() {
               <div className="max-w-2xl">
                 <div className="inline-flex items-center gap-2 rounded-full bg-canvas border border-hairline px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.5px] text-steel mb-6">
                   <span className="w-1.5 h-1.5 rounded-full bg-brand-green" />
-                  Coaching center ERP for modern institutes
+                  The Calm Institute OS
                 </div>
 
                 <h1 className="text-[32px] min-[360px]:text-[42px] sm:text-[56px] lg:text-[72px] leading-[1.05] font-semibold tracking-[-2px] text-ink">
-                  Run your coaching business from one calm command center.
+                  Clarity, at scale. Run your institute on autopilot.
                 </h1>
                 <p className="mt-6 text-base sm:text-lg leading-[1.5] text-charcoal max-w-xl">
-                  CoachOS brings student records, fees, attendance, staff, reminders, and reports into a polished operating system built for growing institutes.
+                  MANEZA brings student records, fees, attendance, staff, reminders, and reports into a polished operating system built for growing institutes.
                 </p>
 
                 <div className="mt-8 flex flex-col sm:flex-row gap-3">
@@ -326,7 +326,7 @@ export default function HomePage() {
                     onClick={() => isAuthenticated ? navigate('/dashboard') : setAuthModal({ open: true, mode: 'register' })} 
                     className="mint-btn-brand"
                   >
-                    {isAuthenticated ? 'Open dashboard' : 'Start with VidyaPlus'}
+                    {isAuthenticated ? 'Open dashboard' : 'Start with MANEZA'}
                     <ArrowRight className="w-4 h-4" />
                   </button>
                   <a href="#product" className="mint-btn-secondary">

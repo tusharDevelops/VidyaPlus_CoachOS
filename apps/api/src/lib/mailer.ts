@@ -12,7 +12,7 @@ interface SendEmailParams {
  * Sends email using Resend HTTP API.
  * If RESEND_API_KEY is not defined, it logs the email to the console for local debugging.
  */
-async function sendEmail({ to, subject, html, text, fromName = 'CoachOS' }: SendEmailParams): Promise<void> {
+async function sendEmail({ to, subject, html, text, fromName = 'MANEZA' }: SendEmailParams): Promise<void> {
   const resendApiKey = process.env.RESEND_API_KEY;
 
   if (!resendApiKey) {
@@ -52,11 +52,11 @@ async function sendEmail({ to, subject, html, text, fromName = 'CoachOS' }: Send
  * Send an OTP email to the specified address.
  */
 export async function sendOtpEmail(email: string, otp: string): Promise<void> {
-  const subject = 'Your CoachOS verification code';
+  const subject = 'Your MANEZA verification code';
   const text = `Your verification code is ${otp}. It expires in ${process.env.OTP_EXPIRY_MINUTES || '10'} minutes.`;
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
-      <h2 style="color: #4f46e5;">Welcome to CoachOS</h2>
+      <h2 style="color: #4f46e5;">Welcome to MANEZA</h2>
       <p>Use the following code to complete your registration:</p>
       <div style="font-size: 24px; font-weight: bold; color: #4f46e5; background: #f5f3ff; padding: 10px; text-align: center; border-radius: 5px; margin: 20px 0;">
         ${otp}
@@ -78,11 +78,11 @@ export async function sendOtpEmail(email: string, otp: string): Promise<void> {
  * Send a login OTP email to the specified address.
  */
 export async function sendLoginOtpEmail(email: string, otp: string): Promise<void> {
-  const subject = 'Your CoachOS login code';
+  const subject = 'Your MANEZA login code';
   const text = `Your login code is ${otp}. It expires in ${process.env.OTP_EXPIRY_MINUTES || '10'} minutes.`;
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
-      <h2 style="color: #4f46e5;">Log in to CoachOS</h2>
+      <h2 style="color: #4f46e5;">Log in to MANEZA</h2>
       <p>Use the following code to log in to your account:</p>
       <div style="font-size: 24px; font-weight: bold; color: #4f46e5; background: #f5f3ff; padding: 10px; text-align: center; border-radius: 5px; margin: 20px 0;">
         ${otp}
@@ -103,14 +103,14 @@ export async function sendLoginOtpEmail(email: string, otp: string): Promise<voi
 /**
  * Send a premium custom email
  */
-export async function sendCustomEmail(to: string, subject: string, content: string, title: string = 'Update from VidyaPlus'): Promise<void> {
+export async function sendCustomEmail(to: string, subject: string, content: string, title: string = 'Update from MANEZA'): Promise<void> {
   const html = `
     <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; padding: 40px 20px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
         <!-- Premium Header -->
         <div style="background-color: #09090b; padding: 40px; text-align: center;">
           <div style="display: inline-block; padding: 12px 24px; background-color: #10b981; border-radius: 12px; color: #ffffff; font-weight: 800; font-size: 20px; letter-spacing: -0.02em;">
-            VidyaPlus
+            MANEZA
           </div>
           <h1 style="color: #ffffff; font-size: 24px; margin-top: 24px; font-weight: 700; letter-spacing: -0.025em;">${title}</h1>
         </div>
@@ -123,14 +123,14 @@ export async function sendCustomEmail(to: string, subject: string, content: stri
           
           <div style="padding-top: 32px; border-top: 1px solid #f1f5f9;">
             <p style="color: #64748b; font-size: 14px; margin-bottom: 8px;">Need assistance?</p>
-            <a href="https://vidyaplus.com/support" style="color: #10b981; font-weight: 700; text-decoration: none; font-size: 14px;">Contact Academic Support →</a>
+            <a href="https://maneza.com/support" style="color: #10b981; font-weight: 700; text-decoration: none; font-size: 14px;">Contact Academic Support →</a>
           </div>
         </div>
         
         <!-- Footer -->
         <div style="background-color: #f8fafc; padding: 24px; text-align: center;">
           <p style="color: #94a3b8; font-size: 12px; margin: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;">
-            Managed by CoachOS Technology Suite
+            Managed by MANEZA Technology Suite
           </p>
         </div>
       </div>
@@ -138,7 +138,7 @@ export async function sendCustomEmail(to: string, subject: string, content: stri
   `;
 
   try {
-    await sendEmail({ to, subject, html, fromName: 'VidyaPlus' });
+    await sendEmail({ to, subject, html, fromName: 'MANEZA' });
   } catch (err) {
     logger.error('[MAIL] Failed to send custom email', { error: err });
     // Suppress error so users can still proceed in development if email fails

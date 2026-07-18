@@ -30,7 +30,7 @@ export default function LoginPage() {
           <div className="flex justify-center mb-4">
             <BrandLogo />
           </div>
-          <p className="text-[11px] font-semibold text-steel uppercase tracking-[0.5px] mt-2">CoachOS Management Platform</p>
+          <p className="text-[11px] font-semibold text-steel uppercase tracking-[0.5px] mt-2">The Calm Institute OS</p>
         </div>
 
         <div className="bg-canvas rounded-lg p-3 sm:p-8 sm:p-4 sm:p-10 border border-hairline">
@@ -117,13 +117,13 @@ export default function LoginPage() {
 
           <div className="mt-10 pt-6 border-t border-hairline text-center">
             <p className="text-steel text-[11px] font-semibold uppercase tracking-[0.5px]">
-              Unified secure login for VidyaPlus
+              Unified secure login for MANEZA
             </p>
           </div>
         </div>
 
         <p className="text-center text-steel text-[11px] font-semibold uppercase tracking-[0.5px] mt-10">
-          (c) 2026 VidyaPlus Technologies
+          (c) 2026 MANEZA Technologies
         </p>
       </div>
     </div>

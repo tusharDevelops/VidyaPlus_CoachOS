@@ -138,9 +138,9 @@ export default function ReceiptView() {
           </div>
 
           <div className="flex justify-between items-end pt-12 border-t border-hairline border-dashed">
-            <p className="text-[8px] font-black text-slate uppercase tracking-widest max-w-[200px]">
-              This is a digital certificate of payment processed through VidyaPlus Finance. Secure transmission ID: {receipt.id}
-            </p>
+            <div className="text-center text-[10px] text-steel px-4 pb-4">
+              This is a digital certificate of payment processed through MANEZA Finance. Secure transmission ID: {receipt.id}
+            </div>
             <div className="text-center">
               <div className="w-40 border-b border-hairline mb-3"></div>
               <p className="text-[10px] font-black text-ink uppercase tracking-widest">Authorized Signatory</p>

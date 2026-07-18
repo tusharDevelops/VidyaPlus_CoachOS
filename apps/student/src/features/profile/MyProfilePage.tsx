@@ -280,7 +280,7 @@ export default function MyProfilePage() {
         </div>
         <div>
           <p className="text-[10px] font-bold text-stone uppercase tracking-widest">Enrolled Institute</p>
-          <p className="text-sm font-bold text-ink">{user?.institute?.name || 'VidyaPlus Institute'}</p>
+          <p className="text-sm font-bold text-ink">{user?.institute?.name || 'MANEZA Institute'}</p>
         </div>
       </div>
     </div>

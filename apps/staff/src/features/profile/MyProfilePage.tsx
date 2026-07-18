@@ -167,7 +167,7 @@ export default function MyProfilePage() {
                 <label className="text-[10px] font-black text-steel uppercase tracking-widest flex items-center gap-2 opacity-60">
                   <ShieldCheck className="w-3 h-3" /> Institute
                 </label>
-                <p className="text-sm font-bold text-ink">{profile?.institute?.name || 'VidyaPlus 2.0'}</p>
+                <p className="text-sm font-bold text-ink">{profile?.institute?.name || 'MANEZA'}</p>
               </div>
             </div>
           </div>

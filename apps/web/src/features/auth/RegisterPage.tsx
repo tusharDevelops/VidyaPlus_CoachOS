@@ -4,7 +4,6 @@ import { useAuthStore } from '../../stores/auth.store';
 import { 
   Eye, 
   EyeOff, 
-  GraduationCap, 
   Loader2, 
   Mail, 
   Building2, 
@@ -12,6 +11,7 @@ import {
   ArrowRight,
   ShieldCheck
 } from 'lucide-react';
+import { BrandLogo } from '@coachos/ui';
 import api from '../../lib/api';
 
 export default function RegisterPage() {
@@ -134,10 +134,10 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center px-4 py-12 hero-backdrop overflow-hidden">
       <div className="relative w-full max-w-[480px] animate-fade-in">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary border border-hairline mb-4">
-            <GraduationCap className="w-6 h-6 text-brand-green" />
+          <div className="flex justify-center mb-4">
+            <BrandLogo />
           </div>
-          <h1 className="text-2xl font-semibold text-ink tracking-[-0.5px]">Create your CoachOS account</h1>
+          <h1 className="text-2xl font-semibold text-ink tracking-[-0.5px]">Create your MANEZA account</h1>
           <p className="text-steel text-sm mt-2 font-medium">Sign up for free or choose a premium plan</p>
         </div>
 

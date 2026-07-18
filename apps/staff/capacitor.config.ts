@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.vidyaplus.coachos.staff',
-  appName: 'VidyaPlus Staff',
+  appId: 'com.maneza.staff',
+  appName: 'MANEZA Staff',
   webDir: 'dist'
 };
 
