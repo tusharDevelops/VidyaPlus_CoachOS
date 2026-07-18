@@ -4,7 +4,7 @@ import { useAdminAuthStore } from '../stores/auth.store';
 import { PWAInstallBanner, BrandLogo } from '@coachos/ui';
 import {
   LayoutDashboard, Building2, CreditCard, Settings, LogOut,
-  Menu, Shield, ChevronLeft, Sun, Moon
+  Menu, Shield, ChevronLeft, Sun, Moon, X
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -16,7 +16,7 @@ const NAV_ITEMS = [
 
 export default function AdminLayout() {
   const { user, logout } = useAdminAuthStore();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,14 +42,17 @@ export default function AdminLayout() {
     <div className="flex min-h-screen bg-surface font-sans">
       {/* Sidebar */}
       <aside 
-        className={`fixed inset-y-0 left-0 z-50 bg-canvas border-r border-hairline transition-all duration-300 ease-in-out ${
-          sidebarOpen ? 'w-60' : 'w-20'
-        } lg:relative lg:translate-x-0 ${!sidebarOpen && 'lg:w-20'}`}
+        className={`fixed inset-y-0 left-0 z-50 bg-canvas border-r border-hairline transition-all duration-300 ease-in-out 
+          ${sidebarOpen ? 'w-60 translate-x-0' : 'w-60 -translate-x-full'} 
+          lg:relative lg:translate-x-0 lg:z-30 ${sidebarOpen ? 'lg:w-60' : 'lg:w-20'}`}
       >
         <div className="flex flex-col h-full">
           {/* Brand */}
           <div className="h-16 flex items-center px-6 border-b border-hairline-soft flex-shrink-0">
             <BrandLogo collapsed={!sidebarOpen} />
+            <button onClick={() => setSidebarOpen(false)} className="ml-auto lg:hidden p-1 rounded-lg hover:bg-surface-hover text-ink-muted">
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Navigation */}
@@ -84,7 +87,7 @@ export default function AdminLayout() {
 
           {/* Footer Actions */}
           <div className="p-3 border-t border-hairline-soft space-y-1 flex-shrink-0">
-            <PWAInstallBanner appName="VP Admin" collapsed={!sidebarOpen} />
+            <PWAInstallBanner appName="MANEZA Admin" collapsed={!sidebarOpen} />
              <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="w-full flex items-center h-10 px-3 rounded-md text-sm font-medium text-steel hover:bg-surface hover:text-ink transition-colors group hidden lg:flex"
@@ -106,7 +109,7 @@ export default function AdminLayout() {
       {/* Backdrop for mobile */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-primary/20 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
