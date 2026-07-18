@@ -10,21 +10,53 @@ interface BrandLogoProps {
 }
 
 function useDarkMode() {
-  const [isDark, setIsDark] = useState(() => 
-    typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
-  );
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof document === 'undefined') return false;
+    if (document.documentElement.classList.contains('dark')) return true;
+    if (document.documentElement.classList.contains('light')) return false;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
 
   useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    });
+    const updateTheme = () => {
+      if (document.documentElement.classList.contains('dark')) {
+        setIsDark(true);
+      } else if (document.documentElement.classList.contains('light')) {
+        setIsDark(false);
+      } else {
+        setIsDark(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      }
+    };
 
+    // 1. Listen for explicit class changes (manual toggle)
+    const observer = new MutationObserver(updateTheme);
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['class'],
     });
 
-    return () => observer.disconnect();
+    // 2. Listen for native system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (!document.documentElement.classList.contains('dark') && !document.documentElement.classList.contains('light')) {
+        setIsDark(e.matches);
+      }
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange);
+    } else {
+      mediaQuery.addListener(handleChange);
+    }
+
+    return () => {
+      observer.disconnect();
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleChange);
+      } else {
+        mediaQuery.removeListener(handleChange);
+      }
+    };
   }, []);
 
   return isDark;
