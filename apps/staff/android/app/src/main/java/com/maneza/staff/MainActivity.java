@@ -1,4 +1,4 @@
-package com.vidyaplus.coachos.staff;
+package com.maneza.staff;
 
 import com.getcapacitor.BridgeActivity;
 

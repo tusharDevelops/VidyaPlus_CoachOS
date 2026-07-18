@@ -1,4 +1,4 @@
-package com.vidyaplus.coachos.owner;
+package com.maneza.owner;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.vidyaplus.coachos.owner"
+    namespace = "com.maneza.owner"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.maneza.owner"
