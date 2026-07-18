@@ -16,9 +16,40 @@ export default function App() {
   const { isAuthenticated } = useAdminAuthStore();
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem('theme');
-    const isDark = storedTheme === 'dark';
-    document.documentElement.classList.toggle('dark', isDark);
+    const syncTheme = () => {
+      const savedTheme = localStorage.getItem('theme');
+      const isDark = savedTheme === 'dark' || 
+        (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+
+    syncTheme();
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleMediaChange = () => {
+      if (!localStorage.getItem('theme')) {
+        syncTheme();
+      }
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleMediaChange);
+    } else {
+      mediaQuery.addListener(handleMediaChange);
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleMediaChange);
+      } else {
+        mediaQuery.removeListener(handleMediaChange);
+      }
+    };
   }, []);
 
   return (

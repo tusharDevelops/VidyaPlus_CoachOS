@@ -59,15 +59,40 @@ export default function App() {
   useEffect(() => {
     if (isAuthenticated) fetchUser();
     
-    // Initialize Dark Mode
-    const isDark = localStorage.getItem('theme') === 'dark' || 
-      (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    
-    if (isDark) {
-      document.documentElement.classList.add('dark');
+    const syncTheme = () => {
+      const savedTheme = localStorage.getItem('theme');
+      const isDark = savedTheme === 'dark' || 
+        (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+
+    syncTheme();
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleMediaChange = () => {
+      if (!localStorage.getItem('theme')) {
+        syncTheme();
+      }
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleMediaChange);
     } else {
-      document.documentElement.classList.remove('dark');
+      mediaQuery.addListener(handleMediaChange);
     }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleMediaChange);
+      } else {
+        mediaQuery.removeListener(handleMediaChange);
+      }
+    };
   }, []);
 
   return (
