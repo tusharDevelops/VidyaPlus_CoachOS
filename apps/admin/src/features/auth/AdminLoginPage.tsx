@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminAuthStore } from '../../stores/auth.store';
-import { Shield, Eye, EyeOff, Loader2, Sun, Moon } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Sun, Moon } from 'lucide-react';
+import { BrandLogo } from '@coachos/ui';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -50,10 +51,9 @@ export default function AdminLoginPage() {
 
       <div className="relative w-full max-w-[440px] animate-fade-in">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-lg bg-primary border border-hairline mb-5">
-            <Shield className="w-7 h-7 text-brand-green" />
+          <div className="flex justify-center mb-4">
+            <BrandLogo />
           </div>
-          <h1 className="text-3xl font-semibold text-ink tracking-[-0.5px]">VidyaPlus</h1>
           <p className="text-[11px] font-semibold text-steel uppercase tracking-[0.5px] mt-2">Super Admin Console</p>
         </div>
 

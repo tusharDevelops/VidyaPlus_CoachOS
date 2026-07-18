@@ -148,10 +148,9 @@ export default function StaffLayout() {
              <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 rounded-lg hover:bg-surface text-ink-muted">
                 <Menu className="w-5 h-5" />
              </button>
-             <div className="lg:hidden w-8 h-8 rounded-lg bg-ink flex items-center justify-center flex-shrink-0">
-                <GraduationCap className="w-5 h-5 text-brand-green" />
+             <div className="lg:hidden">
+               <BrandLogo />
              </div>
-             <h1 className="lg:hidden text-base font-bold text-ink tracking-tight">VidyaPlus</h1>
              
              {/* Desktop Search Placeholder */}
              <div className="relative max-w-md hidden lg:block">

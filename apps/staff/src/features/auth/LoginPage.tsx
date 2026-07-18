@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuthStore } from '../../stores/auth.store';
-import { GraduationCap, Loader2, Mail, CheckCircle2, Building, ChevronRight, ArrowLeft, Sun, Moon } from 'lucide-react';
+import { Loader2, Mail, CheckCircle2, Building, ChevronRight, ArrowLeft, Sun, Moon } from 'lucide-react';
+import { BrandLogo } from '@coachos/ui';
 
 export default function LoginPage() {
   const { sendLoginOtp, verifyLoginOtp, selectProfile, isLoading, error, clearError } = useAuthStore();
@@ -76,14 +77,9 @@ export default function LoginPage() {
             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
         </div>
-        <div className="flex items-center justify-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-lg bg-ink flex items-center justify-center">
-            <GraduationCap className="w-6 h-6 text-brand-green" />
-          </div>
-          <div className="text-left">
-            <h1 className="text-lg font-bold text-ink tracking-tight">VidyaPlus</h1>
-            <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">Staff Portal</p>
-          </div>
+        <div className="flex flex-col items-center justify-center gap-2 mb-2">
+          <BrandLogo />
+          <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">Staff Portal</p>
         </div>
       </div>
 
