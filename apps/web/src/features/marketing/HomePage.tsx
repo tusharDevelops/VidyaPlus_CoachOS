@@ -6,7 +6,7 @@ import { BrandLogo } from '@coachos/ui';
 import AuthModal from '../auth/AuthModal';
 import {
   ArrowRight, BarChart3, Bell, BookOpen, CalendarCheck, CheckCircle2,
-  CreditCard, GraduationCap, IndianRupee, Layers3, ShieldCheck, Users, UserCog, ExternalLink, ChevronDown, Sun, Moon,
+  CreditCard, GraduationCap, IndianRupee, Layers3, ShieldCheck, Shield, Users, UserCog, ExternalLink, ChevronDown, Sun, Moon,
   Menu, X
 } from 'lucide-react';
 
@@ -133,7 +133,7 @@ export default function HomePage() {
                       <p className="text-xs font-semibold text-ink-muted uppercase tracking-wider">Access Portals</p>
                     </div>
                     <div className="p-2 space-y-1">
-                      <a href="https://vidya-plus-coach-os-web.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
+                      <a href="https://maneza.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
                         <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
                           <GraduationCap className="w-4 h-4 text-brand-green" />
                         </div>
@@ -143,7 +143,7 @@ export default function HomePage() {
                         </div>
                         <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
                       </a>
-                      <a href="https://vidya-plus-coach-os-staff.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
+                      <a href="https://maneza-staff.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
                         <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
                           <UserCog className="w-4 h-4 text-brand-purple" />
                         </div>
@@ -153,13 +153,23 @@ export default function HomePage() {
                         </div>
                         <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
                       </a>
-                      <a href="https://vidya-plus-coach-os-student.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
+                      <a href="https://maneza-student.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
                         <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
                           <BookOpen className="w-4 h-4 text-brand-green" />
                         </div>
                         <div className="flex-1">
                           <p className="text-sm font-medium text-ink">Student App</p>
                           <p className="text-[10px] text-steel leading-tight mt-0.5">Learner experience</p>
+                        </div>
+                        <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </a>
+                      <a href="https://maneza-superadmin.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
+                        <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
+                          <Shield className="w-4 h-4 text-brand-blue" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-ink">Super Admin</p>
+                          <p className="text-[10px] text-steel leading-tight mt-0.5">Platform management</p>
                         </div>
                         <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
                       </a>
@@ -242,34 +252,36 @@ export default function HomePage() {
                 {isMobilePortalsOpen && (
                   <div className="pl-4 mt-2 space-y-3 border-l border-hairline-soft">
                     <a 
-                      href="https://vidya-plus-coach-os-web.vercel.app/" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 py-1 text-sm text-steel hover:text-ink"
+                      href="https://maneza.vercel.app/" 
+                      target="_blank" rel="noopener noreferrer" 
+                      className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors text-ink"
                     >
                       <GraduationCap className="w-4 h-4 text-brand-green" />
-                      <span>Owner Portal</span>
+                      <span className="text-sm font-medium">Owner Portal</span>
                     </a>
                     <a 
-                      href="https://vidya-plus-coach-os-staff.vercel.app/" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 py-1 text-sm text-steel hover:text-ink"
+                      href="https://maneza-staff.vercel.app/" 
+                      target="_blank" rel="noopener noreferrer" 
+                      className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors text-ink"
                     >
                       <UserCog className="w-4 h-4 text-brand-purple" />
-                      <span>Staff Portal</span>
+                      <span className="text-sm font-medium">Staff Portal</span>
                     </a>
-                     <a 
-                      href="https://vidya-plus-coach-os-student.vercel.app/" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 py-1 text-sm text-steel hover:text-ink"
+                    <a 
+                      href="https://maneza-student.vercel.app/" 
+                      target="_blank" rel="noopener noreferrer" 
+                      className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors text-ink"
                     >
                       <BookOpen className="w-4 h-4 text-brand-green" />
-                      <span>Student App</span>
+                      <span className="text-sm font-medium">Student App</span>
+                    </a>
+                    <a 
+                      href="https://maneza-superadmin.vercel.app/" 
+                      target="_blank" rel="noopener noreferrer" 
+                      className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors text-ink"
+                    >
+                      <Shield className="w-4 h-4 text-brand-blue" />
+                      <span className="text-sm font-medium">Super Admin</span>
                     </a>
                   </div>
                 )}
@@ -315,7 +327,7 @@ export default function HomePage() {
                 </div>
 
                 <h1 className="text-[32px] min-[360px]:text-[42px] sm:text-[56px] lg:text-[72px] leading-[1.05] font-semibold tracking-[-2px] text-ink">
-                  Clarity, at scale. Run your institute on autopilot.
+                  Maneza: Coaching Operations, Simplified.
                 </h1>
                 <p className="mt-6 text-base sm:text-lg leading-[1.5] text-charcoal max-w-xl">
                   MANEZA brings student records, fees, attendance, staff, reminders, and reports into a polished operating system built for growing institutes.

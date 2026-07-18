@@ -1,7 +1,7 @@
 {
   "short_name": "MANEZA Admin",
   "name": "MANEZA - Admin Control Panel",
-  "description": "MANEZA global administration.",
+  "description": "Maneza: Coaching Operations, Simplified.",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
