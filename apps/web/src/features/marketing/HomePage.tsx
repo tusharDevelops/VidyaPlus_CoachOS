@@ -312,7 +312,7 @@ export default function HomePage() {
                   Coaching Operations, Simplified.
                 </h1>
                 <p className="mt-6 text-base sm:text-lg leading-[1.5] text-charcoal max-w-xl">
-                  Every other coaching software was built to impress during a demo.<br/>MANEZA was built to disappear into your daily routine.
+                  MANEZA brings student records, fees, attendance, staff, reminders, and reports into a polished operating system built for growing institutes.
                 </p>
 
                 <div className="mt-8 flex flex-col sm:flex-row gap-3">
