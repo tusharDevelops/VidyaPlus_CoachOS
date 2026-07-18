@@ -163,16 +163,6 @@ export default function HomePage() {
                         </div>
                         <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
                       </a>
-                      <a href="https://maneza-superadmin.vercel.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors group">
-                        <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center group-hover:bg-canvas border border-transparent group-hover:border-hairline transition-all">
-                          <Shield className="w-4 h-4 text-brand-blue" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-ink">Super Admin</p>
-                          <p className="text-[10px] text-steel leading-tight mt-0.5">Platform management</p>
-                        </div>
-                        <ExternalLink className="w-3 h-3 text-steel opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </a>
                     </div>
                   </div>
                 </>
@@ -275,14 +265,6 @@ export default function HomePage() {
                       <BookOpen className="w-4 h-4 text-brand-green" />
                       <span className="text-sm font-medium">Student App</span>
                     </a>
-                    <a 
-                      href="https://maneza-superadmin.vercel.app/" 
-                      target="_blank" rel="noopener noreferrer" 
-                      className="flex items-center gap-3 p-2 rounded-md hover:bg-surface transition-colors text-ink"
-                    >
-                      <Shield className="w-4 h-4 text-brand-blue" />
-                      <span className="text-sm font-medium">Super Admin</span>
-                    </a>
                   </div>
                 )}
               </div>
@@ -327,10 +309,10 @@ export default function HomePage() {
                 </div>
 
                 <h1 className="text-[32px] min-[360px]:text-[42px] sm:text-[56px] lg:text-[72px] leading-[1.05] font-semibold tracking-[-2px] text-ink">
-                  Maneza: Coaching Operations, Simplified.
+                  Coaching Operations, Simplified.
                 </h1>
                 <p className="mt-6 text-base sm:text-lg leading-[1.5] text-charcoal max-w-xl">
-                  MANEZA brings student records, fees, attendance, staff, reminders, and reports into a polished operating system built for growing institutes.
+                  Every other coaching software was built to impress during a demo.<br/>MANEZA was built to disappear into your daily routine.
                 </p>
 
                 <div className="mt-8 flex flex-col sm:flex-row gap-3">
