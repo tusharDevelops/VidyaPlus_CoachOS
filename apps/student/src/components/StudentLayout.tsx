@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/auth.store';
-import { PWAInstallBanner, BrandLogo } from '@coachos/ui';
+import { PWAInstallBanner, BrandLogo, useTheme } from '@coachos/ui';
 import {
   GraduationCap, CalendarCheck, CreditCard, Bell,
   LayoutDashboard, User, LogOut, MoreHorizontal, Sun, Moon, Menu, FileText
@@ -20,19 +20,7 @@ export default function StudentLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [showMore, setShowMore] = useState(false);
-  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
-
-  const toggleDarkMode = () => {
-    const newDark = !isDark;
-    setIsDark(newDark);
-    if (newDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
+  const { isDark, toggleTheme } = useTheme();
 
   const handleLogout = async () => {
     await logout();
@@ -52,7 +40,7 @@ export default function StudentLayout() {
 
         <div className="flex items-center gap-2">
           <button 
-            onClick={toggleDarkMode}
+            onClick={toggleTheme}
             className="w-9 h-9 flex items-center justify-center rounded-full text-steel hover:bg-surface transition-colors"
             title="Toggle Dark Mode"
           >

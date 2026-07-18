@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAdminAuthStore } from '../stores/auth.store';
-import { PWAInstallBanner, BrandLogo } from '@coachos/ui';
+import { PWAInstallBanner, BrandLogo, useTheme } from '@coachos/ui';
 import {
   LayoutDashboard, Building2, CreditCard, Settings, LogOut,
   Menu, Shield, ChevronLeft, Sun, Moon, X
@@ -17,7 +17,7 @@ const NAV_ITEMS = [
 export default function AdminLayout() {
   const { user, logout } = useAdminAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,14 +25,6 @@ export default function AdminLayout() {
     await logout();
     navigate('/login');
   };
-
-  const toggleTheme = () => {
-    const nextDark = !isDark;
-    setIsDark(nextDark);
-    document.documentElement.classList.toggle('dark', nextDark);
-    localStorage.setItem('theme', nextDark ? 'dark' : 'light');
-  };
-
   const currentNav = NAV_ITEMS.find(item =>
     location.pathname === item.path || (item.path !== '/dashboard' && location.pathname.startsWith(item.path))
   );

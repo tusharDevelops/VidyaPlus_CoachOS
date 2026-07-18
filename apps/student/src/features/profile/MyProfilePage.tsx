@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuthStore } from '../../stores/auth.store';
 import api from '../../lib/api';
+import { useTheme, applyTheme } from '@coachos/ui';
 import {
   User, Mail, Phone, Calendar, MapPin, Building,
   BookOpen, Shield, Clock, Loader2, Moon, Sun, Download, BarChart2
@@ -11,9 +12,7 @@ export default function MyProfilePage() {
   const [loading, setLoading] = useState(true);
   const [attendanceData, setAttendanceData] = useState<any>(null);
   const [examResults, setExamResults] = useState<any[]>([]);
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-  });
+  const { isDark, toggleTheme } = useTheme();
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -33,16 +32,7 @@ export default function MyProfilePage() {
     fetchProfileData();
   }, []);
 
-  const toggleTheme = () => {
-    const nextTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(nextTheme);
-    localStorage.setItem('theme', nextTheme);
-    if (nextTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
+
 
   if (loading) {
     return (
@@ -82,7 +72,7 @@ export default function MyProfilePage() {
             className="w-10 h-10 rounded-full border border-hairline bg-surface flex items-center justify-center text-steel hover:bg-surface-hover hover:text-ink active:scale-95 transition-all print:hidden"
             title="Toggle Light/Dark Theme"
           >
-            {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+            {!isDark ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
           </button>
         </div>
       </div>

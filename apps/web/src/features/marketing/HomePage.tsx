@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../lib/api';
 import { useAuthStore } from '../../stores/auth.store';
-import { BrandLogo } from '@coachos/ui';
+import { BrandLogo, useTheme } from '@coachos/ui';
 import AuthModal from '../auth/AuthModal';
 import {
   ArrowRight, BarChart3, Bell, BookOpen, CalendarCheck, CheckCircle2,
@@ -56,20 +56,7 @@ export default function HomePage() {
   const [isPortalsOpen, setIsPortalsOpen] = useState(false);
   const [isMobilePortalsOpen, setIsMobilePortalsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
-
-  const toggleDarkMode = () => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      setIsDark(false);
-    } else {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      setIsDark(true);
-    }
-  };
+  const { isDark, toggleTheme } = useTheme();
 
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -172,7 +159,7 @@ export default function HomePage() {
 
           <div className="flex items-center gap-2">
             <button 
-              onClick={toggleDarkMode}
+              onClick={toggleTheme}
               className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-steel hover:bg-surface transition-colors"
               title="Toggle Dark Mode"
             >

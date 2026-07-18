@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/auth.store';
-import { PWAInstallBanner, BrandLogo } from '@coachos/ui';
+import { PWAInstallBanner, BrandLogo, useTheme } from '@coachos/ui';
 import api from '../lib/api';
 import {
   GraduationCap, Bell, TrendingUp,
@@ -29,21 +29,9 @@ export default function StaffLayout() {
   const { user, logout, hasPermission } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const toggleDarkMode = () => {
-    const newDark = !isDark;
-    setIsDark(newDark);
-    if (newDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
 
   const fetchUnreadCount = async () => {
     try {
@@ -165,7 +153,7 @@ export default function StaffLayout() {
 
           <div className="flex items-center gap-2 sm:gap-4">
             <button 
-              onClick={toggleDarkMode}
+              onClick={toggleTheme}
               className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-steel hover:bg-surface transition-colors"
               title="Toggle Dark Mode"
             >

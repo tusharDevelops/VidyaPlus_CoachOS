@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { applyTheme } from '@coachos/ui';
 import { useAdminAuthStore } from './stores/auth.store';
 import { ProtectedRoute, PublicOnlyRoute } from './components/RouteGuards';
 import AdminLayout from './components/AdminLayout';
@@ -16,24 +17,15 @@ export default function App() {
   const { isAuthenticated } = useAdminAuthStore();
 
   useEffect(() => {
-    const syncTheme = () => {
-      const savedTheme = localStorage.getItem('theme');
-      const isDark = savedTheme === 'dark' || 
-        (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-      
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    };
-
-    syncTheme();
+    const savedTheme = localStorage.getItem('theme');
+    const shouldBeDark = savedTheme === 'dark' || 
+      (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    applyTheme(shouldBeDark);
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleMediaChange = () => {
+    const handleMediaChange = (e: MediaQueryListEvent) => {
       if (!localStorage.getItem('theme')) {
-        syncTheme();
+        applyTheme(e.matches);
       }
     };
 

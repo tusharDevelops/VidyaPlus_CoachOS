@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { applyTheme } from '@coachos/ui';
 import { useAuthStore } from './stores/auth.store';
 import LoginPage from './features/auth/LoginPage';
 import DashboardPage from './features/dashboard/DashboardPage';
@@ -45,24 +46,15 @@ export default function App() {
   useEffect(() => {
     if (isAuthenticated) fetchUser();
 
-    const syncTheme = () => {
-      const savedTheme = localStorage.getItem('theme');
-      const isDark = savedTheme === 'dark' || 
-        (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-      
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    };
-
-    syncTheme();
+    const savedTheme = localStorage.getItem('theme');
+    const shouldBeDark = savedTheme === 'dark' || 
+      (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    applyTheme(shouldBeDark);
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleMediaChange = () => {
+    const handleMediaChange = (e: MediaQueryListEvent) => {
       if (!localStorage.getItem('theme')) {
-        syncTheme();
+        applyTheme(e.matches);
       }
     };
 

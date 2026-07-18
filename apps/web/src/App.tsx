@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
+import { applyTheme } from '@coachos/ui';
 import { useAuthStore } from './stores/auth.store';
 import { ProtectedRoute, PublicOnlyRoute } from './components/RouteGuards';
 import OwnerLayout from './components/OwnerLayout';
@@ -59,24 +60,17 @@ export default function App() {
   useEffect(() => {
     if (isAuthenticated) fetchUser();
     
-    const syncTheme = () => {
-      const savedTheme = localStorage.getItem('theme');
-      const isDark = savedTheme === 'dark' || 
-        (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-      
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    };
+    // Initialize theme from saved preference or system default
+    const savedTheme = localStorage.getItem('theme');
+    const shouldBeDark = savedTheme === 'dark' || 
+      (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    applyTheme(shouldBeDark);
 
-    syncTheme();
-
+    // Listen for native system theme changes (Android dark mode toggle)
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleMediaChange = () => {
+    const handleMediaChange = (e: MediaQueryListEvent) => {
       if (!localStorage.getItem('theme')) {
-        syncTheme();
+        applyTheme(e.matches);
       }
     };
 
