@@ -4,7 +4,7 @@ $insetXml = @"
 <?xml version="1.0" encoding="utf-8"?>
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
     android:drawable="@mipmap/ic_launcher_foreground"
-    android:inset="20%" />
+    android:inset="10%" />
 "@
 
 $launcherXml = @"
