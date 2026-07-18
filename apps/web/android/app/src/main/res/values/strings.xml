@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">MANEZA</string>
-    <string name="title_activity_main">MANEZA</string>
+    <string name="app_name">Maneza</string>
+    <string name="title_activity_main">Maneza</string>
     <string name="package_name">com.maneza.owner</string>
     <string name="custom_url_scheme">com.maneza.owner</string>
 </resources>
