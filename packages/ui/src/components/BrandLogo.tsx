@@ -11,44 +11,44 @@ interface BrandLogoProps {
 
 export function BrandLogo({ collapsed = false, className = '' }: BrandLogoProps) {
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`flex items-center gap-1.5 sm:gap-2 max-w-full ${className}`}>
       {collapsed ? (
-        <div className="flex-shrink-0 flex items-center justify-center relative w-8 h-8">
+        <div className="flex items-center justify-center relative w-6 h-6 sm:w-8 sm:h-8 shrink-0">
           <img 
             src={iconDark} 
             alt="VidyaPlus Icon" 
-            className="w-8 h-8 object-contain dark:hidden"
+            className="w-full h-full object-contain dark:hidden"
           />
           <img 
             src={iconWhite} 
             alt="VidyaPlus Icon" 
-            className="w-8 h-8 object-contain hidden dark:block"
+            className="w-full h-full object-contain hidden dark:block"
           />
         </div>
       ) : (
-        <div className="flex-shrink-0 flex items-center justify-start relative h-8 gap-2">
+        <div className="flex items-center justify-start relative gap-1.5 sm:gap-2 shrink min-w-0">
           {/* Icon */}
           <img 
             src={iconDark} 
             alt="VidyaPlus Icon" 
-            className="h-8 w-auto object-contain dark:hidden"
+            className="h-6 sm:h-8 w-auto object-contain shrink-0 dark:hidden"
           />
           <img 
             src={iconWhite} 
             alt="VidyaPlus Icon" 
-            className="h-8 w-auto object-contain hidden dark:block"
+            className="h-6 sm:h-8 w-auto object-contain shrink-0 hidden dark:block"
           />
           
           {/* Name */}
           <img 
             src={nameDark} 
             alt="VidyaPlus Name" 
-            className="h-5 w-auto object-contain dark:hidden"
+            className="h-3.5 sm:h-5 w-auto object-contain shrink min-w-0 dark:hidden"
           />
           <img 
             src={nameWhite} 
             alt="VidyaPlus Name" 
-            className="h-5 w-auto object-contain hidden dark:block"
+            className="h-3.5 sm:h-5 w-auto object-contain shrink min-w-0 hidden dark:block"
           />
         </div>
       )}
