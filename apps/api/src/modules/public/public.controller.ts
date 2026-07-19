@@ -45,6 +45,18 @@ export const publicController = {
       if (!email) {
         return res.status(400).json({ success: false, error: 'Email is required' });
       }
+
+      // Check if this email is already registered as an institute owner
+      const existingOwner = await prisma.user.findFirst({
+        where: { email, role: 'owner' }
+      });
+      if (existingOwner) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'This email is already registered with an institute. Please log in instead.' 
+        });
+      }
+
       // Generate 6‑digit OTP
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       const hashedOtp = await bcrypt.hash(otp, 10);
