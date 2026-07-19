@@ -426,6 +426,99 @@ export const authService = {
   },
 
   /**
+   * Switch to another profile (same email, no OTP required)
+   * The user is already authenticated — we just verify the target shares the same email.
+   */
+  async switchProfile(currentUserId: string, targetUserId: string) {
+    const currentUser = await prisma.user.findUnique({
+      where: { id: currentUserId },
+      select: { email: true },
+    });
+
+    if (!currentUser?.email) {
+      throw Object.assign(new Error('Current user has no email'), { statusCode: 400, code: 'NO_EMAIL' });
+    }
+
+    const targetUser = await prisma.user.findFirst({
+      where: { id: targetUserId, email: currentUser.email, status: 'active' },
+      include: { institute: true },
+    });
+
+    if (!targetUser) {
+      throw Object.assign(new Error('Target profile not found or email mismatch'), { statusCode: 403, code: 'PROFILE_MISMATCH' });
+    }
+
+    // Check if institute is active
+    if (targetUser.institute && targetUser.institute.status !== 'active') {
+      throw Object.assign(new Error('Target institute is suspended'), { statusCode: 403, code: 'INSTITUTE_SUSPENDED' });
+    }
+
+    // Revoke current user's tokens
+    await prisma.refreshToken.updateMany({
+      where: { userId: currentUserId, revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
+
+    // Generate fresh tokens for the target user
+    const { accessToken, refreshToken } = await this.generateTokens(targetUser);
+    await prisma.user.update({ where: { id: targetUser.id }, data: { lastLoginAt: new Date() } });
+
+    const permissions = (targetUser.permissionsJson as Permission[]).length > 0
+      ? (targetUser.permissionsJson as Permission[])
+      : (DEFAULT_ROLE_PERMISSIONS[targetUser.role] || []);
+
+    logger.info(`User switched profile: ${currentUserId} -> ${targetUserId} (${targetUser.institute?.name})`);
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: targetUser.id,
+        name: targetUser.name,
+        phone: targetUser.phone,
+        email: targetUser.email,
+        role: targetUser.role,
+        instituteId: targetUser.instituteId,
+        instituteName: targetUser.institute?.name || null,
+        permissions,
+      },
+    };
+  },
+
+  /**
+   * List all profiles (other institutes) the current user can switch to
+   */
+  async listSwitchableProfiles(currentUserId: string) {
+    const currentUser = await prisma.user.findUnique({
+      where: { id: currentUserId },
+      select: { id: true, email: true },
+    });
+
+    if (!currentUser?.email) {
+      return [];
+    }
+
+    const profiles = await prisma.user.findMany({
+      where: {
+        email: currentUser.email,
+        status: 'active',
+        id: { not: currentUserId },
+      },
+      include: { institute: true },
+    });
+
+    return profiles
+      .filter(u => u.institute?.status === 'active')
+      .map(u => ({
+        id: u.id,
+        name: u.name,
+        role: u.role,
+        instituteName: u.institute?.name || 'Unknown Institute',
+        photoUrl: u.photoUrl,
+      }));
+  },
+
+  /**
    * Send email verification OTP (used during student/staff creation)
    */
   async sendVerificationOtp(email: string) {

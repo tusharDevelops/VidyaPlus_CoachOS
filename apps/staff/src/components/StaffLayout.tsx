@@ -6,7 +6,8 @@ import api from '../lib/api';
 import {
   GraduationCap, Bell, TrendingUp,
   IndianRupee, Banknote, UserCircle, LogOut, LayoutDashboard,
-  Menu, X, Search, ChevronLeft, MoreHorizontal, Sun, Moon
+  Menu, X, Search, ChevronLeft, MoreHorizontal, Sun, Moon,
+  ArrowLeftRight, Building, ChevronRight, Loader2
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -26,9 +27,10 @@ const BOTTOM_NAV_ITEMS = [
 ];
 
 export default function StaffLayout() {
-  const { user, logout, hasPermission } = useAuthStore();
+  const { user, logout, hasPermission, switchProfile, fetchSwitchableProfiles, switchableProfiles, isLoading } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showSwitchModal, setShowSwitchModal] = useState(false);
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,6 +44,7 @@ export default function StaffLayout() {
 
   useEffect(() => {
     fetchUnreadCount();
+    fetchSwitchableProfiles();
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
   }, [location.pathname]);
@@ -98,9 +101,17 @@ export default function StaffLayout() {
             })}
           </nav>
 
-          {/* Footer Actions */}
           <div className="p-3 border-t border-hairline-soft space-y-1 flex-shrink-0">
             <PWAInstallBanner appName="MANEZA Staff" collapsed={!sidebarOpen} />
+            {switchableProfiles.length > 0 && (
+              <button
+                onClick={() => { setShowSwitchModal(true); if (window.innerWidth < 1024) setSidebarOpen(false); }}
+                className="w-full flex items-center h-10 px-3 rounded-md text-sm font-medium text-steel hover:bg-surface hover:text-brand-green transition-colors group"
+              >
+                <ArrowLeftRight className="w-4 h-4 flex-shrink-0 text-steel group-hover:text-brand-green" />
+                <span className={`ml-3 ${!sidebarOpen ? 'lg:hidden' : ''}`}>Switch Institute</span>
+              </button>
+            )}
              <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="w-full hidden lg:flex items-center h-10 px-3 rounded-md text-sm font-medium text-steel hover:bg-surface transition-colors group"
@@ -221,6 +232,74 @@ export default function StaffLayout() {
           })}
         </div>
       </div>
+      {/* Switch Institute Modal */}
+      {showSwitchModal && (
+        <>
+          <div className="fixed inset-0 bg-ink/30 backdrop-blur-sm z-[70]" onClick={() => setShowSwitchModal(false)} />
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+            <div className="bg-canvas border border-hairline w-full max-w-md rounded-2xl p-8 shadow-premium animate-slide-up space-y-6">
+              <div className="text-center space-y-2">
+                <div className="w-14 h-14 rounded-2xl bg-brand-green/10 flex items-center justify-center mx-auto mb-4">
+                  <ArrowLeftRight className="w-7 h-7 text-brand-green" />
+                </div>
+                <h2 className="text-xl font-black text-ink tracking-tight">Switch Institute</h2>
+                <p className="text-sm text-steel">Select the institute you want to switch to.</p>
+              </div>
+
+              <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1 custom-scrollbar">
+                {/* Current institute */}
+                <div className="flex items-center gap-4 p-4 rounded-xl border-2 border-brand-green bg-brand-green/5">
+                  <div className="w-12 h-12 rounded-full bg-brand-green/10 flex items-center justify-center border border-brand-green/20">
+                    <Building className="w-5 h-5 text-brand-green" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-ink">{user?.instituteName || 'Current Institute'}</h3>
+                    <p className="text-[10px] text-brand-green font-bold uppercase tracking-widest">Currently Active</p>
+                  </div>
+                </div>
+
+                {/* Other profiles */}
+                {switchableProfiles.map((profile) => (
+                  <button
+                    key={profile.id}
+                    onClick={() => switchProfile(profile.id)}
+                    disabled={isLoading}
+                    className="w-full flex items-center justify-between p-4 rounded-xl border border-hairline bg-surface hover:border-ink/20 hover:shadow-sm transition-all text-left group"
+                  >
+                    <div className="flex items-center gap-4">
+                      {profile.photoUrl ? (
+                        <img src={profile.photoUrl} alt={profile.name} className="w-12 h-12 rounded-full object-cover border border-hairline" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-ink/5 flex items-center justify-center border border-hairline">
+                          <Building className="w-5 h-5 text-stone" />
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="font-bold text-ink group-hover:text-brand-green transition-colors">{profile.instituteName}</h3>
+                        <p className="text-xs text-steel">
+                          <span className="uppercase tracking-wider text-[10px] font-bold">{profile.role}</span>
+                        </p>
+                      </div>
+                    </div>
+                    {isLoading ? (
+                      <Loader2 className="w-5 h-5 text-stone animate-spin" />
+                    ) : (
+                      <ChevronRight className="w-5 h-5 text-stone group-hover:text-brand-green transition-colors" />
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setShowSwitchModal(false)}
+                className="w-full h-11 text-sm font-medium text-steel hover:text-ink transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

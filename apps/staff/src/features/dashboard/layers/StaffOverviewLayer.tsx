@@ -28,7 +28,7 @@ export default function StaffOverviewLayer({ onNavigate }: StaffOverviewLayerPro
 
   useEffect(() => {
     Promise.all([
-      api.get('/batches'),
+      api.get('/batches', { params: { status: 'active' } }),
       api.get('/students'),
       api.get('/staff'),
     ]).then(([{ data: bData }, { data: sData }, { data: stData }]) => {

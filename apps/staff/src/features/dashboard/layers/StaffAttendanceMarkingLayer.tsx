@@ -44,7 +44,7 @@ export default function StaffAttendanceMarkingLayer({ batchId, onNavigate }: Sta
   const fetchBatches = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await api.get('/batches');
+      const res = await api.get('/batches', { params: { status: 'active' } });
       const filtered = user?.role === 'teacher' 
         ? res.data.data.filter((b: any) => b.teacherId === user.id)
         : res.data.data;

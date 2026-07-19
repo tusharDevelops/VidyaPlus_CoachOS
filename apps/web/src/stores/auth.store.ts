@@ -25,6 +25,7 @@ interface AuthState {
   sendOtp: (phone: string) => Promise<{ message: string }>;
   verifyOtp: (phone: string, otp: string) => Promise<void>;
   registerSendOtp: (email: string) => Promise<void>;
+  registerVerifyOtpOnly: (email: string, otp: string) => Promise<void>;
   registerVerify: (data: any) => Promise<void>;
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
@@ -106,6 +107,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: false });
     } catch (err: any) {
       const message = err.response?.data?.error || 'Failed to send OTP';
+      set({ error: message, isLoading: false });
+      throw err;
+    }
+  },
+
+  registerVerifyOtpOnly: async (email, otp) => {
+    set({ isLoading: true, error: null });
+    try {
+      await api.post('/public/register/verify-otp-only', { email, otp });
+      set({ isLoading: false });
+    } catch (err: any) {
+      const message = err.response?.data?.error || 'Invalid OTP';
       set({ error: message, isLoading: false });
       throw err;
     }

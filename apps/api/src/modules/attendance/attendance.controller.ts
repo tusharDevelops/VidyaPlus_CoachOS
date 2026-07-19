@@ -312,7 +312,7 @@ export const attendanceController = {
 
       const records = await prisma.attendanceRecord.findMany({
         where: { studentId, instituteId, date: { gte: since } },
-        include: { batch: { select: { id: true, name: true } } },
+        include: { batch: { select: { id: true, name: true, status: true } } },
         orderBy: { date: 'desc' },
       });
 
@@ -327,10 +327,10 @@ export const attendanceController = {
       };
 
       // Group by batch
-      const byBatch: Record<string, { batchName: string; present: number; absent: number; late: number; total: number }> = {};
+      const byBatch: Record<string, { batchName: string; batchStatus: string; present: number; absent: number; late: number; total: number }> = {};
       records.forEach(r => {
         if (!byBatch[r.batchId]) {
-          byBatch[r.batchId] = { batchName: r.batch.name, present: 0, absent: 0, late: 0, total: 0 };
+          byBatch[r.batchId] = { batchName: r.batch.name, batchStatus: r.batch.status, present: 0, absent: 0, late: 0, total: 0 };
         }
         byBatch[r.batchId][r.status as 'present' | 'absent' | 'late']++;
         byBatch[r.batchId].total++;

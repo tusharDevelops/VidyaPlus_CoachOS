@@ -22,7 +22,7 @@ interface AuthModalProps {
 }
 
 export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalProps) {
-  const [mode, setMode] = useState<'login' | 'register' | 'otp' | 'forgot' | 'verify-reset' | 'reset'>(initialMode);
+  const [mode, setMode] = useState<'login' | 'register' | 'otp' | 'create-password' | 'forgot' | 'verify-reset' | 'reset'>(initialMode);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +37,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     confirmPassword: ''
   });
 
-  const { login, registerSendOtp, registerVerify, forgotPassword, verifyResetOtp, resetPassword, clearError } = useAuthStore();
+  const { login, registerSendOtp, registerVerifyOtpOnly, registerVerify, forgotPassword, verifyResetOtp, resetPassword, clearError } = useAuthStore();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const planId = searchParams.get('planId') || '00000000-0000-0000-0000-000000000001';
@@ -89,8 +89,39 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     }
   };
 
+  const handleVerifyOtpOnly = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    try {
+      await registerVerifyOtpOnly(formData.email, formData.otp);
+      setMode('create-password');
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Invalid verification code');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const validatePassword = (password: string) => {
+    const hasMinLength = password.length >= 8;
+    const hasUpper = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    return { hasMinLength, hasUpper, hasNumber, hasSpecial, isValid: hasMinLength && hasUpper && hasNumber && hasSpecial };
+  };
+
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
+    const pwCheck = validatePassword(formData.password);
+    if (!pwCheck.isValid) {
+      setError('Password does not meet the minimum strength requirements.');
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
     setIsLoading(true);
     setError(null);
     try {
@@ -192,6 +223,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
               {mode === 'login' && 'Welcome back'}
               {mode === 'register' && 'Create your account'}
               {mode === 'otp' && 'Verify Email'}
+              {mode === 'create-password' && 'Secure your account'}
               {mode === 'forgot' && 'Forgot Password?'}
               {mode === 'verify-reset' && 'Verify OTP'}
               {mode === 'reset' && 'Set New Password'}
@@ -200,6 +232,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
               {mode === 'login' && 'Sign in to your MANEZA command center'}
               {mode === 'register' && 'Create your account'}
               {mode === 'otp' && `We've sent a code to ${formData.email}`}
+              {mode === 'create-password' && 'Create a strong password for your new account'}
               {mode === 'forgot' && 'Enter your email to receive a reset code'}
               {mode === 'verify-reset' && `Enter the code sent to ${formData.email}`}
               {mode === 'reset' && 'Create a strong new password'}
@@ -318,28 +351,6 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-steel uppercase tracking-[0.5px] ml-0.5">Create Password</label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    placeholder="Min. 8 characters"
-                    className="w-full pl-4 pr-12 py-2.5 bg-canvas border border-hairline rounded-lg text-ink placeholder:text-stone focus:outline-none focus:border-brand-green transition-all"
-                    required
-                    minLength={8}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-steel hover:text-ink transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
               <div className="pt-2">
                 <button
                   type="submit"
@@ -359,7 +370,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
           {/* OTP Step */}
           {mode === 'otp' && (
-            <form onSubmit={handleVerify} className="space-y-6">
+            <form onSubmit={handleVerifyOtpOnly} className="space-y-6">
               <div className="space-y-3">
                 <label className="block text-center text-[11px] font-bold text-steel uppercase tracking-[0.5px]">
                   Verification Code
@@ -382,8 +393,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
               >
                 {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                   <>
-                    Complete Registration
-                    <CheckCircle2 className="w-4 h-4 ml-2" />
+                    Verify & Continue
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
               </button>
@@ -394,6 +405,77 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 className="w-full text-xs font-semibold text-steel hover:text-ink transition-colors"
               >
                 Change email or edit details
+              </button>
+            </form>
+          )}
+
+          {/* Create Password Step */}
+          {mode === 'create-password' && (
+            <form onSubmit={handleVerify} className="space-y-5">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-steel uppercase tracking-[0.5px] ml-0.5">Create Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    placeholder="Min. 8 characters"
+                    className="w-full pl-4 pr-12 py-2.5 bg-canvas border border-hairline rounded-lg text-ink placeholder:text-stone focus:outline-none focus:border-brand-green transition-all"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-steel hover:text-ink transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+              
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-steel uppercase tracking-[0.5px] ml-0.5">Re-enter Password</label>
+                <input
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  placeholder="Confirm password"
+                  className="w-full px-4 py-2.5 bg-canvas border border-hairline rounded-lg text-ink placeholder:text-stone focus:outline-none focus:border-brand-green transition-all"
+                  required
+                />
+              </div>
+
+              {/* Password Strength Indicators */}
+              <div className="bg-surface/50 p-3 rounded-lg border border-hairline space-y-2">
+                <p className="text-[10px] font-bold text-steel uppercase tracking-widest mb-2">Password Requirements</p>
+                {[
+                  { label: 'At least 8 characters', valid: validatePassword(formData.password).hasMinLength },
+                  { label: 'One uppercase letter', valid: validatePassword(formData.password).hasUpper },
+                  { label: 'One number', valid: validatePassword(formData.password).hasNumber },
+                  { label: 'One special character (!@#$...)', valid: validatePassword(formData.password).hasSpecial },
+                ].map((req, i) => (
+                  <div key={i} className="flex items-center gap-2 text-xs">
+                    {req.valid ? (
+                      <CheckCircle2 className="w-3.5 h-3.5 text-brand-green" />
+                    ) : (
+                      <div className="w-3.5 h-3.5 rounded-full border border-stone/50" />
+                    )}
+                    <span className={req.valid ? 'text-ink font-medium' : 'text-stone'}>{req.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading || !validatePassword(formData.password).isValid || formData.password !== formData.confirmPassword}
+                className="mint-btn-primary w-full group"
+              >
+                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                  <>
+                    Complete Registration
+                    <CheckCircle2 className="w-4 h-4 ml-2" />
+                  </>
+                )}
               </button>
             </form>
           )}

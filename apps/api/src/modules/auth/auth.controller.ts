@@ -30,6 +30,10 @@ const selectProfileSchema = z.object({
   userId: z.string().uuid('Invalid user ID'),
 });
 
+const switchProfileSchema = z.object({
+  targetUserId: z.string().uuid('Invalid target user ID'),
+});
+
 const refreshSchema = z.object({
   refreshToken: z.string().min(1, 'Refresh token required'),
 });
@@ -115,6 +119,33 @@ export const authController = {
       const { sessionToken, userId } = selectProfileSchema.parse(req.body);
       const result = await authService.selectProfile(sessionToken, userId);
       res.json({ success: true, data: result });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * POST /api/v1/auth/switch-profile
+   * Switch to another profile (same email) without OTP — requires authentication
+   */
+  async switchProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { targetUserId } = switchProfileSchema.parse(req.body);
+      const result = await authService.switchProfile(req.user!.userId, targetUserId);
+      res.json({ success: true, data: result });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * GET /api/v1/auth/switchable-profiles
+   * List profiles the current user can switch to
+   */
+  async listSwitchableProfiles(req: Request, res: Response, next: NextFunction) {
+    try {
+      const profiles = await authService.listSwitchableProfiles(req.user!.userId);
+      res.json({ success: true, data: profiles });
     } catch (error) {
       next(error);
     }

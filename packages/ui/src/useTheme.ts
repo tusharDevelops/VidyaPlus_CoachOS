@@ -61,12 +61,9 @@ export function useTheme() {
 
     // 3. System preference — native Android dark-mode switch
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const onMediaChange = () => {
-      const savedTheme = localStorage.getItem('theme');
-      // Only follow the system when the user hasn't explicitly chosen a theme
-      if (!savedTheme) {
-        setIsDark(resolveIsDark());
-      }
+    const onMediaChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      // Always respect native OS theme changes on mobile/web!
+      applyTheme(e.matches);
     };
 
     if (mediaQuery.addEventListener) {

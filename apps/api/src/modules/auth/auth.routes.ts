@@ -23,5 +23,7 @@ router.post('/refresh', authController.refresh);
 // Protected routes
 router.post('/logout', authenticate, authController.logout);
 router.get('/me', authenticate, authController.me);
+router.post('/switch-profile', authenticate, authController.switchProfile);
+router.get('/switchable-profiles', authenticate, authController.listSwitchableProfiles);
 
 export default router;

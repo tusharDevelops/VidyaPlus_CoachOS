@@ -15,10 +15,13 @@ interface StudentAuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  switchableProfiles: UserProfile[];
 
   sendLoginOtp: (email: string) => Promise<void>;
   verifyLoginOtp: (email: string, otp: string) => Promise<{ type: 'authenticated' | 'select_profile', profiles?: UserProfile[], sessionToken?: string }>;
   selectProfile: (sessionToken: string, userId: string) => Promise<void>;
+  switchProfile: (targetUserId: string) => Promise<void>;
+  fetchSwitchableProfiles: () => Promise<void>;
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
   clearError: () => void;
@@ -29,11 +32,13 @@ export const useAuthStore = create<StudentAuthState>((set) => ({
   isAuthenticated: !!localStorage.getItem('accessToken'),
   isLoading: false,
   error: null,
+  switchableProfiles: [],
 
   sendLoginOtp: async (email) => {
     set({ isLoading: true, error: null });
     try {
-      await api.post('/auth/otp/send-login', { email, portal: 'student' });
+      const sanitizedEmail = email.trim().toLowerCase();
+      await api.post('/auth/otp/send-login', { email: sanitizedEmail, portal: 'student' });
       set({ isLoading: false });
     } catch (err: any) {
       const message = err.response?.data?.error || 'Failed to send OTP';
@@ -45,7 +50,8 @@ export const useAuthStore = create<StudentAuthState>((set) => ({
   verifyLoginOtp: async (email, otp) => {
     set({ isLoading: true, error: null });
     try {
-      const { data } = await api.post('/auth/otp/verify-login', { email, otp, portal: 'student' });
+      const sanitizedEmail = email.trim().toLowerCase();
+      const { data } = await api.post('/auth/otp/verify-login', { email: sanitizedEmail, otp: otp.trim(), portal: 'student' });
       const result = data.data;
 
       if (result.type === 'authenticated') {
@@ -92,7 +98,32 @@ export const useAuthStore = create<StudentAuthState>((set) => ({
     }
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    set({ user: null, isAuthenticated: false });
+    set({ user: null, isAuthenticated: false, switchableProfiles: [] });
+  },
+
+  switchProfile: async (targetUserId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await api.post('/auth/switch-profile', { targetUserId });
+      const { accessToken, refreshToken, user } = data.data;
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+      set({ user, isAuthenticated: true, isLoading: false, switchableProfiles: [] });
+      window.location.href = '/dashboard';
+    } catch (err: any) {
+      const message = err.response?.data?.error || 'Failed to switch profile';
+      set({ error: message, isLoading: false });
+      throw err;
+    }
+  },
+
+  fetchSwitchableProfiles: async () => {
+    try {
+      const { data } = await api.get('/auth/switchable-profiles');
+      set({ switchableProfiles: data.data || [] });
+    } catch {
+      set({ switchableProfiles: [] });
+    }
   },
 
   fetchUser: async () => {

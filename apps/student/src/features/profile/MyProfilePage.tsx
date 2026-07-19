@@ -182,35 +182,68 @@ export default function MyProfilePage() {
         <h3 className="text-sm font-bold text-ink-muted uppercase tracking-wider px-1">Academic Enrollments</h3>
         
         <div className="space-y-3">
-          {attendanceData?.byBatch?.length > 0 ? (
-            attendanceData.byBatch.map((batch: any, index: number) => (
-              <div key={index} className="mint-card p-4 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-brand-green-soft flex items-center justify-center text-brand-green-deep">
-                    <BookOpen className="w-5 h-5" />
+          {(() => {
+            const activeBatches = attendanceData?.byBatch?.filter((b: any) => b.batchStatus === 'active') || [];
+            const pastBatches = attendanceData?.byBatch?.filter((b: any) => b.batchStatus === 'completed') || [];
+
+            return (
+              <>
+                {activeBatches.length > 0 ? (
+                  activeBatches.map((batch: any, index: number) => (
+                    <div key={index} className="mint-card p-4 flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-brand-green-soft flex items-center justify-center text-brand-green-deep">
+                          <BookOpen className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-bold text-ink leading-tight">{batch.batchName}</h4>
+                          <div className="flex items-center gap-1.5 text-xs text-steel mt-1">
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>{batch.total} attendance classes</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <p className="text-[9px] font-bold text-stone uppercase tracking-widest">Attendance</p>
+                        <p className="text-base font-black text-ink font-mono mt-0.5">
+                          {batch.total > 0 ? Math.round(((batch.present + batch.late) / batch.total) * 100) : 0}%
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="mint-card p-4 sm:p-8 text-center text-steel text-sm italic">
+                    No active batch enrollments found.
                   </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-ink leading-tight">{batch.batchName}</h4>
-                    <div className="flex items-center gap-1.5 text-xs text-steel mt-1">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>{batch.total} attendance classes</span>
+                )}
+
+                {pastBatches.length > 0 && (
+                  <div className="mt-8 pt-4">
+                    <h3 className="text-sm font-bold text-stone uppercase tracking-wider px-1 mb-4">Past Classes / Alumni</h3>
+                    <div className="space-y-3">
+                      {pastBatches.map((batch: any, index: number) => (
+                        <div key={index} className="mint-card bg-surface/50 p-4 flex items-center justify-between gap-4 opacity-80 hover:opacity-100 transition-opacity border-dashed">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-surface flex items-center justify-center text-stone">
+                              <BookOpen className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-bold text-ink leading-tight">{batch.batchName}</h4>
+                              <div className="flex items-center gap-1.5 text-xs text-stone mt-1">
+                                <Clock className="w-3.5 h-3.5" />
+                                <span>{batch.total} historical classes</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </div>
-
-                <div className="text-right">
-                  <p className="text-[9px] font-bold text-stone uppercase tracking-widest">Attendance</p>
-                  <p className="text-base font-black text-ink font-mono mt-0.5">
-                    {batch.total > 0 ? Math.round(((batch.present + batch.late) / batch.total) * 100) : 0}%
-                  </p>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="mint-card p-4 sm:p-8 text-center text-steel text-sm italic">
-              No active batch enrollments found.
-            </div>
-          )}
+                )}
+              </>
+            );
+          })()}
         </div>
       </div>
 

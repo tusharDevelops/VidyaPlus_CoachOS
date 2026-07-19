@@ -47,7 +47,8 @@ export default function DashboardPage() {
 
   const attendanceRate = data?.attendance?.summary?.attendanceRate || 0;
   const pendingFees = data?.fees?.summary?.balance || 0;
-  const batchCount = data?.attendance?.byBatch?.length || 0;
+  const activeBatches = data?.attendance?.byBatch?.filter((b: any) => b.batchStatus === 'active') || [];
+  const batchCount = activeBatches.length;
 
   return (
     <div className="space-y-6 pb-6 animate-fade-in">
@@ -120,13 +121,36 @@ export default function DashboardPage() {
               <h3 className="text-2xl font-black text-ink font-mono">{batchCount}</h3>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {data?.attendance?.byBatch?.map((b: any) => (
-              <span key={b.batchName} className="px-3 py-1 bg-surface border border-hairline rounded-full text-[10px] font-bold text-ink-muted uppercase tracking-widest">
-                {b.batchName}
-              </span>
-            ))}
-            {batchCount === 0 && <span className="text-[11px] text-stone italic">No batches enrolled</span>}
+          
+          <div className="space-y-3">
+            <div>
+              <p className="text-[9px] font-bold text-steel uppercase tracking-widest mb-1.5">Active</p>
+              <div className="flex flex-wrap gap-2">
+                {activeBatches.map((b: any) => (
+                  <span key={b.batchName} className="px-3 py-1 bg-brand-green/10 text-brand-green-deep border border-brand-green/20 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                    {b.batchName}
+                  </span>
+                ))}
+                {batchCount === 0 && <span className="text-[11px] text-stone italic">No active batches</span>}
+              </div>
+            </div>
+
+            {data?.attendance?.byBatch?.filter((b: any) => b.batchStatus === 'completed').length > 0 && (
+              <div className="pt-2 border-t border-hairline">
+                <p className="text-[9px] font-bold text-steel uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                  Past Classes
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {data.attendance.byBatch
+                    .filter((b: any) => b.batchStatus === 'completed')
+                    .map((b: any) => (
+                      <span key={b.batchName} className="px-3 py-1 bg-surface border border-hairline rounded-full text-[10px] font-bold text-ink-muted uppercase tracking-widest opacity-60">
+                        {b.batchName}
+                      </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -23,17 +23,18 @@ export default function BatchesPage() {
   const [showModal, setShowModal] = useState(false);
   const [editBatch, setEditBatch] = useState<Batch | null>(null);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active');
   const [meta, setMeta] = useState({ page: 1, limit: 20, total: 0, totalPages: 0 });
 
   const fetchBatches = useCallback(async (page = 1) => {
     setLoading(true);
     try {
-      const { data } = await api.get('/batches', { params: { page, limit: 20 } });
+      const { data } = await api.get('/batches', { params: { page, limit: 20, status: activeTab } });
       setBatches(data.data);
       if (data.meta) setMeta(data.meta);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
-  }, []);
+  }, [activeTab]);
 
   useEffect(() => { fetchBatches(); }, [fetchBatches]);
 
@@ -61,6 +62,30 @@ export default function BatchesPage() {
         </button>
       </div>
 
+      {/* Tabs */}
+      <div className="flex border-b border-hairline gap-8">
+        <button
+          onClick={() => setActiveTab('active')}
+          className={`pb-4 text-xs font-black uppercase tracking-widest transition-colors ${
+            activeTab === 'active' 
+              ? 'text-brand-green border-b-2 border-brand-green' 
+              : 'text-stone hover:text-ink'
+          }`}
+        >
+          Active Classes
+        </button>
+        <button
+          onClick={() => setActiveTab('completed')}
+          className={`pb-4 text-xs font-black uppercase tracking-widest transition-colors ${
+            activeTab === 'completed' 
+              ? 'text-ink border-b-2 border-ink' 
+              : 'text-stone hover:text-ink'
+          }`}
+        >
+          Past / Completed
+        </button>
+      </div>
+
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -72,11 +97,19 @@ export default function BatchesPage() {
           <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mb-6 border border-hairline text-stone">
             <BookOpen className="w-8 h-8" />
           </div>
-          <h3 className="text-base font-black text-ink uppercase tracking-widest">No Classes Found</h3>
-          <p className="text-xs text-slate mt-2 mb-8 max-w-xs mx-auto">Add your first class to start enrolling students and managing schedules.</p>
-          <button onClick={() => { setEditBatch(null); setShowModal(true); }} className="text-brand-green font-black text-xs uppercase tracking-widest hover:underline">
-            + Add First Class
-          </button>
+          <h3 className="text-base font-black text-ink uppercase tracking-widest">
+            {activeTab === 'completed' ? 'No Past Classes' : 'No Classes Found'}
+          </h3>
+          <p className="text-xs text-slate mt-2 mb-8 max-w-xs mx-auto">
+            {activeTab === 'completed' 
+              ? 'Completed and archived classes will appear here.' 
+              : 'Add your first class to start enrolling students and managing schedules.'}
+          </p>
+          {activeTab === 'active' && (
+            <button onClick={() => { setEditBatch(null); setShowModal(true); }} className="text-brand-green font-black text-xs uppercase tracking-widest hover:underline">
+              + Add First Class
+            </button>
+          )}
         </div>
       ) : (
         <>

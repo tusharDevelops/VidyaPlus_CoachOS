@@ -35,7 +35,8 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
   login: async (email: string, password: string) => {
     set({ isLoading: true, error: null });
     try {
-      const { data } = await api.post('/auth/super-admin/login', { email, password });
+      const sanitizedEmail = email.trim().toLowerCase();
+      const { data } = await api.post('/auth/super-admin/login', { email: sanitizedEmail, password });
       const { accessToken, refreshToken, user } = data.data;
 
       localStorage.setItem('admin_access_token', accessToken);

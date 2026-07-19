@@ -66,6 +66,45 @@ export const publicController = {
     }
   },
 
+  // ---------- Verify OTP Only (Step 2) ----------
+  async verifyRegistrationOtpOnly(req: Request, res: Response) {
+    try {
+      const { email, otp } = req.body;
+      if (!email || !otp) {
+        return res.status(400).json({ success: false, error: 'Missing required fields' });
+      }
+      
+      const otpRecord = await prisma.otpStore.findFirst({
+        where: { email, purpose: 'email_verify', verified: false, expiresAt: { gte: new Date() } },
+        orderBy: { createdAt: 'desc' },
+      });
+      
+      if (!otpRecord) {
+        return res.status(400).json({ success: false, error: 'OTP expired or not found' });
+      }
+      
+      const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
+      if (!isMatch) {
+        await prisma.otpStore.update({
+          where: { id: otpRecord.id },
+          data: { attempts: { increment: 1 } },
+        });
+        return res.status(400).json({ success: false, error: 'Invalid OTP' });
+      }
+      
+      // Mark as verified
+      await prisma.otpStore.update({
+        where: { id: otpRecord.id },
+        data: { verified: true },
+      });
+      
+      res.json({ success: true, data: { message: 'OTP verified successfully' } });
+    } catch (error: any) {
+      logger.error('Failed to verify OTP', { error: error.message });
+      res.status(500).json({ success: false, error: 'Verification failed' });
+    }
+  },
+
   // ---------- Verify OTP & Create Account ----------
   async verifyRegistrationOtp(req: Request, res: Response) {
     try {

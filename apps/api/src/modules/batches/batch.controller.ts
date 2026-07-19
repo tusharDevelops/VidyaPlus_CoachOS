@@ -34,7 +34,7 @@ const updateBatchSchema = z.object({
   capacity: z.number().int().positive().optional(),
   startDate: z.string().nullable().optional(),
   endDate: z.string().nullable().optional(),
-  status: z.enum(['active', 'inactive']).optional(),
+  status: z.enum(['active', 'inactive', 'completed']).optional(),
   feeAmount: z.number().min(0).optional(),
   feeType: z.enum(['monthly', 'one-time']).optional(),
   admissionFee: z.number().min(0).optional(),

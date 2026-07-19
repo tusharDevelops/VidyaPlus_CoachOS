@@ -44,7 +44,7 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
 
   useEffect(() => {
     Promise.all([
-      api.get('/batches'),
+      api.get('/batches', { params: { status: 'active' } }),
       api.get('/fee-plans')
     ]).then(([{ data: bData }, { data: fData }]) => {
       setBatches(bData.data);

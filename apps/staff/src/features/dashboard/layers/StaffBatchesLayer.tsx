@@ -28,6 +28,7 @@ export default function StaffBatchesLayer({ onNavigate }: StaffBatchesLayerProps
   const [batches, setBatches] = useState<Batch[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
@@ -35,7 +36,7 @@ export default function StaffBatchesLayer({ onNavigate }: StaffBatchesLayerProps
   const fetchBatches = async (p = 1, append = false) => {
     setLoading(true);
     try {
-      const { data } = await api.get('/batches', { params: { page: p, limit: 20 } });
+      const { data } = await api.get('/batches', { params: { page: p, limit: 20, status: activeTab } });
       setBatches(prev => append ? [...prev, ...data.data] : data.data);
       if (data.meta) {
         setHasMore(data.meta.page < data.meta.totalPages);
@@ -52,8 +53,8 @@ export default function StaffBatchesLayer({ onNavigate }: StaffBatchesLayerProps
   const loadMore = () => fetchBatches(page + 1, true);
 
   useEffect(() => {
-    fetchBatches();
-  }, []);
+    fetchBatches(1);
+  }, [activeTab]);
 
   const deleteBatch = async (id: string) => {
     if (!hasPermission('batches.edit')) return;
@@ -87,10 +88,36 @@ export default function StaffBatchesLayer({ onNavigate }: StaffBatchesLayerProps
           </button>
         )}
       </div>
+
+      {/* Tabs */}
+      <div className="flex border-b border-hairline gap-8">
+        <button
+          onClick={() => setActiveTab('active')}
+          className={`pb-4 text-xs font-black uppercase tracking-widest transition-colors ${
+            activeTab === 'active' 
+              ? 'text-brand-green border-b-2 border-brand-green' 
+              : 'text-stone hover:text-ink'
+          }`}
+        >
+          Active Classes
+        </button>
+        <button
+          onClick={() => setActiveTab('completed')}
+          className={`pb-4 text-xs font-black uppercase tracking-widest transition-colors ${
+            activeTab === 'completed' 
+              ? 'text-ink border-b-2 border-ink' 
+              : 'text-stone hover:text-ink'
+          }`}
+        >
+          Past / Completed
+        </button>
+      </div>
       
       {batches.length === 0 ? (
         <div className="mint-card py-12 text-center border-dashed">
-          <p className="text-steel mb-4">No active batches found.</p>
+          <p className="text-steel mb-4">
+            {activeTab === 'completed' ? 'No past batches found.' : 'No active batches found.'}
+          </p>
         </div>
       ) : (
         <>
