@@ -67,8 +67,8 @@ export async function sendOtpEmail(email: string, otp: string): Promise<void> {
 
   try {
     await sendEmail({ to: email, subject, html, text });
-  } catch (err) {
-    logger.error('[MAIL] Failed to send OTP email', { error: err });
+  } catch (err: any) {
+    logger.error('[MAIL] Failed to send OTP email', { error: err.message || err });
     // Suppress error so users can still proceed in development if email fails
     // throw Object.assign(new Error('Failed to send OTP email'), { statusCode: 500, code: 'MAIL_SEND_FAILURE' });
   }
@@ -93,8 +93,8 @@ export async function sendLoginOtpEmail(email: string, otp: string): Promise<voi
 
   try {
     await sendEmail({ to: email, subject, html, text });
-  } catch (err) {
-    logger.error('[MAIL] Failed to send login OTP email', { error: err });
+  } catch (err: any) {
+    logger.error('[MAIL] Failed to send login OTP email', { error: err.message || err });
     // Suppress error so users can still proceed in development if email fails
     // throw Object.assign(new Error('Failed to send login OTP email'), { statusCode: 500, code: 'MAIL_SEND_FAILURE' });
   }
@@ -139,8 +139,8 @@ export async function sendCustomEmail(to: string, subject: string, content: stri
 
   try {
     await sendEmail({ to, subject, html, fromName: 'MANEZA' });
-  } catch (err) {
-    logger.error('[MAIL] Failed to send custom email', { error: err });
+  } catch (err: any) {
+    logger.error('[MAIL] Failed to send custom email', { error: err.message || err });
     // Suppress error so users can still proceed in development if email fails
     // throw Object.assign(new Error('Failed to send email'), { statusCode: 500, code: 'MAIL_SEND_FAILURE' });
   }
