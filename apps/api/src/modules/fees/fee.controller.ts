@@ -462,7 +462,7 @@ export const feeController = {
             include: {
               feeRecord: {
                 include: {
-                  student: { include: { user: { select: { name: true, phone: true } } } },
+                  student: { include: { user: { select: { id: true, name: true, phone: true } } } },
                   feePlan: { select: { name: true } }
                 }
               }
@@ -474,6 +474,22 @@ export const feeController = {
       if (!receipt) {
         res.status(404).json({ success: false, error: 'Receipt not found' });
         return;
+      }
+
+      // Security: verify access
+      if (req.user!.role === 'student') {
+        const studentUserId = receipt.payment?.feeRecord?.student?.user?.id;
+        if (studentUserId !== req.user!.userId) {
+          res.status(403).json({ success: false, error: 'Forbidden' });
+          return;
+        }
+      } else {
+        const isOwner = req.user!.role === 'owner' || req.user!.role === 'super_admin';
+        const hasPerm = req.user!.permissions?.includes('fees.view');
+        if (!isOwner && !hasPerm) {
+          res.status(403).json({ success: false, error: 'Forbidden' });
+          return;
+        }
       }
 
       res.json({ success: true, data: receipt });

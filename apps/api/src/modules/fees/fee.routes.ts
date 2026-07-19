@@ -13,6 +13,6 @@ router.post('/payments', requirePermission('fees.collect'), feeController.record
 router.get('/dashboard', requirePermission('fees.view'), feeController.getDashboardSummary);
 router.get('/student/:studentId/ledger', requirePermission('fees.view'), feeController.getStudentLedger);
 router.get('/my-ledger', feeController.getStudentLedger); // Students can see their own ledger
-router.get('/receipt/:receiptNumber', requirePermission('fees.view'), feeController.getReceipt);
+router.get('/receipt/:receiptNumber', feeController.getReceipt);
 
 export default router;
