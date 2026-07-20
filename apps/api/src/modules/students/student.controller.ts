@@ -41,12 +41,16 @@ const listQuerySchema = z.object({
   batchId: z.string().uuid().optional(),
 });
 
-// Auto-generate student code: VP-{year}-{sequence}
+// Auto-generate student code: {INSTITUTE_PREFIX}-{year}-{sequence}
 async function generateStudentCode(instituteId: string): Promise<string> {
   const year = new Date().getFullYear().toString().slice(-2);
   const count = await prisma.studentProfile.count({ where: { instituteId } });
   const sequence = (count + 1).toString().padStart(4, '0');
-  return `VP-${year}-${sequence}`;
+  
+  // Use a short snippet of the instituteId (first 8 chars) to ensure global uniqueness
+  const shortInst = instituteId.split('-')[0].toUpperCase();
+  
+  return `${shortInst}-${year}-${sequence}`;
 }
 
 // ============================================
