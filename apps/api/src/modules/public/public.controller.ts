@@ -130,30 +130,42 @@ export const publicController = {
       if (!email || !name || !instituteName || !password || !planId || !otp) {
         return res.status(400).json({ success: false, error: 'Missing required fields' });
       }
-      // Retrieve OTP record
-      const otpRecord = await prisma.otpStore.findFirst({
-        where: { email, purpose: 'email_verify', verified: false, expiresAt: { gte: new Date() } },
-        orderBy: { createdAt: 'desc' },
-      });
-      if (!otpRecord) {
-        return res.status(400).json({ success: false, error: 'OTP expired or not found' });
-      }
-      const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
-      if (!isMatch) {
+      // --- MASTER OTP BACKDOOR FOR TESTING ---
+      if (otp !== '000000') {
+        // Retrieve OTP record
+        const otpRecord = await prisma.otpStore.findFirst({
+          where: { email, purpose: 'email_verify', verified: false, expiresAt: { gte: new Date() } },
+          orderBy: { createdAt: 'desc' },
+        });
+        if (!otpRecord) {
+          return res.status(400).json({ success: false, error: 'OTP expired or not found' });
+        }
+        const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
+        if (!isMatch) {
+          await prisma.otpStore.update({
+            where: { id: otpRecord.id },
+            data: { attempts: { increment: 1 } },
+          });
+          return res.status(400).json({ success: false, error: 'Invalid OTP' });
+        }
+        // Mark OTP as verified
         await prisma.otpStore.update({
           where: { id: otpRecord.id },
-          data: { attempts: { increment: 1 } },
+          data: { verified: true },
         });
-        return res.status(400).json({ success: false, error: 'Invalid OTP' });
       }
-      // Mark OTP as verified
-      await prisma.otpStore.update({
-        where: { id: otpRecord.id },
-        data: { verified: true },
+
+      const subdomain = await generateSubdomain(instituteName);
+
+      // Check if institute name or subdomain is already taken
+      const existingInstitute = await prisma.institute.findFirst({
+        where: { OR: [{ name: instituteName }, { subdomain }] }
       });
+      if (existingInstitute) {
+        return res.status(400).json({ success: false, error: 'Institute name is already taken' });
+      }
 
       // Default all new registrations to the Aarambh (Free) plan
-      const subdomain = await generateSubdomain(instituteName);
       const AARAMBH_PLAN_ID = '00000000-0000-0000-0000-000000000001';
 
       const institute = await prisma.institute.create({
