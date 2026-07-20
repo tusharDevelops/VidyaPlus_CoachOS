@@ -250,9 +250,10 @@ export const feeController = {
         });
 
         // 3. Generate Receipt Number
-        // E.g., REC-2026-0001
+        // E.g., {INSTITUTE_PREFIX}-REC-2026-0001
         const receiptCount = await tx.receipt.count({ where: { instituteId } });
-        const receiptNum = `REC-${new Date().getFullYear()}-${String(receiptCount + 1).padStart(4, '0')}`;
+        const shortInst = instituteId.split('-')[0].toUpperCase();
+        const receiptNum = `${shortInst}-REC-${new Date().getFullYear()}-${String(receiptCount + 1).padStart(4, '0')}`;
 
         // 4. Create the Receipt
         const receipt = await tx.receipt.create({
