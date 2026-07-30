@@ -55,11 +55,16 @@ export default function LoginPage() {
     }
   };
 
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
+
   const handleSelectProfile = async (userId: string) => {
+    if (isLoading || selectedProfileId) return;
     try {
+      setSelectedProfileId(userId);
       await selectProfile(sessionToken, userId);
       // App.tsx will route away on auth
     } catch {
+      setSelectedProfileId(null);
       // Error handled in store
     }
   };
@@ -207,7 +212,7 @@ export default function LoginPage() {
                         </p>
                       </div>
                     </div>
-                    {isLoading ? (
+                    {isLoading && selectedProfileId === profile.id ? (
                       <Loader2 className="w-5 h-5 text-stone animate-spin" />
                     ) : (
                       <ChevronRight className="w-5 h-5 text-stone group-hover:text-brand-green transition-colors" />

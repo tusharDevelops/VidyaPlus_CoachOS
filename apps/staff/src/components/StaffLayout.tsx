@@ -31,6 +31,7 @@ export default function StaffLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showSwitchModal, setShowSwitchModal] = useState(false);
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -262,7 +263,12 @@ export default function StaffLayout() {
                 {switchableProfiles.map((profile) => (
                   <button
                     key={profile.id}
-                    onClick={() => switchProfile(profile.id)}
+                    onClick={async () => {
+                      if (isLoading || selectedProfileId) return;
+                      setSelectedProfileId(profile.id);
+                      try { await switchProfile(profile.id); } 
+                      catch { setSelectedProfileId(null); }
+                    }}
                     disabled={isLoading}
                     className="w-full flex items-center justify-between p-4 rounded-xl border border-hairline bg-surface hover:border-ink/20 hover:shadow-sm transition-all text-left group"
                   >
@@ -281,7 +287,7 @@ export default function StaffLayout() {
                         </p>
                       </div>
                     </div>
-                    {isLoading ? (
+                    {isLoading && selectedProfileId === profile.id ? (
                       <Loader2 className="w-5 h-5 text-stone animate-spin" />
                     ) : (
                       <ChevronRight className="w-5 h-5 text-stone group-hover:text-brand-green transition-colors" />
