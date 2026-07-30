@@ -65,7 +65,7 @@ export const useAuthStore = create<StudentAuthState>((set) => ({
       set({ isLoading: false });
       return {
         type: 'select_profile',
-        profiles: result.profiles,
+        profiles: (result.profiles || []).filter((p: UserProfile) => p.role === 'student'),
         sessionToken: result.sessionToken,
       };
     } catch (err: any) {
@@ -120,7 +120,8 @@ export const useAuthStore = create<StudentAuthState>((set) => ({
   fetchSwitchableProfiles: async () => {
     try {
       const { data } = await api.get('/auth/switchable-profiles');
-      set({ switchableProfiles: data.data || [] });
+      const filtered = (data.data || []).filter((p: UserProfile) => p.role === 'student');
+      set({ switchableProfiles: filtered });
     } catch {
       set({ switchableProfiles: [] });
     }
