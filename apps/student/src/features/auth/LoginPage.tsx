@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuthStore } from '../../stores/auth.store';
 import { Loader2, Mail, CheckCircle2, Building, ChevronRight, ArrowLeft, Sun, Moon } from 'lucide-react';
-import { BrandLogo } from '@coachos/ui';
+import { BrandLogo, useTheme } from '@coachos/ui';
 
 export default function LoginPage() {
   const { sendLoginOtp, verifyLoginOtp, selectProfile, isLoading, error, clearError } = useAuthStore();
@@ -9,20 +9,7 @@ export default function LoginPage() {
   const [step, setStep] = useState<'email' | 'otp' | 'profile'>('email');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
-  const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
-
-  const toggleDarkMode = () => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      setIsDark(false);
-    } else {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      setIsDark(true);
-    }
-  };
+  const { isDark, toggleTheme } = useTheme();
   
   // Profile selection state
   const [profiles, setProfiles] = useState<any[]>([]);
@@ -75,7 +62,7 @@ export default function LoginPage() {
       <div className="hero-backdrop flex-shrink-0 py-8 px-4 text-center border-b border-hairline relative">
         <div className="absolute top-4 right-4 z-50">
           <button 
-            onClick={toggleDarkMode}
+            onClick={toggleTheme}
             className="w-10 h-10 flex items-center justify-center rounded-full text-steel hover:bg-surface transition-colors bg-canvas shadow-sm border border-hairline"
             title="Toggle Dark Mode"
           >

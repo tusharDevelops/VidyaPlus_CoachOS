@@ -2,28 +2,15 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminAuthStore } from '../../stores/auth.store';
 import { Eye, EyeOff, Loader2, Sun, Moon } from 'lucide-react';
-import { BrandLogo } from '@coachos/ui';
+import { BrandLogo, useTheme } from '@coachos/ui';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+  const { isDark, toggleTheme } = useTheme();
   const { login, isLoading, error, clearError } = useAdminAuthStore();
   const navigate = useNavigate();
-
-  const toggleDarkMode = () => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      setIsDark(false);
-    } else {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      setIsDark(true);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +28,7 @@ export default function AdminLoginPage() {
       
       <div className="absolute top-4 right-4 z-50">
         <button 
-          onClick={toggleDarkMode}
+          onClick={toggleTheme}
           className="w-10 h-10 flex items-center justify-center rounded-full text-steel hover:bg-surface transition-colors bg-canvas shadow-sm border border-hairline"
           title="Toggle Dark Mode"
         >

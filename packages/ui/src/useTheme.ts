@@ -10,8 +10,17 @@ const THEME_CHANGE_EVENT = 'maneza-theme-change';
  */
 function resolveIsDark(): boolean {
   if (typeof document === 'undefined') return false;
+  
+  // 1. Check DOM classes (if already applied)
   if (document.documentElement.classList.contains('dark')) return true;
   if (document.documentElement.classList.contains('light')) return false;
+  
+  // 2. Check localStorage (user preference)
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') return true;
+  if (savedTheme === 'light') return false;
+  
+  // 3. Check OS preference
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
 }
 
@@ -41,6 +50,15 @@ export function applyTheme(dark: boolean): void {
  */
 export function useTheme() {
   const [isDark, setIsDark] = useState(resolveIsDark);
+
+  useEffect(() => {
+    // Ensure the initial resolved state is applied to the DOM
+    if (isDark && !document.documentElement.classList.contains('dark')) {
+      document.documentElement.classList.add('dark');
+    } else if (!isDark && !document.documentElement.classList.contains('light')) {
+      document.documentElement.classList.add('light');
+    }
+  }, []);
 
   useEffect(() => {
     // 1. Custom event — fired by `applyTheme()`
