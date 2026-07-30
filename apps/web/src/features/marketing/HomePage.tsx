@@ -562,7 +562,7 @@ function ProductMockup() {
           <span className="w-2.5 h-2.5 rounded-full bg-brand-green" />
         </div>
         <div className="hidden sm:flex items-center gap-2 text-[11px] text-steel font-mono">
-          coachos.vidyaplus.in/dashboard
+          coachos.Maneza.in/dashboard
         </div>
       </div>
 

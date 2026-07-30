@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vidyaplus-owner-v1';
+const CACHE_NAME = 'Maneza-owner-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

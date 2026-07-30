@@ -16,7 +16,7 @@ $launcherXml = @"
 "@
 
 foreach ($app in $apps) {
-    $resPath = "D:\vidyaplus2.0\apps\$app\android\app\src\main\res"
+    $resPath = "D:\Maneza2.0\apps\$app\android\app\src\main\res"
     if (Test-Path $resPath) {
         $drawablePath = "$resPath\drawable"
         if (-not (Test-Path $drawablePath)) {

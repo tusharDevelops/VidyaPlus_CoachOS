@@ -8,7 +8,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function PWAInstallBanner({ 
-  appName = "VidyaPlus",
+  appName = "Maneza",
   collapsed = false 
 }: { 
   appName?: string;

@@ -57,7 +57,7 @@ CoachOS is built with a focus on developer-grade information density and cinemat
 1. **Clone & Enter**:
    ```bash
    git clone <repository_url>
-   cd vidyaplus2.0
+   cd Maneza2.0
    ```
 
 2. **Environment Configuration**:
@@ -88,7 +88,7 @@ CoachOS is built with a focus on developer-grade information density and cinemat
 
 ## 📄 Documentation
 
-For detailed PRDs and business strategies, refer to the [docs/](file:///d:/vidyaplus2.0/docs) directory:
+For detailed PRDs and business strategies, refer to the [docs/](file:///d:/Maneza2.0/docs) directory:
 - `CoachOS_PRD_Part1.pdf`: Core Platform & Auth
 - `CoachOS_PRD_Part2.pdf`: Operational Modules
 - `CoachOS_PRD_Part3.pdf`: Advanced Features

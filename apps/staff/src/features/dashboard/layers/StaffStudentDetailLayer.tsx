@@ -453,7 +453,7 @@ export default function StaffStudentDetailLayer({ studentId, onNavigate }: Staff
                     desc={`Hello, Please find the attached fee invoice for ${student.name} for the current month.`} 
                     onClick={() => setEmailDraft({ 
                       subject: `Fee Invoice - ${new Date().toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}`, 
-                      content: `Dear Parent,\n\nThis is a notification regarding the fee invoice for ${student.name}.\n\nTotal Balance: ₹${summary.balance}\n\nBest Regards,\nVidyaPlus Accounts` 
+                      content: `Dear Parent,\n\nThis is a notification regarding the fee invoice for ${student.name}.\n\nTotal Balance: ₹${summary.balance}\n\nBest Regards,\nManeza Accounts` 
                     })}
                   />
                 </div>

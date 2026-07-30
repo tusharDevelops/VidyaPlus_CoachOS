@@ -1,6 +1,6 @@
-# VidyaPlus CoachOS — Mintlify Design System
+# Maneza CoachOS — Mintlify Design System
 
-> This DESIGN.md defines the visual language for all VidyaPlus client apps (web, staff, student, admin).
+> This DESIGN.md defines the visual language for all Maneza client apps (web, staff, student, admin).
 > Based on the Mintlify design system specification.
 
 ## Overview

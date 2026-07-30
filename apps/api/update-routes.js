@@ -14,7 +14,7 @@ const routeFiles = [
 ];
 
 for (const file of routeFiles) {
-  const filePath = path.join('d:/vidyaplus2.0/apps/api/src', file);
+  const filePath = path.join('d:/Maneza2.0/apps/api/src', file);
   let content = fs.readFileSync(filePath, 'utf8');
   if (!content.includes('enforceTrialStatus')) {
     content = content.replace('enforceTenantIsolation,', 'enforceTenantIsolation, enforceTrialStatus,');
@@ -25,7 +25,7 @@ for (const file of routeFiles) {
   }
 }
 
-const authPath = 'd:/vidyaplus2.0/apps/api/src/modules/auth/auth.routes.ts';
+const authPath = 'd:/Maneza2.0/apps/api/src/modules/auth/auth.routes.ts';
 let authContent = fs.readFileSync(authPath, 'utf8');
 if (!authContent.includes('enforceTrialStatus')) {
   authContent = authContent.replace(`import { authenticate } from '../../middleware/auth.middleware';`, `import { authenticate, enforceTrialStatus } from '../../middleware/auth.middleware';`);

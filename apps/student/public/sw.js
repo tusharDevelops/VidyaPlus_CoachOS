@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vidyaplus-student-v1';
+const CACHE_NAME = 'Maneza-student-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

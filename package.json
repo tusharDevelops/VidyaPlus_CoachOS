@@ -2,7 +2,7 @@
   "name": "coachos",
   "version": "1.0.0",
   "private": true,
-  "description": "CoachOS — Coaching Center ERP SaaS Platform by VidyaPlus",
+  "description": "CoachOS — Coaching Center ERP SaaS Platform by Maneza",
   "workspaces": [
     "apps/*",
     "packages/*"
