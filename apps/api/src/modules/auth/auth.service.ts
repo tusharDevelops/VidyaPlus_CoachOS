@@ -314,10 +314,10 @@ export const authService = {
         });
         throw Object.assign(new Error('Invalid OTP'), { statusCode: 400, code: 'INVALID_OTP' });
       }
-      
-      // OTP is valid
-      await prisma.otpStore.update({ where: { id: otpRecord.id }, data: { verified: true } });
     }
+    
+    // OTP is valid
+    await prisma.otpStore.update({ where: { id: otpRecord.id }, data: { verified: true } });
 
     // Fetch users for this portal
     const roleFilter = portal === 'student' ? 'student' : { in: ['teacher', 'accountant', 'staff', 'admin', 'custom'] };
@@ -569,9 +569,9 @@ export const authService = {
         });
         throw Object.assign(new Error('Invalid OTP'), { statusCode: 400, code: 'INVALID_OTP' });
       }
-
-      await prisma.otpStore.update({ where: { id: otpRecord.id }, data: { verified: true } });
     }
+
+    await prisma.otpStore.update({ where: { id: otpRecord.id }, data: { verified: true } });
     return { verified: true };
   },
 
