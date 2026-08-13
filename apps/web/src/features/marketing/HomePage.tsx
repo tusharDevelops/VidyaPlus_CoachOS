@@ -481,7 +481,7 @@ export default function HomePage() {
                           if (index === 2) {
                             setAuthModal({ open: true, mode: 'login' });
                           } else {
-                            setSearchParams({ planId: plan.id });
+                            // Always default to Aarambh (Free plan) on registration
                             setAuthModal({ open: true, mode: 'register' });
                           }
                         }}
