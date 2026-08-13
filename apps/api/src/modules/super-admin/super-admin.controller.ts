@@ -444,7 +444,35 @@ export const superAdminController = {
           },
         });
 
-        // 2. Hard delete the institute (Cascades to Users, Batches, StudentProfiles, etc.)
+        // 2. Hard delete the institute manually by cascading bottom-up
+        await tx.receipt.deleteMany({ where: { instituteId: id } });
+        await tx.payment.deleteMany({ where: { instituteId: id } });
+        await tx.feeRecord.deleteMany({ where: { instituteId: id } });
+        await tx.batchEnrollment.deleteMany({ where: { instituteId: id } });
+        await tx.attendanceRecord.deleteMany({ where: { instituteId: id } });
+        await tx.staffAttendance.deleteMany({ where: { instituteId: id } });
+        await tx.examResult.deleteMany({ where: { instituteId: id } });
+        await tx.exam.deleteMany({ where: { instituteId: id } });
+        await tx.payrollRecord.deleteMany({ where: { instituteId: id } });
+        await tx.notification.deleteMany({ where: { instituteId: id } });
+        await tx.holiday.deleteMany({ where: { instituteId: id } });
+        await tx.batch.deleteMany({ where: { instituteId: id } });
+        await tx.feePlan.deleteMany({ where: { instituteId: id } });
+        
+        // Delete Audit logs tied specifically to this institute
+        await tx.auditLog.deleteMany({ where: { instituteId: id } });
+        
+        // Delete refresh tokens for users
+        const users = await tx.user.findMany({ where: { instituteId: id }, select: { id: true } });
+        const userIds = users.map(u => u.id);
+        if (userIds.length > 0) {
+          await tx.refreshToken.deleteMany({ where: { userId: { in: userIds } } });
+        }
+        
+        await tx.studentProfile.deleteMany({ where: { instituteId: id } });
+        await tx.user.deleteMany({ where: { instituteId: id } });
+        
+        // Finally, delete the institute itself
         await tx.institute.delete({ where: { id } });
       });
 
