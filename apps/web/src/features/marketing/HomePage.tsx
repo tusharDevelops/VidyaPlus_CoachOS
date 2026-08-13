@@ -430,7 +430,6 @@ export default function HomePage() {
                     staffLabel,
                     storageLabel,
                     'All features unlocked (LMS, Payroll, Exams)',
-                    plan.featuresJson?.support ?? 'Help center support',
                   ].filter(Boolean) as string[];
 
                   const taglines = [

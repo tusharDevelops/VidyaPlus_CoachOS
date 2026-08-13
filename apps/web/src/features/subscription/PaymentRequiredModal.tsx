@@ -114,7 +114,6 @@ export default function PaymentRequiredModal() {
                   batchesLabel,
                   storageLabel,
                   'All features unlocked (LMS, Payroll, Exams)',
-                  plan.featuresJson?.support ?? 'Help center support',
                 ].filter(Boolean) as string[];
 
                 return (
