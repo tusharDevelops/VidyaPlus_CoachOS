@@ -5,7 +5,7 @@ import api from '../../lib/api';
 import {
   ArrowLeft, Building2, Users, BookOpen, CreditCard, Settings,
   Mail, Phone, MapPin, Calendar, Shield, Loader2,
-  CheckCircle2, XCircle, UserPlus, TrendingUp, MoreVertical, Zap
+  CheckCircle2, XCircle, UserPlus, TrendingUp, MoreVertical, Zap, Trash2
 } from 'lucide-react';
 
 interface InstituteDetail {
@@ -99,6 +99,23 @@ export default function InstituteDetailPage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!institute) return;
+    const confirmed = window.confirm(`Are you absolutely sure you want to permanently delete ${institute.name}? This action cannot be undone and will delete all associated users, batches, and data.`);
+    if (!confirmed) return;
+    
+    setUpdating(true);
+    try {
+      await api.delete(`/super-admin/institutes/${institute.id}`);
+      navigate('/institutes');
+    } catch (err) {
+      console.error('Failed to delete institute:', err);
+      alert('Failed to delete institute');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const handleImpersonate = async (ownerId: string) => {
     try {
       const { data } = await api.post(`/super-admin/impersonate/${ownerId}`);
@@ -157,6 +174,13 @@ export default function InstituteDetailPage() {
                 {updating ? 'Processing...' : statusAction.label}
               </button>
             )}
+            <button 
+              onClick={handleDelete}
+              disabled={updating}
+              className="px-4 py-2 rounded-lg bg-brand-error/10 text-brand-error font-medium hover:bg-brand-error/20 flex items-center gap-2 text-sm transition-colors"
+            >
+              <Trash2 className="w-4 h-4" /> Delete
+            </button>
             <button className="w-10 h-10 rounded-full border border-hairline text-steel hover:text-ink hover:bg-surface flex items-center justify-center">
               <Settings className="w-4 h-4" />
             </button>
