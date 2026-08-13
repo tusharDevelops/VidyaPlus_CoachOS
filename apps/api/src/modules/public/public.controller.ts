@@ -38,6 +38,24 @@ export const publicController = {
     }
   },
 
+  // ---------- List Featured Institutes ----------
+  async getFeaturedInstitutes(_req: Request, res: Response) {
+    try {
+      const institutes = await prisma.institute.findMany({
+        where: { isFeatured: true, status: 'active' },
+        select: {
+          id: true,
+          name: true,
+          logoUrl: true,
+        },
+      });
+      res.json({ success: true, data: institutes });
+    } catch (error: any) {
+      logger.error('Failed to list featured institutes', { error: error.message });
+      res.status(500).json({ success: false, error: 'Failed to fetch featured institutes' });
+    }
+  },
+
   // ---------- Send Registration OTP ----------
   async sendRegistrationOtp(req: Request, res: Response) {
     try {

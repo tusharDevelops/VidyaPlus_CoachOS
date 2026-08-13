@@ -31,6 +31,7 @@ const updateInstituteSchema = z.object({
   planId: z.string().uuid().nullable().optional(),
   academicYear: z.string().optional(),
   status: z.enum(['active', 'suspended', 'inactive']).optional(),
+  isFeatured: z.boolean().optional(),
 });
 
 const listQuerySchema = z.object({

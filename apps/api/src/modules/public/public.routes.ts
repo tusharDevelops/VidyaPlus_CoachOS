@@ -5,6 +5,7 @@ const router = Router();
 
 // Publicly accessible plans
 router.get('/plans', publicController.listPlans);
+router.get('/featured-institutes', publicController.getFeaturedInstitutes);
 
 // Registration flow
 router.post('/register/send-otp', publicController.sendRegistrationOtp);

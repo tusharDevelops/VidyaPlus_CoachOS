@@ -5,13 +5,13 @@ import api from '../../lib/api';
 import {
   ArrowLeft, Building2, Users, BookOpen, CreditCard, Settings,
   Mail, Phone, MapPin, Calendar, Shield, Loader2,
-  CheckCircle2, XCircle, UserPlus, TrendingUp, MoreVertical, Zap, Trash2
+  CheckCircle2, XCircle, UserPlus, TrendingUp, MoreVertical, Zap, Trash2, Star
 } from 'lucide-react';
 
 interface InstituteDetail {
   id: string; name: string; subdomain: string; phone: string; email: string | null;
   address: string | null; logoUrl: string | null; status: string; academicYear: string | null;
-  setupCompleted: boolean; createdAt: string; updatedAt: string;
+  setupCompleted: boolean; isFeatured: boolean; createdAt: string; updatedAt: string;
   plan: { id: string; name: string; maxStudents: number; maxStaff: number; maxStorageMb: number; priceMonthly: string } | null;
   _count: { users: number; batches: number; studentProfiles: number; feePlans: number };
   users: { id: string; name: string; phone: string; email: string | null; role: string; status: string; lastLoginAt: string | null; createdAt: string }[];
@@ -92,8 +92,23 @@ export default function InstituteDetailPage() {
     try {
       await api.patch(`/super-admin/institutes/${institute.id}`, { status: newStatus });
       setInstitute(prev => prev ? { ...prev, status: newStatus } : null);
-    } catch (err) {
-      console.error('Failed to update status:', err);
+    } catch (error) {
+      console.error('Failed to update status', error);
+      alert('Failed to update institute status');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleToggleFeatured = async () => {
+    if (!institute) return;
+    setUpdating(true);
+    try {
+      await api.patch(`/super-admin/institutes/${institute.id}`, { isFeatured: !institute.isFeatured });
+      setInstitute(prev => prev ? { ...prev, isFeatured: !prev.isFeatured } : null);
+    } catch (error) {
+      console.error('Failed to update featured status', error);
+      alert('Failed to update featured status');
     } finally {
       setUpdating(false);
     }
@@ -174,6 +189,18 @@ export default function InstituteDetailPage() {
                 {updating ? 'Processing...' : statusAction.label}
               </button>
             )}
+            <button 
+              onClick={handleToggleFeatured}
+              disabled={updating}
+              className={`px-4 py-2 rounded-lg font-medium flex items-center gap-2 text-sm transition-colors ${
+                institute.isFeatured 
+                  ? 'bg-amber-100 text-amber-700 hover:bg-amber-200' 
+                  : 'bg-surface text-steel hover:text-ink hover:bg-surface-hover'
+              }`}
+            >
+              <Star className={`w-4 h-4 ${institute.isFeatured ? 'fill-amber-500 text-amber-500' : ''}`} /> 
+              {institute.isFeatured ? 'Featured' : 'Feature'}
+            </button>
             <button 
               onClick={handleDelete}
               disabled={updating}

@@ -49,6 +49,23 @@ const MODULES = [
 export default function HomePage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
+
+  const [featuredInstitutes, setFeaturedInstitutes] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const { data } = await api.get('/public/featured-institutes');
+        if (data?.data && Array.isArray(data.data)) {
+          setFeaturedInstitutes(data.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch featured institutes', err);
+      }
+    };
+    fetchFeatured();
+  }, []);
+
   const [authModal, setAuthModal] = useState<{ open: boolean; mode: 'login' | 'register' }>({ 
     open: false, 
     mode: 'login' 
@@ -324,11 +341,23 @@ export default function HomePage() {
         <section className="bg-canvas py-10 border-b border-hairline-soft">
           <div className="max-w-[1280px] mx-auto px-3 sm:px-3 sm:px-8">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              {LOGOS.map((logo) => (
-                <div key={logo} className="h-16 flex items-center justify-center text-sm font-medium text-steel">
-                  {logo}
-                </div>
-              ))}
+              {featuredInstitutes.length > 0 ? (
+                featuredInstitutes.map((inst) => (
+                  <div key={inst.id} className="h-16 flex items-center justify-center text-sm font-medium text-steel gap-2">
+                    {inst.logoUrl ? (
+                      <img src={inst.logoUrl} alt={inst.name} className="h-8 max-w-[120px] object-contain opacity-80" />
+                    ) : (
+                      <span>{inst.name}</span>
+                    )}
+                  </div>
+                ))
+              ) : (
+                LOGOS.map((logo) => (
+                  <div key={logo} className="h-16 flex items-center justify-center text-sm font-medium text-steel">
+                    {logo}
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </section>

@@ -48,6 +48,7 @@ model Institute {
   dodoSubscriptionId String? @map("dodo_subscription_id") @db.VarChar(100)
   settingsJson    Json     @default("{}") @map("settings_json")
   setupCompleted  Boolean  @default(false) @map("setup_completed")
+  isFeatured      Boolean  @default(false) @map("is_featured")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
