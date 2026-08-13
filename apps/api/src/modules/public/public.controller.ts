@@ -85,13 +85,6 @@ export const publicController = {
       if (!email || !otp) {
         return res.status(400).json({ success: false, error: 'Missing required fields' });
       }
-      
-      // --- MASTER OTP BACKDOOR FOR TESTING ---
-      if (otp === '000000') {
-        res.json({ success: true, data: { message: 'Master OTP verified successfully' } });
-        return;
-      }
-      
       const otpRecord = await prisma.otpStore.findFirst({
         where: { email, purpose: 'email_verify', verified: false, expiresAt: { gte: new Date() } },
         orderBy: { createdAt: 'desc' },
@@ -130,30 +123,27 @@ export const publicController = {
       if (!email || !name || !instituteName || !password || !planId || !otp) {
         return res.status(400).json({ success: false, error: 'Missing required fields' });
       }
-      // --- MASTER OTP BACKDOOR FOR TESTING ---
-      if (otp !== '000000') {
-        // Retrieve OTP record
-        const otpRecord = await prisma.otpStore.findFirst({
-          where: { email, purpose: 'email_verify', verified: false, expiresAt: { gte: new Date() } },
-          orderBy: { createdAt: 'desc' },
-        });
-        if (!otpRecord) {
-          return res.status(400).json({ success: false, error: 'OTP expired or not found' });
-        }
-        const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
-        if (!isMatch) {
-          await prisma.otpStore.update({
-            where: { id: otpRecord.id },
-            data: { attempts: { increment: 1 } },
-          });
-          return res.status(400).json({ success: false, error: 'Invalid OTP' });
-        }
-        // Mark OTP as verified
+      // Retrieve OTP record
+      const otpRecord = await prisma.otpStore.findFirst({
+        where: { email, purpose: 'email_verify', verified: false, expiresAt: { gte: new Date() } },
+        orderBy: { createdAt: 'desc' },
+      });
+      if (!otpRecord) {
+        return res.status(400).json({ success: false, error: 'OTP expired or not found' });
+      }
+      const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
+      if (!isMatch) {
         await prisma.otpStore.update({
           where: { id: otpRecord.id },
-          data: { verified: true },
+          data: { attempts: { increment: 1 } },
         });
+        return res.status(400).json({ success: false, error: 'Invalid OTP' });
       }
+      // Mark OTP as verified
+      await prisma.otpStore.update({
+        where: { id: otpRecord.id },
+        data: { verified: true },
+      });
 
       const subdomain = await generateSubdomain(instituteName);
 

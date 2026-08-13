@@ -24,7 +24,7 @@ async function sendEmail({ to, subject, html, text, fromName = 'MANEZA' }: SendE
     return;
   }
 
-  const fromEmail = process.env.MAIL_FROM || 'onboarding@resend.dev';
+  const fromEmail = process.env.MAIL_FROM || 'noreply@creativeinteriorssatna.com';
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {

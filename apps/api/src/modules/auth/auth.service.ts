@@ -304,16 +304,13 @@ export const authService = {
       throw Object.assign(new Error('Too many failed attempts'), { statusCode: 429, code: 'OTP_MAX_ATTEMPTS' });
     }
 
-    // --- MASTER OTP BACKDOOR FOR TESTING ---
-    if (otp !== '000000') {
-      const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
-      if (!isMatch) {
-        await prisma.otpStore.update({
-          where: { id: otpRecord.id },
-          data: { attempts: { increment: 1 } },
-        });
-        throw Object.assign(new Error('Invalid OTP'), { statusCode: 400, code: 'INVALID_OTP' });
-      }
+    const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
+    if (!isMatch) {
+      await prisma.otpStore.update({
+        where: { id: otpRecord.id },
+        data: { attempts: { increment: 1 } },
+      });
+      throw Object.assign(new Error('Invalid OTP'), { statusCode: 400, code: 'INVALID_OTP' });
     }
     
     // OTP is valid
@@ -559,16 +556,13 @@ export const authService = {
       throw Object.assign(new Error('OTP expired or not found'), { statusCode: 400, code: 'OTP_EXPIRED' });
     }
 
-    // --- MASTER OTP BACKDOOR FOR TESTING ---
-    if (otp !== '000000') {
-      const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
-      if (!isMatch) {
-        await prisma.otpStore.update({
-          where: { id: otpRecord.id },
-          data: { attempts: { increment: 1 } },
-        });
-        throw Object.assign(new Error('Invalid OTP'), { statusCode: 400, code: 'INVALID_OTP' });
-      }
+    const isMatch = await bcrypt.compare(otp, otpRecord.hashedOtp);
+    if (!isMatch) {
+      await prisma.otpStore.update({
+        where: { id: otpRecord.id },
+        data: { attempts: { increment: 1 } },
+      });
+      throw Object.assign(new Error('Invalid OTP'), { statusCode: 400, code: 'INVALID_OTP' });
     }
 
     await prisma.otpStore.update({ where: { id: otpRecord.id }, data: { verified: true } });
