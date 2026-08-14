@@ -1,0 +1,16 @@
+export { ProductMockup } from './ProductMockup';
+export { HeroSection } from './HeroSection';
+export { ProblemSection } from './ProblemSection';
+export { PositioningSection } from './PositioningSection';
+export { ShowcaseSection } from './ShowcaseSection';
+export { NotAnErpSection } from './NotAnErpSection';
+export { RolesSection } from './RolesSection';
+export { WorkflowSection } from './WorkflowSection';
+export { ModulesSection } from './ModulesSection';
+export { DifferentiationSection } from './DifferentiationSection';
+export { HowItStartsSection } from './HowItStartsSection';
+export { PricingSection } from './PricingSection';
+export { SecuritySection } from './SecuritySection';
+export { FaqSection } from './FaqSection';
+export { FinalCtaSection } from './FinalCtaSection';
+export { FooterSection } from './FooterSection';
