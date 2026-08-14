@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import { applyTheme } from '@coachos/ui';
+import { applyTheme, GlobalPlatformBanner } from '@coachos/ui';
 import { useAuthStore } from './stores/auth.store';
 import { ProtectedRoute, PublicOnlyRoute } from './components/RouteGuards';
 import OwnerLayout from './components/OwnerLayout';
@@ -93,6 +93,7 @@ export default function App() {
     <Sentry.ErrorBoundary fallback={<div className="p-3 sm:p-8 text-center"><p className="text-red-500 font-bold mb-2">Oops! Something went wrong.</p><p className="text-sm text-gray-500">Our team has been notified. Please refresh the page.</p></div>}>
       <PaymentRequiredModal />
       <BrowserRouter>
+        <GlobalPlatformBanner />
         <HardwareBackButtonHandler />
         <Routes>
           <Route path="/" element={

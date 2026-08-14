@@ -6,3 +6,4 @@ export { ProtectedRoute, PublicOnlyRoute } from './RouteGuards';
 export { PWAInstallBanner } from './PWAInstallBanner';
 export { BrandLogo } from './components/BrandLogo';
 export { useTheme, applyTheme } from './useTheme';
+export { GlobalPlatformBanner } from './components/GlobalPlatformBanner';

@@ -532,3 +532,14 @@ model ExamResult {
   @@map("exam_results")
 }
 
+// ============================================
+// System Settings (Global)
+// ============================================
+model SystemSetting {
+  key       String   @id @db.VarChar(100)
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_settings")
+}
+

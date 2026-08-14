@@ -213,4 +213,22 @@ export const publicController = {
       res.status(500).json({ success: false, error: 'Registration failed' });
     }
   },
+
+  // ---------- Get Platform Banner ----------
+  async getPlatformBanner(_req: Request, res: Response) {
+    try {
+      const setting = await prisma.systemSetting.findUnique({
+        where: { key: 'PLATFORM_BANNER_NOTICE' }
+      });
+      
+      if (!setting) {
+        return res.json({ success: true, data: { enabled: false, bannerText: '', bannerType: 'info' } });
+      }
+      
+      res.json({ success: true, data: setting.value });
+    } catch (error: any) {
+      logger.error('Failed to get platform banner', { error: error.message });
+      res.status(500).json({ success: false, error: 'Failed to get banner settings' });
+    }
+  },
 };

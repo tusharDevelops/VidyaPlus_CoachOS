@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { applyTheme } from '@coachos/ui';
+import { applyTheme, GlobalPlatformBanner } from '@coachos/ui';
 import { useAuthStore } from './stores/auth.store';
 import LoginPage from './features/auth/LoginPage';
 import DashboardPage from './features/dashboard/DashboardPage';
@@ -64,6 +64,7 @@ export default function App() {
   return (
     <Sentry.ErrorBoundary fallback={<div className="p-4 sm:p-8 text-center"><p className="text-red-500 font-bold mb-2">Oops! Something went wrong.</p><p className="text-sm text-gray-500">Our team has been notified. Please refresh the page.</p></div>}>
       <BrowserRouter>
+        <GlobalPlatformBanner />
         <Routes>
           {/* Public */}
           <Route path="/login" element={<PublicOnly><LoginPage /></PublicOnly>} />

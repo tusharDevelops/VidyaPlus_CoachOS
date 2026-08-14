@@ -613,4 +613,44 @@ export const superAdminController = {
       res.status(500).json({ success: false, error: 'Failed to delete plan' });
     }
   },
+
+  // ---------- Update Platform Banner ----------
+  async updatePlatformBanner(req: Request, res: Response) {
+    try {
+      const schema = z.object({
+        bannerEnabled: z.boolean(),
+        bannerText: z.string(),
+        bannerType: z.string(),
+      });
+
+      const body = schema.parse(req.body);
+
+      const setting = await prisma.systemSetting.upsert({
+        where: { key: 'PLATFORM_BANNER_NOTICE' },
+        update: { value: body },
+        create: { key: 'PLATFORM_BANNER_NOTICE', value: body },
+      });
+
+      // Audit log
+      await prisma.auditLog.create({
+        data: {
+          userId: req.user!.userId,
+          action: 'system.update_banner',
+          entityType: 'system_setting',
+          afterJson: body,
+          ipAddress: req.ip,
+        },
+      });
+
+      logger.info('Platform banner notice updated by super admin');
+      res.json({ success: true, data: setting.value });
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        res.status(400).json({ success: false, error: 'Validation failed', details: error.errors });
+        return;
+      }
+      logger.error('Failed to update platform banner', { error: error.message });
+      res.status(500).json({ success: false, error: 'Failed to update platform banner' });
+    }
+  },
 };

@@ -27,4 +27,7 @@ router.post('/plans', superAdminController.createPlan);
 router.patch('/plans/:id', superAdminController.updatePlan);
 router.delete('/plans/:id', superAdminController.deletePlan);
 
+// Platform Settings
+router.put('/system-settings/banner', superAdminController.updatePlatformBanner);
+
 export default router;
