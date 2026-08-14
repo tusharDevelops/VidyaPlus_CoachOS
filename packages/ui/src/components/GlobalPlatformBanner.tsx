@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { AlertCircle } from 'lucide-react';
 
 interface BannerSettings {
-  enabled: boolean;
+  bannerEnabled: boolean;
   bannerText: string;
   bannerType: 'info' | 'warning' | 'danger';
 }
@@ -23,7 +23,7 @@ export function GlobalPlatformBanner({ api }: { api: any }) {
       });
   }, []);
 
-  if (!settings || !settings.enabled || !settings.bannerText) return null;
+  if (!settings || !settings.bannerEnabled || !settings.bannerText) return null;
 
   return (
     <div className={`w-full p-3 text-sm font-medium flex items-center justify-center gap-2.5 z-50 ${
