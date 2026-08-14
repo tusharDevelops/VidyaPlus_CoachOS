@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { 
   Bell, Save, Check, Loader2, AlertCircle
 } from 'lucide-react';
-import { api } from '@coachos/ui';
+import api from '../../lib/api';
 
 export default function PlatformSettingsPage() {
   const [saving, setSaving] = useState(false);

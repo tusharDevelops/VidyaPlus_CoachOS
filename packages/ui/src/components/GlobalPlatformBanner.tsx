@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { AlertCircle } from 'lucide-react';
-import api from '../api';
 
 interface BannerSettings {
   enabled: boolean;
@@ -8,18 +7,18 @@ interface BannerSettings {
   bannerType: 'info' | 'warning' | 'danger';
 }
 
-export function GlobalPlatformBanner() {
+export function GlobalPlatformBanner({ api }: { api: any }) {
   const [settings, setSettings] = useState<BannerSettings | null>(null);
 
   useEffect(() => {
     // Fetch banner settings from public API
     api.get('/public/system-settings/banner')
-      .then((res) => {
+      .then((res: any) => {
         if (res.data?.success && res.data.data) {
           setSettings(res.data.data);
         }
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error('Failed to fetch platform banner settings:', err);
       });
   }, []);

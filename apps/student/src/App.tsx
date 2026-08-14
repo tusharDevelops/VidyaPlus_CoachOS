@@ -27,6 +27,7 @@ function PublicOnly({ children }: { children: React.ReactNode }) {
 }
 
 import * as Sentry from '@sentry/react';
+import api from './lib/api';
 
 export default function App() {
   const { isAuthenticated, fetchUser } = useAuthStore();
@@ -64,7 +65,7 @@ export default function App() {
   return (
     <Sentry.ErrorBoundary fallback={<div className="p-4 sm:p-8 text-center"><p className="text-red-500 font-bold mb-2">Oops! Something went wrong.</p><p className="text-sm text-gray-500">Our team has been notified. Please refresh the page.</p></div>}>
       <BrowserRouter>
-        <GlobalPlatformBanner />
+        <GlobalPlatformBanner api={api} />
         <Routes>
           {/* Public */}
           <Route path="/login" element={<PublicOnly><LoginPage /></PublicOnly>} />

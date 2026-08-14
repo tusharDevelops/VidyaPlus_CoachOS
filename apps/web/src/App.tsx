@@ -26,6 +26,7 @@ import PaymentRequiredModal from './features/subscription/PaymentRequiredModal';
 import { Capacitor } from '@capacitor/core';
 import { App as CapacitorApp } from '@capacitor/app';
 import * as Sentry from '@sentry/react';
+import api from './lib/api';
 
 // Custom hook/component to manage the Android hardware back button
 function HardwareBackButtonHandler() {
@@ -93,7 +94,7 @@ export default function App() {
     <Sentry.ErrorBoundary fallback={<div className="p-3 sm:p-8 text-center"><p className="text-red-500 font-bold mb-2">Oops! Something went wrong.</p><p className="text-sm text-gray-500">Our team has been notified. Please refresh the page.</p></div>}>
       <PaymentRequiredModal />
       <BrowserRouter>
-        <GlobalPlatformBanner />
+        <GlobalPlatformBanner api={api} />
         <HardwareBackButtonHandler />
         <Routes>
           <Route path="/" element={
