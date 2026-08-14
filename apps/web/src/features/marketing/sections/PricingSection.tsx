@@ -47,91 +47,96 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading ? (
             Array(3).fill(0).map((_, i) => (
-              <div key={i} className="mint-card p-6 animate-pulse">
-                <div className="h-6 bg-surface rounded w-1/3 mb-4"></div>
-                <div className="h-8 bg-surface rounded w-1/2 mb-6"></div>
+              <div key={i} className="mint-card p-3 sm:p-8 animate-pulse">
+                <div className="h-7 bg-surface rounded w-2/5 mb-2" />
+                <div className="h-3 bg-surface rounded w-1/3 mb-5" />
+                <div className="h-4 bg-surface rounded w-3/4 mb-8" />
+                <div className="h-14 bg-surface rounded w-full mb-2" />
+                <div className="h-3 bg-surface rounded w-1/4 mb-8" />
+                <div className="h-10 bg-surface rounded-full w-full mb-8" />
                 <div className="space-y-3">
-                  <div className="h-4 bg-surface rounded w-full"></div>
-                  <div className="h-4 bg-surface rounded w-full"></div>
-                  <div className="h-4 bg-surface rounded w-3/4"></div>
+                  {[1,2,3,4,5].map(j => <div key={j} className="h-3.5 bg-surface rounded w-full" />)}
                 </div>
               </div>
             ))
           ) : (
             plans.map((plan, index) => {
               const isFeatured = index === 1;
-              const planNameParts = plan.name ? plan.name.split(' - ') : ['Plan'];
-              const planShortName = planNameParts[0];
-              const planTierMatch = plan.name ? plan.name.match(/\(([^)]+)\)/) : null;
-              const planTier = planTierMatch ? planTierMatch[1] : '';
+              const planShortName = plan.name.split(' ')[0];
+              const planTier = plan.name.match(/\(([^)]+)\)/)?.[1] ?? '';
+              
+              const storageLabel = plan.maxStorageMb >= 1000
+                ? `${Math.round(plan.maxStorageMb / 1000)} GB storage`
+                : `${plan.maxStorageMb} MB storage`;
+              const studentsLabel = plan.maxStudents >= 10000 ? 'Unlimited students' : `Up to ${plan.maxStudents} students`;
+              const batchesLabel = plan.maxBatches >= 1000 ? 'Unlimited batches' : `${plan.maxBatches} batches`;
+              const staffLabel = plan.maxStaff >= 1000 ? 'Unlimited staff' : `Up to ${plan.maxStaff} staff`;
 
-              let maxStudents = 'Unlimited';
-              let maxBatches = 'Unlimited';
-              let maxStaff = 'Unlimited';
-              let storageLimit = 'Unlimited';
-
-              if (plan.limits) {
-                if (plan.limits.students !== -1) maxStudents = String(plan.limits.students);
-                if (plan.limits.batches !== -1) maxBatches = String(plan.limits.batches);
-                if (plan.limits.staff !== -1) maxStaff = String(plan.limits.staff);
-                if (plan.limits.storage_mb !== -1) {
-                  storageLimit = plan.limits.storage_mb >= 1024 
-                    ? `${(plan.limits.storage_mb / 1024).toFixed(1)} GB` 
-                    : `${plan.limits.storage_mb} MB`;
-                }
-              }
-
-              const features = [
-                `${maxStudents} Students`,
-                `${maxBatches} Batches`,
-                `${maxStaff} Staff Members`,
-                `${storageLimit} Storage`,
-                ...(plan.features || [])
+              const featuresList: string[] = [
+                studentsLabel,
+                batchesLabel,
+                staffLabel,
+                storageLabel,
+                'All features unlocked',
               ];
 
               return (
-                <div 
-                  key={plan.id || index} 
-                  className={`mint-card p-6 relative ${isFeatured ? 'border-2 border-brand-green' : ''}`}
+                <div
+                  key={plan.id}
+                  className={`relative flex flex-col rounded-lg p-3 sm:p-8 transition-all ${
+                    isFeatured
+                      ? 'border-2 border-brand-green bg-canvas shadow-[rgba(0,212,164,0.08)_0px_8px_24px]'
+                      : 'border border-hairline bg-canvas'
+                  }`}
                 >
                   {isFeatured && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="mint-badge bg-brand-green-soft px-3 py-1 text-xs font-medium text-brand-green rounded-full">
-                        Most Popular
-                      </span>
+                    <div className="absolute top-6 right-6">
+                      <span className="mint-badge">Most Popular</span>
                     </div>
                   )}
-                  
-                  <div className="mt-2">
-                    <h3 className="text-xl font-semibold text-ink">{planShortName} {planTier && <span className="text-steel font-normal text-sm ml-1">({planTier})</span>}</h3>
-                    <p className="text-sm text-steel mt-2 h-10">{taglines[index] || "For growing institutes."}</p>
-                    
-                    <div className="mt-6 mb-6">
-                      <span className="text-3xl font-semibold text-ink font-mono">₹{plan.price_monthly || 0}</span>
-                      <span className="text-sm text-steel">/month + GST</span>
+
+                  <div className="mb-1">
+                    <h3 className="text-[28px] leading-[1.25] font-semibold text-ink">{planShortName}</h3>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-steel mt-0.5">({planTier})</p>
+                  </div>
+
+                  <p className="mt-3 text-sm text-steel leading-[1.5]">{taglines[index]}</p>
+
+                  <div className="mt-8 mb-8">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-[56px] font-semibold font-mono text-ink tracking-[-1.5px] leading-none">
+                        ₹{Number(plan.priceMonthly).toLocaleString()}
+                      </span>
                     </div>
+                    <p className="mt-2 text-[13px] text-steel">/month + GST</p>
+                  </div>
 
-                    <button 
-                      className={`w-full justify-center flex items-center ${isFeatured ? 'mint-btn-brand' : 'mint-btn-primary'}`}
-                      onClick={() => {
-                        if (index === 2) {
-                          onAuthOpen('login');
-                        } else {
-                          onAuthOpen('register');
-                        }
-                      }}
-                    >
-                      {ctaLabels[index] || "Get started"}
-                    </button>
+                  <button
+                    onClick={() => {
+                      if (index === 2) {
+                        onAuthOpen('login');
+                      } else {
+                        onAuthOpen('register');
+                      }
+                    }}
+                    className={`w-full min-h-[42px] px-5 rounded-full text-sm font-medium transition-colors flex items-center justify-center ${
+                      isFeatured
+                        ? 'bg-brand-green text-primary hover:bg-brand-green-deep'
+                        : 'bg-primary text-on-primary hover:bg-charcoal'
+                    }`}
+                  >
+                    {ctaLabels[index]}
+                  </button>
 
-                    <div className="mt-8 space-y-3">
-                      {features.map((feature: string, fIndex: number) => (
-                        <div key={fIndex} className="flex items-start gap-3">
-                          <CheckCircle2 className="w-5 h-5 text-brand-green shrink-0" />
-                          <span className="text-sm text-charcoal">{feature}</span>
-                        </div>
+                  <div className="mt-8 pt-8 border-t border-hairline-soft flex-1">
+                    <ul className="space-y-[10px]">
+                      {featuresList.map((feat) => (
+                        <li key={feat} className="flex items-start gap-2.5">
+                          <CheckCircle2 className="w-4 h-4 text-brand-green flex-shrink-0 mt-0.5" />
+                          <span className="text-sm text-charcoal leading-[1.4]">{feat}</span>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
                 </div>
               );
@@ -139,11 +144,12 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
           )}
         </div>
 
-        <div className="mt-8 text-center text-[13px] text-steel flex items-center justify-center gap-2">
-          <ShieldCheck className="w-4 h-4" />
-          <span>Start free. Upgrade when your institute grows.</span>
-        </div>
+        <p className="mt-8 text-center text-[13px] text-steel flex items-center justify-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-brand-green flex-shrink-0" />
+          Start free. Upgrade when your institute grows.
+        </p>
       </div>
     </section>
   );
 };
+
