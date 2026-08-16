@@ -35,7 +35,7 @@ export const authService = {
    * Generate tokens for a user (used by login and impersonation)
    */
   async generateTokens(user: any) {
-    const permissions = (user.permissionsJson as any[])?.length > 0
+    const permissions = Array.isArray(user.permissionsJson) && user.permissionsJson.length > 0
       ? (user.permissionsJson as any[])
       : (DEFAULT_ROLE_PERMISSIONS[user.role] || []);
 
@@ -103,7 +103,7 @@ export const authService = {
       });
     }
 
-    const permissions = (user.permissionsJson as Permission[]).length > 0
+    const permissions = Array.isArray(user.permissionsJson) && user.permissionsJson.length > 0
       ? (user.permissionsJson as Permission[])
       : (DEFAULT_ROLE_PERMISSIONS[user.role] || []);
 
@@ -336,7 +336,7 @@ export const authService = {
       const { accessToken, refreshToken } = await this.generateTokens(user);
       await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
       
-      const permissions = (user.permissionsJson as Permission[]).length > 0
+      const permissions = Array.isArray(user.permissionsJson) && user.permissionsJson.length > 0
         ? (user.permissionsJson as Permission[])
         : (DEFAULT_ROLE_PERMISSIONS[user.role] || []);
 
@@ -405,7 +405,7 @@ export const authService = {
     // Invalidate session to prevent reuse
     await prisma.otpStore.delete({ where: { id: otpRecord.id } });
 
-    const permissions = (user.permissionsJson as Permission[]).length > 0
+    const permissions = Array.isArray(user.permissionsJson) && user.permissionsJson.length > 0
       ? (user.permissionsJson as Permission[])
       : (DEFAULT_ROLE_PERMISSIONS[user.role] || []);
 
@@ -463,7 +463,7 @@ export const authService = {
     const { accessToken, refreshToken } = await this.generateTokens(targetUser);
     await prisma.user.update({ where: { id: targetUser.id }, data: { lastLoginAt: new Date() } });
 
-    const permissions = (targetUser.permissionsJson as Permission[]).length > 0
+    const permissions = Array.isArray(targetUser.permissionsJson) && targetUser.permissionsJson.length > 0
       ? (targetUser.permissionsJson as Permission[])
       : (DEFAULT_ROLE_PERMISSIONS[targetUser.role] || []);
 
@@ -596,7 +596,7 @@ export const authService = {
     }
 
     const user = matchedRecord.user;
-    const permissions = (user.permissionsJson as Permission[]).length > 0
+    const permissions = Array.isArray(user.permissionsJson) && user.permissionsJson.length > 0
       ? (user.permissionsJson as Permission[])
       : (DEFAULT_ROLE_PERMISSIONS[user.role] || []);
 
