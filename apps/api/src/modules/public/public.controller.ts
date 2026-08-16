@@ -143,7 +143,7 @@ export const publicController = {
       }
       // Retrieve OTP record
       const otpRecord = await prisma.otpStore.findFirst({
-        where: { email, purpose: 'email_verify', verified: false, expiresAt: { gte: new Date() } },
+        where: { email, purpose: 'email_verify', expiresAt: { gte: new Date() } },
         orderBy: { createdAt: 'desc' },
       });
       if (!otpRecord) {
