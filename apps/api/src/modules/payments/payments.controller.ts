@@ -3,16 +3,22 @@ import prisma from '../../lib/prisma';
 import { DodoPayments } from 'dodopayments';
 // @ts-ignore
 import { Webhooks } from '@dodopayments/express';
+import { z } from 'zod';
 
 const dodoClient = new DodoPayments({
   bearerToken: process.env.DODO_PAYMENTS_API_KEY || '',
   environment: process.env.DODO_PAYMENTS_ENV === 'production' ? 'live_mode' : 'test_mode',
 });
 
+const createCheckoutSchema = z.object({
+  planId: z.string().uuid(),
+  returnUrl: z.string().url().optional(),
+});
+
 export const createCheckoutSession = async (req: Request, res: Response) => {
   try {
     const instituteId = req.user?.instituteId;
-    const { planId, returnUrl } = req.body;
+    const { planId, returnUrl } = createCheckoutSchema.parse(req.body);
 
     if (!instituteId || !planId) {
       return res.status(400).json({ success: false, error: 'Missing planId or auth' });
@@ -61,6 +67,9 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ success: false, error: 'Validation failed', details: error.errors });
+    }
     console.error('Error creating checkout session:', error);
     return res.status(500).json({ success: false, error: 'Failed to create checkout session' });
   }

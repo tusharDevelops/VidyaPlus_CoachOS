@@ -1,37 +1,14 @@
-import axios from 'axios';
+import { createApiClient } from '@coachos/ui';
 
-const api = axios.create({
+const api = createApiClient({
   baseURL: import.meta.env.VITE_API_URL || 'https://Maneza-coachos.onrender.com/api/v1',
-  headers: { 'Content-Type': 'application/json' },
+  loginPath: '/login'
 });
 
-// Request interceptor — attach access token
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
-// Response interceptor — auto-refresh on token expiry
+// Extra interceptor specific to the web portal to handle plan limits
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    if (error.response?.status === 401 && error.response?.data?.code === 'TOKEN_EXPIRED') {
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (refreshToken) {
-        try {
-          const { data } = await axios.post(`${import.meta.env.VITE_API_URL || '/api/v1'}/auth/refresh`, { refreshToken });
-          localStorage.setItem('accessToken', data.data.accessToken);
-          error.config.headers.Authorization = `Bearer ${data.data.accessToken}`;
-          return api(error.config);
-        } catch {
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          window.location.href = '/login';
-        }
-      }
-    }
-
+  (error) => {
     if (error.response?.status === 403 && ['PLAN_LIMIT', 'LIMIT_REACHED', 'PLAN_LIMIT_REACHED'].includes(error.response?.data?.code)) {
       window.dispatchEvent(new CustomEvent('UPGRADE_REQUIRED', {
         detail: {
@@ -40,9 +17,8 @@ api.interceptors.response.use(
         }
       }));
     }
-
     return Promise.reject(error);
-  },
+  }
 );
 
 export default api;

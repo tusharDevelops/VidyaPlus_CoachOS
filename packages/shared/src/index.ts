@@ -120,28 +120,73 @@ export const PERMISSIONS = {
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 
+export const PERMISSION_GROUPS = [
+  {
+    id: 'students',
+    title: 'Students & Inquiries',
+    items: [
+      { id: 'students.view', label: 'View student directory', description: 'Access student list and basic profiles' },
+      { id: 'students.add', label: 'Enroll new students', description: 'Register new students into the system' },
+      { id: 'students.edit', label: 'Modify student data', description: 'Update KYC, contact info, and status' },
+      { id: 'students.delete', label: 'Remove student records', description: 'Permit removal or archiving of records' },
+    ]
+  },
+  {
+    id: 'academics',
+    title: 'Academics & Attendance',
+    items: [
+      { id: 'batches.view', label: 'View batch schedules', description: 'See class schedules and assignments' },
+      { id: 'batches.edit', label: 'Manage batch settings', description: 'Configure batch settings and timings' },
+      { id: 'attendance.mark', label: 'Mark daily attendance', description: 'Record daily attendance for students' },
+      { id: 'attendance.view', label: 'View attendance reports', description: 'Access past attendance logs' },
+      { id: 'attendance.edit', label: 'Correct past attendance', description: 'Modify past attendance records' },
+      { id: 'exams.view', label: 'View offline exams', description: 'See exam schedules and test records' },
+      { id: 'exams.manage', label: 'Manage offline exams', description: 'Create exams and enter student marks' },
+    ]
+  },
+  {
+    id: 'finance',
+    title: 'Financials & Fees',
+    items: [
+      { id: 'fees.view', label: 'Access fee dashboard', description: 'Access financial summaries and dues' },
+      { id: 'fees.collect', label: 'Process fee payments', description: 'Record and verify fee collections' },
+      { id: 'fees.edit', label: 'Edit fee structures', description: 'Modify fee plans and discounts' },
+      { id: 'fees.delete', label: 'Void/Delete receipts', description: 'Cancel or delete payment records' },
+    ]
+  },
+  {
+    id: 'communications',
+    title: 'Communications',
+    items: [
+      { id: 'notifications.view', label: 'View notification logs', description: 'View history of sent alerts' },
+      { id: 'notifications.send', label: 'Send broadcast alerts', description: 'Send WhatsApp/Email notifications' },
+    ]
+  },
+  {
+    id: 'system',
+    title: 'System & Team',
+    items: [
+      { id: 'reports.view', label: 'View operational reports', description: 'Access institute-wide performance data' },
+      { id: 'reports.export', label: 'Download data exports', description: 'Download CSV/PDF reports' },
+      { id: 'staff.view', label: 'View staff members', description: 'See directory of staff members' },
+      { id: 'staff.manage', label: 'Manage staff & payroll', description: 'Add/Edit team members and permissions' },
+      { id: 'settings.manage', label: 'Institute settings access', description: 'Access system-wide configuration' },
+    ]
+  }
+];
+
+export const DEFAULT_STAFF_PERMISSIONS: Record<string, string[]> = {
+  teacher: ['attendance.mark', 'attendance.view', 'batches.view', 'students.view', 'notifications.view', 'exams.view', 'exams.manage'],
+  accountant: ['fees.view', 'fees.collect', 'fees.edit', 'batches.view', 'students.view', 'reports.view', 'staff.view'],
+  admin: PERMISSION_GROUPS.flatMap(g => g.items.map(p => p.id)),
+  custom: []
+};
+
 // Default Role Permissions
 export const DEFAULT_ROLE_PERMISSIONS: Record<string, Permission[]> = {
   owner: Object.values(PERMISSIONS),
-  teacher: [
-    PERMISSIONS.STUDENTS_VIEW,
-    PERMISSIONS.BATCHES_VIEW,
-    PERMISSIONS.ATTENDANCE_VIEW,
-    PERMISSIONS.ATTENDANCE_MARK,
-    PERMISSIONS.EXAMS_VIEW,
-    PERMISSIONS.EXAMS_MANAGE,
-  ],
-  accountant: [
-    PERMISSIONS.STUDENTS_VIEW,
-    PERMISSIONS.BATCHES_VIEW,
-    PERMISSIONS.FEES_VIEW,
-    PERMISSIONS.FEES_COLLECT,
-    PERMISSIONS.FEES_EDIT,
-    PERMISSIONS.FEES_DELETE,
-    PERMISSIONS.REPORTS_VIEW,
-    PERMISSIONS.NOTIFICATIONS_VIEW,
-    PERMISSIONS.STAFF_VIEW,
-  ],
+  teacher: DEFAULT_STAFF_PERMISSIONS.teacher as Permission[],
+  accountant: DEFAULT_STAFF_PERMISSIONS.accountant as Permission[],
   staff: [
     PERMISSIONS.STUDENTS_VIEW,
     PERMISSIONS.STUDENTS_ADD,
@@ -151,8 +196,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, Permission[]> = {
     PERMISSIONS.NOTIFICATIONS_SEND,
     PERMISSIONS.REPORTS_VIEW,
   ],
-  admin: Object.values(PERMISSIONS),
-  custom: [],
+  admin: DEFAULT_STAFF_PERMISSIONS.admin as Permission[],
+  custom: DEFAULT_STAFF_PERMISSIONS.custom as Permission[],
 };
 
 // API Response Types

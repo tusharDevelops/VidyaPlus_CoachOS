@@ -42,10 +42,13 @@ import * as Sentry from '@sentry/react';
 import api from './lib/api';
 
 export default function App() {
-  const { isAuthenticated, fetchUser } = useAuthStore();
+  const { isAuthenticated, fetchUser, refreshUser } = useAuthStore();
 
   useEffect(() => {
-    if (isAuthenticated) fetchUser();
+    if (isAuthenticated) {
+      fetchUser();
+      refreshUser();
+    }
 
     const savedTheme = localStorage.getItem('theme');
     const shouldBeDark = savedTheme === 'dark' || 

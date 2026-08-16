@@ -4,6 +4,7 @@ import { DrillDepth } from '../types';
 import api from '../../../lib/api';
 import { useAuthStore } from '../../../stores/auth.store';
 import LoadMore from '../../../components/LoadMore';
+import StudentModal from '../components/modals/StudentModal';
 
 interface Student {
   id: string;
@@ -32,6 +33,8 @@ export default function StaffStudentsLayer({ batchId, onNavigate }: StaffStudent
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [total, setTotal] = useState(0);
+  const [showStudentModal, setShowStudentModal] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
   const fetchStudents = async (p: number = 1) => {
     setLoading(true);
@@ -93,6 +96,7 @@ export default function StaffStudentsLayer({ batchId, onNavigate }: StaffStudent
           {hasPermission('students.add') && (
             <button 
               className="mint-btn-brand py-1.5 px-3 text-[10px]"
+              onClick={() => { setSelectedStudent(null); setShowStudentModal(true); }}
             >
               <Plus className="w-3.5 h-3.5 mr-1.5" />
               Enroll Student
@@ -159,6 +163,7 @@ export default function StaffStudentsLayer({ batchId, onNavigate }: StaffStudent
                       <div className="absolute right-0 mt-2 w-44 bg-canvas rounded-md shadow-premium border border-hairline z-20 py-1 animate-slide-up origin-top-right">
                         {hasPermission('students.edit') && (
                           <button 
+                            onClick={(e) => { e.stopPropagation(); setSelectedStudent(student); setShowStudentModal(true); setActiveMenu(null); }}
                             className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-ink hover:bg-surface transition-colors"
                           >
                             <Edit2 className="w-3.5 h-3.5" /> Edit Profile
@@ -189,6 +194,15 @@ export default function StaffStudentsLayer({ batchId, onNavigate }: StaffStudent
           </div>
           <LoadMore hasMore={hasMore} loading={loading} onLoadMore={loadMore} total={total} loaded={students.length} />
         </>
+      )}
+      
+      {showStudentModal && (
+        <StudentModal
+          student={selectedStudent}
+          onClose={() => { setShowStudentModal(false); setSelectedStudent(null); }}
+          onSaved={() => { setShowStudentModal(false); setSelectedStudent(null); fetchStudents(1); }}
+          initialBatchId={batchId}
+        />
       )}
     </div>
   );

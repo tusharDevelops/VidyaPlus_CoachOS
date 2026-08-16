@@ -5,17 +5,17 @@ import api from '../../../../lib/api';
 interface Student {
   id: string; name: string; phone: string; email: string | null; status: string;
   photoUrl: string | null; dob: string | null; createdAt: string;
-  studentProfile: { id: string; studentCode: string; parentName: string | null; parentPhone: string | null; enrolledAt: string; balance?: number } | null;
-  enrollments: { id: string; batch: { id: string; name: string; subject: string | null } }[];
+  profile: { id: string; studentCode: string; parentName: string | null; parentPhone: string | null; enrolledAt: string; balance?: number } | null;
+  batches: { id: string; name: string; subject: string | null }[];
 }
 
 interface Batch { id: string; name: string; subject: string | null; feePlanId?: string; admissionFee: number | string }
 interface FeePlan { id: string; name: string; amount: string; frequency: string }
 
 interface StudentModalProps {
-  student?: any | null; // Use any for flexibility with slightly different backend structures
+  student?: Student | null;
   onClose: () => void;
-  onSaved: (s?: any) => void;
+  onSaved: (s?: Student) => void;
   initialBatchId?: string | null;
 }
 
@@ -24,17 +24,14 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
   const [step, setStep] = useState<'form' | 'otp'>('form');
   const [otp, setOtp] = useState('');
   
-  // Adapt to staff portal student structure (studentProfile instead of profile, enrollments instead of batches)
-  const currentBatches = student?.enrollments?.map((e: any) => e.batch?.id).filter(Boolean) || [];
-
   const [form, setForm] = useState({ 
     name: student?.name || '', 
     phone: student?.phone || '', 
     email: student?.email || '', 
     dob: student?.dob ? new Date(student.dob).toISOString().split('T')[0] : '', 
-    parentName: student?.studentProfile?.parentName || '', 
-    parentPhone: student?.studentProfile?.parentPhone || '', 
-    batchIds: currentBatches || (initialBatchId ? [initialBatchId] : []) as string[], 
+    parentName: student?.profile?.parentName || '', 
+    parentPhone: student?.profile?.parentPhone || '', 
+    batchIds: student?.batches?.map(b => b.id) || (initialBatchId ? [initialBatchId] : []) as string[], 
     feePlanId: ''
   });
   const [batches, setBatches] = useState<Batch[]>([]);
@@ -44,7 +41,7 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
 
   useEffect(() => {
     Promise.all([
-      api.get('/batches', { params: { status: 'active' } }),
+      api.get('/batches'),
       api.get('/fee-plans')
     ]).then(([{ data: bData }, { data: fData }]) => {
       setBatches(bData.data);
@@ -60,7 +57,7 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
   const toggleBatch = (id: string) => {
     setForm(prev => ({
       ...prev,
-      batchIds: prev.batchIds.includes(id) ? prev.batchIds.filter((b: string) => b !== id) : [...prev.batchIds, id],
+      batchIds: prev.batchIds.includes(id) ? prev.batchIds.filter(b => b !== id) : [...prev.batchIds, id],
     }));
   };
 
@@ -130,7 +127,7 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-ink/60 backdrop-blur-md p-2 sm:p-4 animate-fade-in overflow-hidden" onClick={onClose}>
       <div 
-        className="w-full max-w-2xl bg-canvas rounded-[2.5rem] shadow-premium overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[92vh] animate-slide-up border border-hairline" 
+        className="w-full max-w-2xl bg-canvas rounded-lg shadow-premium overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[92vh] animate-slide-up border border-hairline" 
         onClick={e => e.stopPropagation()}
       >
         <div className="px-5 sm:px-10 py-5 sm:py-10 border-b border-hairline flex items-center justify-between bg-canvas sticky top-0 z-20">
@@ -147,7 +144,7 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
 
         <div className="flex-1 overflow-y-auto p-5 sm:p-12 space-y-8 sm:space-y-12 custom-scrollbar">
           {error && (
-            <div className="p-4 sm:p-5 bg-brand-error/10 border border-brand-error/20 rounded-2xl text-brand-error text-[10px] font-black uppercase tracking-widest flex items-center gap-3">
+            <div className="p-4 sm:p-5 bg-brand-error/10 border border-brand-error/20 rounded-md text-brand-error text-[10px] font-black uppercase tracking-widest flex items-center gap-3">
               <ShieldAlert className="w-5 h-5 flex-shrink-0" /> {error}
             </div>
           )}
@@ -155,7 +152,7 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
           {step === 'form' && (
             <form id="student-form" onSubmit={handleSubmit} className="space-y-8 sm:space-y-12 animate-fade-in">
               <FormSection icon={User} title="Basic Details">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-3 sm:gap-8">
                   <Field label="Full Name" name="name" value={form.name} onChange={handleChange} required placeholder="Student's Name" />
                   <Field label="Phone Number" name="phone" value={form.phone} onChange={handleChange} required placeholder="Contact Number" />
                   <Field label="Email Address" name="email" value={form.email} onChange={handleChange} type="email" required placeholder="email@example.com" />
@@ -164,7 +161,7 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
               </FormSection>
 
               <FormSection icon={Users} title="Parent / Guardian Details">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-3 sm:gap-8">
                   <Field label="Parent's Name" name="parentName" value={form.parentName} onChange={handleChange} placeholder="Name" />
                   <Field label="Parent's Phone" name="parentPhone" value={form.parentPhone} onChange={handleChange} placeholder="Contact Number" />
                 </div>
@@ -177,7 +174,7 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
                     {batches.map(b => (
                       <button 
                         key={b.id} type="button" onClick={() => toggleBatch(b.id)}
-                        className={`flex-1 sm:flex-none px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest border transition-all ${
+                        className={`flex-1 sm:flex-none px-4 sm:px-5 py-2 sm:py-2.5 rounded-md text-[9px] sm:text-[10px] font-black uppercase tracking-widest border transition-all ${
                           form.batchIds.includes(b.id) 
                             ? 'bg-ink border-ink text-canvas shadow-lg' 
                             : 'bg-canvas border-hairline text-stone hover:border-ink'
@@ -215,7 +212,7 @@ export default function StudentModal({ student, onClose, onSaved, initialBatchId
 
                   {/* Fee Summary Card */}
                   {(feeSummary.admissionTotal > 0 || feeSummary.recurringAmount > 0) && (
-                    <div className="mt-8 bg-surface/50 border border-hairline rounded-[2rem] p-6 sm:p-8 animate-fade-in">
+                    <div className="mt-8 bg-surface/50 border border-hairline rounded-2xl p-6 sm:p-3 sm:p-8 animate-fade-in">
                        <h4 className="text-[10px] font-black text-ink uppercase tracking-widest mb-6 opacity-60">Investment Summary</h4>
                        <div className="space-y-4">
                           {feeSummary.admissionTotal > 0 && (
@@ -291,7 +288,7 @@ function FormSection({ icon: Icon, title, children }: any) {
   return (
     <div className="space-y-6 sm:space-y-8">
       <div className="flex items-center gap-3 sm:gap-4 pb-3 sm:pb-4 border-b border-hairline">
-        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-surface text-brand-tag flex items-center justify-center border border-hairline shrink-0">
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-surface text-brand-tag flex items-center justify-center border border-hairline shrink-0">
           <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
         <h3 className="text-[10px] sm:text-[11px] font-black text-ink uppercase tracking-[0.2em]">{title}</h3>

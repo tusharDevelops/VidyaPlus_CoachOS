@@ -4,7 +4,7 @@ import { DrillDepth } from '../types';
 import api from '../../../lib/api';
 import { useAuthStore } from '../../../stores/auth.store';
 import LoadMore from '../../../components/LoadMore';
-// import BatchModal from '../modals/BatchModal'; // We'll skip modal for now unless asked, or just hide the button
+import BatchModal from '../components/modals/BatchModal';
 
 interface Batch {
   id: string;
@@ -32,6 +32,8 @@ export default function StaffBatchesLayer({ onNavigate }: StaffBatchesLayerProps
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
+  const [showBatchModal, setShowBatchModal] = useState(false);
+  const [selectedBatch, setSelectedBatch] = useState<Batch | null>(null);
 
   const fetchBatches = async (p = 1, append = false) => {
     setLoading(true);
@@ -82,6 +84,7 @@ export default function StaffBatchesLayer({ onNavigate }: StaffBatchesLayerProps
         {hasPermission('batches.edit') && (
           <button 
             className="mint-btn-brand py-2 px-4 text-xs"
+            onClick={() => { setSelectedBatch(null); setShowBatchModal(true); }}
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Batch
@@ -144,6 +147,7 @@ export default function StaffBatchesLayer({ onNavigate }: StaffBatchesLayerProps
                       {activeMenu === batch.id && (
                         <div className="absolute right-0 mt-2 w-40 bg-canvas rounded-md shadow-premium border border-hairline z-20 py-1 animate-slide-up origin-top-right">
                           <button 
+                            onClick={(e) => { e.stopPropagation(); setSelectedBatch(batch); setShowBatchModal(true); setActiveMenu(null); }}
                             className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-ink hover:bg-surface transition-colors"
                           >
                             <Edit2 className="w-3.5 h-3.5" /> Edit
@@ -195,6 +199,14 @@ export default function StaffBatchesLayer({ onNavigate }: StaffBatchesLayerProps
           </div>
           <LoadMore hasMore={hasMore} loading={loading} onLoadMore={loadMore} total={total} loaded={batches.length} />
         </>
+      )}
+      
+      {showBatchModal && (
+        <BatchModal
+          batch={selectedBatch}
+          onClose={() => { setShowBatchModal(false); setSelectedBatch(null); }}
+          onSaved={() => { setShowBatchModal(false); setSelectedBatch(null); fetchBatches(); }}
+        />
       )}
     </div>
   );

@@ -29,6 +29,7 @@ interface AuthState {
   registerVerify: (data: any) => Promise<void>;
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   verifyResetOtp: (email: string, otp: string) => Promise<void>;
   resetPassword: (email: string, otp: string, newPassword: string) => Promise<void>;
@@ -158,6 +159,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       set({ user: null, isAuthenticated: false });
+    }
+  },
+
+  refreshUser: async () => {
+    try {
+      const { data } = await api.get('/auth/me');
+      set((state) => ({
+        user: state.user ? { ...state.user, permissions: data.data.user.permissions } : null
+      }));
+    } catch {
+      // fail silently without disrupting UI
     }
   },
 

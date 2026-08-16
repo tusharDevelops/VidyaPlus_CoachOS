@@ -5,6 +5,7 @@ import {
   IndianRupee, Loader2, Calendar, ShieldAlert,
   ArrowRight, Info, CheckCircle
 } from 'lucide-react';
+import { useAuthStore } from '../../../stores/auth.store';
 
 interface SalaryRecord {
   id: string;
@@ -34,6 +35,7 @@ interface SalarySuggestion {
 }
 
 export default function PayrollDrawer({ staffId, onClose, onSuccess }: PayrollDrawerProps) {
+  const { hasPermission } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [records, setRecords] = useState<SalaryRecord[]>([]);
   const [staff, setStaff] = useState<any>(null);
@@ -49,6 +51,12 @@ export default function PayrollDrawer({ staffId, onClose, onSuccess }: PayrollDr
 
   const [suggestion, setSuggestion] = useState<SalarySuggestion | null>(null);
   const [fetchingSuggestion, setFetchingSuggestion] = useState(false);
+
+  const isCurrentMonthPaid = records.some(r => {
+    const currentMonth = new Date().toLocaleString('default', { month: 'short' });
+    const currentMonthLong = new Date().toLocaleString('default', { month: 'long' });
+    return (r.month === currentMonth || r.month === currentMonthLong) && r.year === new Date().getFullYear();
+  });
 
   const fetchSalaryLedger = useCallback(async () => {
     if (!staffId) return;
@@ -220,8 +228,10 @@ export default function PayrollDrawer({ staffId, onClose, onSuccess }: PayrollDr
 
                {!showPayoutForm && (
                   <button onClick={() => setShowPayoutForm(true)}
-                    className="mint-btn-primary w-full py-4 rounded-[1.5rem] flex items-center justify-center gap-3 text-[11px] font-black uppercase tracking-widest">
-                     <IndianRupee className="w-4 h-4" /> Disburse New Payout
+                    disabled={isCurrentMonthPaid || !hasPermission('staff.manage')}
+                    className={`w-full py-4 rounded-[1.5rem] flex items-center justify-center gap-3 text-[11px] font-black uppercase tracking-widest ${isCurrentMonthPaid || !hasPermission('staff.manage') ? 'bg-surface text-slate cursor-not-allowed border border-hairline' : 'mint-btn-primary'}`}>
+                     <IndianRupee className="w-4 h-4" /> 
+                     {!hasPermission('staff.manage') ? 'No Permission to Disburse' : isCurrentMonthPaid ? 'Current Month Already Paid' : 'Disburse New Payout'}
                   </button>
                )}
             </div>

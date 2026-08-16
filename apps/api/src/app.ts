@@ -57,21 +57,21 @@ app.use(cors({
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
-  max: 2000, // 2000 requests per minute
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // 100 requests per 15 minutes
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, error: 'Too many requests', code: 'RATE_LIMITED' },
 });
 app.use(limiter);
 
-// Auth rate limiting (stricter)
+// Auth rate limiting (strict — prevents OTP brute-force)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // Very lenient for active user/agent pair testing
+  max: 20, // 20 auth attempts per 15 minutes per IP
   standardHeaders: true,
   legacyHeaders: false,
-  message: { success: false, error: 'Too many authentication attempts', code: 'AUTH_RATE_LIMITED' },
+  message: { success: false, error: 'Too many authentication attempts. Please try again later.', code: 'AUTH_RATE_LIMITED' },
 });
 
 // Body parsing

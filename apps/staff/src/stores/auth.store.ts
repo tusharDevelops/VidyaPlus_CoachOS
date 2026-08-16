@@ -25,6 +25,7 @@ interface StaffAuthState {
   fetchSwitchableProfiles: () => Promise<void>;
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   clearError: () => void;
   hasPermission: (permission: string) => boolean;
 }
@@ -138,6 +139,17 @@ export const useAuthStore = create<StaffAuthState>((set, get) => ({
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       set({ user: null, isAuthenticated: false });
+    }
+  },
+
+  refreshUser: async () => {
+    try {
+      const { data } = await api.get('/auth/me');
+      set((state) => ({
+        user: state.user ? { ...state.user, permissions: data.data.user.permissions } : null
+      }));
+    } catch {
+      // fail silently without disrupting UI
     }
   },
 

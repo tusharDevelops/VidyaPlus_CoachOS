@@ -56,10 +56,13 @@ function HardwareBackButtonHandler() {
 }
 
 export default function App() {
-  const { isAuthenticated, fetchUser } = useAuthStore();
+  const { isAuthenticated, fetchUser, refreshUser } = useAuthStore();
 
   useEffect(() => {
-    if (isAuthenticated) fetchUser();
+    if (isAuthenticated) {
+      fetchUser();
+      refreshUser();
+    }
     
     // Initialize theme from saved preference or system default
     const savedTheme = localStorage.getItem('theme');

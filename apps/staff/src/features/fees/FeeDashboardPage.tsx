@@ -4,7 +4,7 @@ import {
   Wallet, TrendingUp, AlertCircle, FileText, ChevronRight,
   Loader2, Search, CheckCircle2, User,
   PlusCircle, CreditCard, ArrowUpRight, ArrowDownRight,
-  Users, UserCheck, Banknote, Calendar
+  Users, UserCheck, Banknote, Calendar, ShieldAlert
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/auth.store';
@@ -139,11 +139,23 @@ export default function FeeDashboardPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  if (loading && !kpis) {
+  if (!hasPermission('fees.view')) {
     return (
-      <div className="flex flex-col items-center justify-center h-96">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-surface text-center">
+        <div className="w-16 h-16 rounded-3xl bg-brand-error/10 flex items-center justify-center mb-6">
+          <ShieldAlert className="w-8 h-8 text-brand-error" />
+        </div>
+        <h2 className="text-xl font-black text-ink tracking-tight mb-2">Access Restricted</h2>
+        <p className="text-slate font-medium text-sm">You do not have permission to view financials.</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center p-8 bg-surface">
         <Loader2 className="w-8 h-8 text-brand-green animate-spin" />
-        <p className="text-[11px] font-bold text-steel uppercase tracking-widest mt-6">Loading Money Dashboard...</p>
+        <p className="text-[11px] font-bold text-steel uppercase tracking-widest mt-6">Loading Financial Dashboard...</p>
       </div>
     );
   }
@@ -224,7 +236,7 @@ export default function FeeDashboardPage() {
                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-6 ${activeTab === 'students' ? 'bg-rose-50 text-brand-error' : 'bg-brand-tag/10 text-brand-tag'}`}>
                   {activeTab === 'students' ? <AlertCircle className="w-5 h-5" /> : <Users className="w-5 h-5" />}
                </div>
-               <p className="text-[11px] font-bold text-steel uppercase tracking-widest mb-1">{activeTab === 'students' ? 'Students with Pending Fees' : 'Staff Salaries Owed'}</p>
+               <p className="text-[11px] font-bold text-steel uppercase tracking-widest mb-1">{activeTab === 'students' ? 'Overdue Invoices' : 'Staff Salaries Owed'}</p>
                <h3 className="text-4xl font-bold text-ink font-mono tracking-tight">
                   {activeTab === 'students' ? kpis?.revenue.defaulters : '₹0'}
                </h3>
@@ -241,7 +253,7 @@ export default function FeeDashboardPage() {
                <div className="w-10 h-10 rounded-xl bg-surface text-ink border border-hairline flex items-center justify-center mb-6">
                   <CreditCard className="w-5 h-5" />
                </div>
-               <p className="text-[11px] font-bold text-steel uppercase tracking-widest mb-1">{activeTab === 'students' ? 'Total Pending Fees' : 'Salaries Paid Overall'}</p>
+               <p className="text-[11px] font-bold text-steel uppercase tracking-widest mb-1">{activeTab === 'students' ? 'Total Outstanding Balance' : 'Salaries Paid Overall'}</p>
                <h3 className="text-4xl font-bold text-ink font-mono tracking-tight">₹{activeTab === 'students' ? kpis?.revenue.totalOutstanding.toLocaleString() : kpis?.expense.totalPaid.toLocaleString()}</h3>
             </div>
             <div className="mt-8">
@@ -257,7 +269,7 @@ export default function FeeDashboardPage() {
 
       <div className="space-y-6">
          <div className="flex items-center justify-between border-b border-hairline pb-4">
-            <h2 className="text-xs font-bold text-ink uppercase tracking-widest">{activeTab === 'students' ? 'Upcoming Fee Collections' : 'Staff Salary List'}</h2>
+            <h2 className="text-xs font-bold text-ink uppercase tracking-widest">{activeTab === 'students' ? 'Late Fee Collections' : 'Staff Salary List'}</h2>
             <button onClick={fetchFinanceData} className="p-1.5 text-steel hover:text-ink transition-colors flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
                Refresh <Banknote className="w-3 h-3" />
             </button>

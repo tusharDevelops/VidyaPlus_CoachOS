@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../lib/api';
 import { Staff } from './StaffPage';
 import { X, Shield, Check, Loader2, UserPlus, Mail } from 'lucide-react';
+import { PERMISSION_GROUPS, DEFAULT_STAFF_PERMISSIONS } from '@coachos/shared';
 
 interface StaffModalProps {
   isOpen: boolean;
@@ -9,68 +10,6 @@ interface StaffModalProps {
   staff: Staff | null;
   onSuccess: () => void;
 }
-
-const PERMISSION_GROUPS = [
-  {
-    id: 'students',
-    title: 'Students & Inquiries',
-    items: [
-      { id: 'students.view', label: 'View student directory', description: 'Access student list and basic profiles' },
-      { id: 'students.add', label: 'Enroll new students', description: 'Register new students into the system' },
-      { id: 'students.edit', label: 'Modify student data', description: 'Update KYC, contact info, and status' },
-      { id: 'students.delete', label: 'Remove student records', description: 'Permit removal or archiving of records' },
-    ]
-  },
-  {
-    id: 'academics',
-    title: 'Academics & Attendance',
-    items: [
-      { id: 'batches.view', label: 'View batch schedules', description: 'See class schedules and assignments' },
-      { id: 'batches.edit', label: 'Manage batch settings', description: 'Configure batch settings and timings' },
-      { id: 'attendance.mark', label: 'Mark daily attendance', description: 'Record daily attendance for students' },
-      { id: 'attendance.view', label: 'View attendance reports', description: 'Access past attendance logs' },
-      { id: 'attendance.edit', label: 'Correct past attendance', description: 'Modify past attendance records' },
-      { id: 'exams.view', label: 'View offline exams', description: 'See exam schedules and test records' },
-      { id: 'exams.manage', label: 'Manage offline exams', description: 'Create exams and enter student marks' },
-    ]
-  },
-  {
-    id: 'finance',
-    title: 'Financials & Fees',
-    items: [
-      { id: 'fees.view', label: 'Access fee dashboard', description: 'Access financial summaries and dues' },
-      { id: 'fees.collect', label: 'Process fee payments', description: 'Record and verify fee collections' },
-      { id: 'fees.edit', label: 'Edit fee structures', description: 'Modify fee plans and discounts' },
-      { id: 'fees.delete', label: 'Void/Delete receipts', description: 'Cancel or delete payment records' },
-    ]
-  },
-  {
-    id: 'communications',
-    title: 'Communications',
-    items: [
-      { id: 'notifications.view', label: 'View notification logs', description: 'View history of sent alerts' },
-      { id: 'notifications.send', label: 'Send broadcast alerts', description: 'Send WhatsApp/Email notifications' },
-    ]
-  },
-  {
-    id: 'system',
-    title: 'System & Team',
-    items: [
-      { id: 'reports.view', label: 'View operational reports', description: 'Access institute-wide performance data' },
-      { id: 'reports.export', label: 'Download data exports', description: 'Download CSV/PDF reports' },
-      { id: 'staff.view', label: 'View staff members', description: 'See directory of staff members' },
-      { id: 'staff.manage', label: 'Manage staff & payroll', description: 'Add/Edit team members and permissions' },
-      { id: 'settings.manage', label: 'Institute settings access', description: 'Access system-wide configuration' },
-    ]
-  }
-];
-
-const DEFAULT_PERMISSIONS: Record<string, string[]> = {
-  teacher: ['attendance.mark', 'attendance.view', 'batches.view', 'students.view', 'notifications.view'],
-  accountant: ['fees.view', 'fees.collect', 'fees.edit', 'batches.view', 'students.view', 'reports.view', 'staff.view'],
-  admin: PERMISSION_GROUPS.flatMap(g => g.items.map(p => p.id)),
-  custom: []
-};
 
 export default function StaffModal({ isOpen, onClose, staff, onSuccess }: StaffModalProps) {
   const [step, setStep] = useState<'form' | 'otp'>('form');
@@ -101,7 +40,7 @@ export default function StaffModal({ isOpen, onClose, staff, onSuccess }: StaffM
       setEmail('');
       setRole('teacher');
       setBaseSalary('0');
-      setPermissions(DEFAULT_PERMISSIONS['teacher']);
+      setPermissions(DEFAULT_STAFF_PERMISSIONS['teacher']);
       setStatus('active');
     }
   }, [staff]);
@@ -109,7 +48,7 @@ export default function StaffModal({ isOpen, onClose, staff, onSuccess }: StaffM
   const handleRoleChange = (newRole: any) => {
     setRole(newRole);
     if (newRole !== 'custom') {
-      setPermissions(DEFAULT_PERMISSIONS[newRole] || []);
+      setPermissions(DEFAULT_STAFF_PERMISSIONS[newRole] || []);
     }
   };
 
@@ -145,7 +84,7 @@ export default function StaffModal({ isOpen, onClose, staff, onSuccess }: StaffM
       const payload: any = {
         name, phone, email: email || undefined,
         role, baseSalary: parseFloat(baseSalary) || 0,
-        permissions: role === 'custom' || role === 'admin' ? permissions : DEFAULT_PERMISSIONS[role],
+        permissions: role === 'custom' || role === 'admin' ? permissions : DEFAULT_STAFF_PERMISSIONS[role],
         status,
         otp: step === 'otp' ? otp : undefined,
       };

@@ -5,25 +5,32 @@ import logger from '../lib/logger';
  * Global error handler middleware.
  */
 export function errorHandler(err: any, req: Request, res: Response, _next: NextFunction): void {
-  logger.error('Unhandled error', {
+  console.error('Unhandled error', {
     error: err.message,
     stack: err.stack,
     path: req.path,
     method: req.method,
   });
 
-  const statusCode = err.statusCode || 500;
-  
-  // Obscure 500-level database and system errors from real users
-  let message = err.message;
-  if (statusCode === 500 || statusCode >= 500) {
-    message = 'An unexpected technical error occurred. Our team has been notified.';
+  let statusCode = err.statusCode || 500;
+  let message = err.message || 'An unexpected error occurred';
+
+  // Handle Prisma known errors
+  if (err.code === 'P2002') {
+    statusCode = 409;
+    message = 'Unique constraint failed on the database';
+  } else if (err.code === 'P2025') {
+    statusCode = 404;
+    message = 'Record not found';
+  } else if (statusCode >= 500) {
+    message = process.env.NODE_ENV === 'production' 
+      ? 'An unexpected technical error occurred. Our team has been notified.' 
+      : message;
   }
 
   res.status(statusCode).json({
-    success: false,
     error: message,
-    code: err.code || 'INTERNAL_ERROR',
+    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
   });
 }
 
@@ -32,8 +39,6 @@ export function errorHandler(err: any, req: Request, res: Response, _next: NextF
  */
 export function notFoundHandler(req: Request, res: Response): void {
   res.status(404).json({
-    success: false,
-    error: `Route ${req.method} ${req.path} not found`,
-    code: 'NOT_FOUND',
+    error: `Route ${req.method} ${req.path} not found`
   });
 }

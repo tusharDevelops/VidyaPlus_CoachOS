@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import winston from 'winston';
 import bcrypt from 'bcryptjs';
+import { z } from 'zod';
 import { authService } from '../auth/auth.service';
 import { sendOtpEmail } from '../../lib/mailer';
 import { generateSubdomain } from '../../lib/subdomain';
@@ -11,6 +12,24 @@ const prisma = new PrismaClient();
 const logger = winston.createLogger({
   format: winston.format.json(),
   transports: [new winston.transports.Console()],
+});
+
+const sendOtpSchema = z.object({
+  email: z.string().email('Invalid email format'),
+});
+
+const verifyOtpOnlySchema = z.object({
+  email: z.string().email('Invalid email format'),
+  otp: z.string().min(6).max(6),
+});
+
+const verifyOtpAndCreateSchema = z.object({
+  email: z.string().email('Invalid email format'),
+  name: z.string().min(2).max(100),
+  instituteName: z.string().min(2).max(100),
+  password: z.string().min(8),
+  planId: z.string().uuid().optional(),
+  otp: z.string().min(6).max(6),
 });
 
 export const publicController = {
@@ -59,10 +78,7 @@ export const publicController = {
   // ---------- Send Registration OTP ----------
   async sendRegistrationOtp(req: Request, res: Response) {
     try {
-      const { email } = req.body;
-      if (!email) {
-        return res.status(400).json({ success: false, error: 'Email is required' });
-      }
+      const { email } = sendOtpSchema.parse(req.body);
 
       // Check if this email is already registered as an institute owner
       const existingOwner = await prisma.user.findFirst({
@@ -91,6 +107,9 @@ export const publicController = {
       await sendOtpEmail(email, otp);
       res.json({ success: true, data: { message: 'OTP sent to email' } });
     } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ success: false, error: 'Validation failed', details: error.errors });
+      }
       logger.error('Failed to send registration OTP', { error: error.message });
       res.status(500).json({ success: false, error: 'Failed to send OTP' });
     }
@@ -99,10 +118,7 @@ export const publicController = {
   // ---------- Verify OTP Only (Step 2) ----------
   async verifyRegistrationOtpOnly(req: Request, res: Response) {
     try {
-      const { email, otp } = req.body;
-      if (!email || !otp) {
-        return res.status(400).json({ success: false, error: 'Missing required fields' });
-      }
+      const { email, otp } = verifyOtpOnlySchema.parse(req.body);
       const otpRecord = await prisma.otpStore.findFirst({
         where: { email, purpose: 'email_verify', verified: false, expiresAt: { gte: new Date() } },
         orderBy: { createdAt: 'desc' },
@@ -129,6 +145,9 @@ export const publicController = {
       
       res.json({ success: true, data: { message: 'OTP verified successfully' } });
     } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ success: false, error: 'Validation failed', details: error.errors });
+      }
       logger.error('Failed to verify OTP', { error: error.message });
       res.status(500).json({ success: false, error: 'Verification failed' });
     }
@@ -137,10 +156,7 @@ export const publicController = {
   // ---------- Verify OTP & Create Account ----------
   async verifyRegistrationOtp(req: Request, res: Response) {
     try {
-      const { email, name, instituteName, password, planId, otp } = req.body;
-      if (!email || !name || !instituteName || !password || !planId || !otp) {
-        return res.status(400).json({ success: false, error: 'Missing required fields' });
-      }
+      const { email, name, instituteName, password, planId, otp } = verifyOtpAndCreateSchema.parse(req.body);
       // Retrieve OTP record
       const otpRecord = await prisma.otpStore.findFirst({
         where: { email, purpose: 'email_verify', expiresAt: { gte: new Date() } },
@@ -209,6 +225,9 @@ export const publicController = {
         } 
       });
     } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ success: false, error: 'Validation failed', details: error.errors });
+      }
       logger.error('Failed to verify registration OTP', { error: error.message });
       res.status(500).json({ success: false, error: 'Registration failed' });
     }
