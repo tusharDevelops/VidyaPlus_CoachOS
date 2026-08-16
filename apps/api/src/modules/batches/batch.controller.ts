@@ -10,7 +10,7 @@ import { DAYS_OF_WEEK } from '@coachos/shared';
 const createBatchSchema = z.object({
   name: z.string().min(2).max(255),
   subject: z.string().min(1).max(100).optional(),
-  teacherId: z.string().uuid().optional(),
+  teacherId: z.string().uuid().nullable().optional(),
   room: z.string().max(100).optional(),
   daysJson: z.array(z.enum(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'])).min(1),
   startTime: z.string().regex(/^\d{2}:\d{2}$/, 'Format: HH:mm'),
