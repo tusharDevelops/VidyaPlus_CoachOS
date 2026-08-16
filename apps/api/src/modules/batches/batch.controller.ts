@@ -247,7 +247,7 @@ export const batchController = {
       // Detect conflicts
       const conflicts = await detectConflicts(
         instituteId, body.daysJson, body.startTime, body.endTime,
-        body.room || undefined, body.teacherId,
+        body.room || undefined, body.teacherId || undefined,
       );
       if (conflicts.length > 0) {
         res.status(409).json({
