@@ -58,10 +58,14 @@ self.addEventListener('fetch', (event) => {
           cache.put(event.request, responseToCache);
         });
         return networkResponse;
-      }).catch(() => {
+      }).catch((error) => {
         if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
+          return caches.match('/index.html').then((response) => {
+            if (response) return response;
+            throw error;
+          });
         }
+        throw error;
       });
     })
   );
