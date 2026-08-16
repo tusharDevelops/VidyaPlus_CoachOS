@@ -133,7 +133,7 @@
 }
 
 /* Dark Mode Tokens */
-@variant dark (&:is(.dark, .dark *));
+@custom-variant dark (&:is(.dark, .dark *));
 
 @layer base {
   .dark {
